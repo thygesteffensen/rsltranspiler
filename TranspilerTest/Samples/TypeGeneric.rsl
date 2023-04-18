@@ -1,4 +1,4 @@
-scheme Simple =
+scheme TypeGeneric =
     class
         type
             T

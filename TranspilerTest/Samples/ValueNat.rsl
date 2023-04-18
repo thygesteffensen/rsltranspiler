@@ -1,0 +1,5 @@
+scheme ValueNat =
+    class
+        value
+            T : Nat
+    end

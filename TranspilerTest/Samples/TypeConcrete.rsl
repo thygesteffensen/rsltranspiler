@@ -1,0 +1,5 @@
+scheme TypeConcrete =
+    class
+        type
+            T = Nat
+    end
