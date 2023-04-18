@@ -1,0 +1,57 @@
+{
+
+//module Lexer =
+
+open FSharp.Text.Lexing
+open System
+open Parser
+
+exception SyntaxError of string
+
+let lexeme = LexBuffer<_>.LexemeString
+
+let newline (lexbuf: LexBuffer<_>) = 
+  lexbuf.StartPos <- lexbuf.StartPos.NextLine
+  
+  
+// This is to avoid state explosion
+let keywords =   
+    [   
+        "class", CLASS;
+        "scheme", SCHEME;
+        "type", TYPE;
+        "end", END;
+    ] |> Map.ofList   
+ 
+let ops =   
+    [   
+        "=",    EQ;   
+        "<",    LT;   
+        "<=",   LE;   
+        ">",    GT;   
+        ">=",   GE;   
+    ] |> Map.ofList   
+}
+
+
+let white = [' ' '\t']+
+let newline = '\r' | '\n' | "\r\n"
+
+let char        = ['a'-'z' 'A'-'Z']   
+let digit       = ['0'-'9']
+let text  = char(char|digit|['-' '_' '.'])*   
+let operator    = ">" | ">=" | "<" | "<=" | "="  
+
+rule read =
+    parse
+    | white { read lexbuf }
+    | newline { newline lexbuf; read lexbuf }
+    | "true"   { TRUE }
+    | "false"  { FALSE }
+    | operator { ops.[LexBuffer<_>.LexemeString lexbuf] } 
+    | text { match keywords.TryFind(LexBuffer<_>.LexemeString lexbuf) with
+             | Some(token) -> token
+             | None -> TEXT(LexBuffer<_>.LexemeString lexbuf) }
+    | ',' { COMMA }
+    | eof { EOF }
+    | _ { EOF }

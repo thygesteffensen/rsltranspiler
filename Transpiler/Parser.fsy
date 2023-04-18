@@ -1,0 +1,37 @@
+%{
+open Transpiler
+open Transpiler.Helpers
+
+let parse_error_rich = Some Helpers.error_handler
+%}
+
+%token <string> ID
+%token <int> INT
+%token <string> TEXT
+%token <char> CHAR
+%token TRUE
+%token FALSE
+%token EQ LT LE GT GE
+%token SCHEME
+%token CLASS
+%token TYPE
+%token END
+%token COMMA
+%token EOF
+
+%start start
+%type <Transpiler.Scheme option> start
+
+%%
+
+start: scheme { $1 }
+
+scheme:
+    | SCHEME TEXT EQ CLASS declarations END { Some ($2, $5) }
+
+declarations: 
+    | TYPE type_declarations { Type($2) }
+    
+type_declarations:
+    | TEXT { [$1] }
+    | type_declarations COMMA TEXT { $3 :: $1 }

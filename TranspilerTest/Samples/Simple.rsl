@@ -1,0 +1,5 @@
+scheme Simple =
+    class
+        type
+            T
+    end

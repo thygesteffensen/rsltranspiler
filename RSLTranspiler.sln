@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Transpiler", "Transpiler\Transpiler.fsproj", "{BF23A9A0-367B-453C-B44D-E7BD1D0B0C2A}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TranspilerTest", "TranspilerTest\TranspilerTest.fsproj", "{1C7629FF-7B6D-49FD-BC0F-4FCA5906CCD3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF23A9A0-367B-453C-B44D-E7BD1D0B0C2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF23A9A0-367B-453C-B44D-E7BD1D0B0C2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF23A9A0-367B-453C-B44D-E7BD1D0B0C2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF23A9A0-367B-453C-B44D-E7BD1D0B0C2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C7629FF-7B6D-49FD-BC0F-4FCA5906CCD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C7629FF-7B6D-49FD-BC0F-4FCA5906CCD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C7629FF-7B6D-49FD-BC0F-4FCA5906CCD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C7629FF-7B6D-49FD-BC0F-4FCA5906CCD3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

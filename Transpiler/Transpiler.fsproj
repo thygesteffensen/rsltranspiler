@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Helpers.fs" />
+        <Compile Include="Ast.fs" />
+        <FsYacc Include="Parser.fsy">
+            <OtherFlags>--module Parser</OtherFlags>
+        </FsYacc>
+        <FsLex Include="Lexer.fsl">
+            <OtherFlags>--module Lexer --unicode</OtherFlags>
+        </FsLex>
+        <Compile Include="Parser.fsi" />
+        <Compile Include="Parser.fs" />
+        <Compile Include="Lexer.fs" />
+<!--        <Compile Include="Program.fs" />-->
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FsLex.Core" Version="11.0.1" />
+      <PackageReference Include="FsLexYacc" Version="11.0.1" />
+      <PackageReference Include="FsLexYacc.Runtime" Version="11.0.1" />
+    </ItemGroup>
+
+</Project>
