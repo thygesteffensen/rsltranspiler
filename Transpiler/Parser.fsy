@@ -42,7 +42,7 @@ type_declaration:
     | TEXT EQ type_declaration_union            { Union($1, List.rev $3) }
     
 type_declaration_union:
-    | TEXT                                      { [$1] }
+    | TEXT BAR TEXT                             { [$3; $1] }
     | type_declaration_union BAR TEXT           { $3 :: $1 }
     
 type_expression:
