@@ -1,4 +1,4 @@
-module TranspilerTest
+module TranspilerTest.Type
 
 open NUnit.Framework
 open FSharp.Text.Lexing
@@ -17,7 +17,7 @@ let testLexerAndParserFromFile (fileName: string) =
 
 [<Test>]
 let TestTypeAbstract () =
-    let expected = Scheme("TypeAbstract", (Type [Abstract("T")]))
+    let expected = Scheme("TypeAbstract", [Type [Abstract("T")]])
 
     let actual = testLexerAndParserFromFile "Samples/TypeAbstract.rsl"
     
@@ -27,7 +27,7 @@ let TestTypeAbstract () =
 
 [<Test>]
 let TestTypeConcrete () =
-    let expected = Scheme("TypeConcrete", (Type [Concrete("T", Name("Nat"))]))
+    let expected = Scheme("TypeConcrete", [Type [Concrete("T", Name("Nat"))]])
 
     let actual = testLexerAndParserFromFile "Samples/TypeConcrete.rsl"
     
@@ -37,7 +37,7 @@ let TestTypeConcrete () =
     
 [<Test>]
 let TestTypeUnion () =
-    let expected = Scheme("TypeUnion", (Type [Union("T", ["t1"; "t2"; "t3"])]))
+    let expected = Scheme("TypeUnion", [Type [Union("T", ["t1"; "t2"; "t3"])]])
 
     let actual = testLexerAndParserFromFile "Samples/TypeUnion.rsl"
     

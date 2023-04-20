@@ -17,12 +17,32 @@ let testLexerAndParserFromFile (fileName: string) =
 
 [<Test>]
 let TestValueNat () =
-    let expected = Scheme("ValueNat", (Value "T"))
+    let expected =
+        Scheme("ValueNat", [(Value [ ExplicitValue("T", Name "Nat", None) ])])
 
-    let actual = testLexerAndParserFromFile "Samples/TypeAbstract.rsl"
-    
+    let actual = testLexerAndParserFromFile "Samples/ValueNat.rsl"
+
     match actual with
     | Some t -> Assert.AreEqual(expected, t)
     | None -> Assert.Fail "Should succeed"
-
     
+[<Test>]
+let TestValueGeneric () =
+    let expected =
+        Scheme(
+            "ValueGeneric", [
+                Type([
+                    Union("TrainId", ["t1"; "t2"; "t3"])
+                ]);
+                Value([
+                    GenericValue("position", [
+                        Typing("t", Name "TrainId")
+                    ], Name "Nat")
+                ])
+            ])
+
+    let actual = testLexerAndParserFromFile "Samples/ValueGeneric.rsl"
+
+    match actual with
+    | Some t -> Assert.AreEqual(expected, t)
+    | None -> Assert.Fail "Should succeed"

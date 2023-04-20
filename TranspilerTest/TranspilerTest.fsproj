@@ -9,10 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="Samples\Simple.rsl">
+        <Content Include="Samples\*.rsl">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Compile Include="UnitTest1.fs" />
+        <Compile Include="UnitTestType.fs" />
+        <Compile Include="UnitTestValue.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

@@ -15,8 +15,9 @@ let parse_error_rich = Some Helpers.error_handler
 %token SCHEME
 %token CLASS
 %token TYPE
+%token VALUE
 %token END
-%token COMMA COLON BAR
+%token COMMA COLON BAR LBRACKET RBRACKET
 %token EOF
 
 %start start
@@ -24,26 +25,46 @@ let parse_error_rich = Some Helpers.error_handler
 
 %%
 
-start: scheme                                   { $1 }
+start: scheme                                                           { $1 }
 
 scheme:
-    | SCHEME TEXT EQ CLASS declarations END     { Some ($2, $5) }
+    | SCHEME TEXT EQ CLASS declarations END                             { Some ($2, List.rev $5) }
+    
+declarations:
+    | declaration                                                       { [$1] }
+    | declarations declaration                                          { $2 :: $1 }
 
-declarations: 
-    | TYPE type_declarations                    { Type($2) }
+declaration: 
+    | TYPE type_declarations                                            { Type($2) }
+    | VALUE value_declarations                                          { Value($2) }
+
+value_declarations:
+    | value_declaration                                                 { [$1] }
+    | value_declarations COMMA value_declaration                        { $3 :: $1 }
+
+value_declaration:
+    | TEXT COLON type_expression                                        { ExplicitValue($1, $3, None) }
+    | TEXT LBRACKET typing_list RBRACKET COLON type_expression          { GenericValue($1, $3, $6) } 
+
+typing:
+    | TEXT COLON type_expression                                        { Typing($1, $3) }
+
+typing_list:
+    | typing                                                            { [$1] }
+    | typing_list COMMA typing                                          { $3 :: $1 }
 
 type_declarations:
-    | type_declaration                          { [$1] }
-    | type_declarations COMMA type_declaration  { $3 :: $1 }
+    | type_declaration                                                  { [$1] }
+    | type_declarations COMMA type_declaration                          { $3 :: $1 }
 
 type_declaration:
-    | TEXT                                      { Abstract($1) }
-    | TEXT EQ type_expression                   { Concrete($1, $3) }
-    | TEXT EQ type_declaration_union            { Union($1, List.rev $3) }
+    | TEXT                                                              { Abstract($1) }
+    | TEXT EQ type_expression                                           { Concrete($1, $3) }
+    | TEXT EQ type_declaration_union                                    { Union($1, List.rev $3) }
     
 type_declaration_union:
-    | TEXT BAR TEXT                             { [$3; $1] }
-    | type_declaration_union BAR TEXT           { $3 :: $1 }
+    | TEXT BAR TEXT                                                     { [$3; $1] }
+    | type_declaration_union BAR TEXT                                   { $3 :: $1 }
     
 type_expression:
-    | TEXT                                      { Name($1) }
+    | TEXT                                                              { Name($1) }
