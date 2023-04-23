@@ -23,7 +23,7 @@ type ValueLiteral =
     | VNat of int
     | VText of string
 
-type TypeExpression =
+type TypeExpression = 
     | Literal of TypeLiteral
     | Name of Id
     | Product of TypeExpression list
@@ -33,27 +33,31 @@ type TypeExpression =
     // | Function
     // | Subtype
     // | Bracketed // Necessary?
-    
-type TypeDeclaration =
-    | Abstract of Id // Sort
-    | Concrete of (Id * TypeExpression) // Abbreviation t = Nat
-    | Union of (Id * Id list)
-    | Typing of (Id * TypeExpression) // t : Nat
 
+// AST Node
+type TypeDefinition =
+    | Abstract // Sort
+    | Concrete of TypeExpression // Abbreviation t = Nat
+    | Union of Id list
+    // | Typing of TypeExpression // t : Nat
+
+type Typing =
+    | SingleTyping of Id * TypeExpression 
 
 type ValueExpression =
     | ValueLiteral of ValueLiteral
 
+// AST Node
 type ValueDeclaration =
     | ExplicitValue of (Id * TypeExpression * Option<ValueExpression>)
     | ImplicitValue
     | ExplicitFunction
     | ImplicitFunction
-    | GenericValue of (Id * TypeDeclaration list * TypeExpression)
+    | GenericValue of (Id * Typing list * TypeExpression)
 
 type Declaration =
     | Value of ValueDeclaration list
-    | Type of TypeDeclaration list
+    | TypeDeclaration of (Id * TypeDefinition) list
 
 type Class = Declaration list
 

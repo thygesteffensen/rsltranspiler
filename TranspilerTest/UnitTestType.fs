@@ -17,7 +17,7 @@ let testLexerAndParserFromFile (fileName: string) =
 
 [<Test>]
 let TestTypeAbstract () =
-    let expected = Scheme("TypeAbstract", [Type [Abstract("T")]])
+    let expected = Scheme("TypeAbstract", [TypeDeclaration [("T", Abstract)]])
 
     let actual = testLexerAndParserFromFile "Samples/TypeAbstract.rsl"
     
@@ -27,17 +27,18 @@ let TestTypeAbstract () =
 
 [<Test>]
 let TestTypeConcrete () =
-    let expected = Scheme("TypeConcrete", [Type [Concrete("T", Name("Nat"))]])
+    let expected =
+        Scheme("TypeConcrete", [ TypeDeclaration [ ("T", Concrete(Name "Nat")) ] ])
 
     let actual = testLexerAndParserFromFile "Samples/TypeConcrete.rsl"
-    
+
     match actual with
     | Some t -> Assert.AreEqual(expected, t)
     | None -> Assert.Fail "Should succeed"
     
 [<Test>]
 let TestTypeUnion () =
-    let expected = Scheme("TypeUnion", [Type [Union("T", ["t1"; "t2"; "t3"])]])
+    let expected = Scheme("TypeUnion", [TypeDeclaration [("T", Union(["t1"; "t2"; "t3"]))]])
 
     let actual = testLexerAndParserFromFile "Samples/TypeUnion.rsl"
     

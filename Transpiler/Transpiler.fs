@@ -10,3 +10,11 @@ let unfold_generic (node: ValueDeclaration) type_env =
     | _ -> node
 
 
+let build_symbol_table (_AST: Class) =
+    
+    let fold acc = function
+        | Value _ -> acc
+        | TypeDeclaration t -> acc
+        
+        
+    List.fold fold [] _AST
