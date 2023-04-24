@@ -10,11 +10,13 @@ let unfold_generic (node: ValueDeclaration) type_env =
     | _ -> node
 
 
-let build_symbol_table (_AST: Class) =
+let buildSymbolTable (_AST: Class) =
     
-    let fold acc = function
+    let unfoldTypeEnvironments acc = function
         | Value _ -> acc
-        | TypeDeclaration t -> acc
-        
-        
-    List.fold fold [] _AST
+        | TypeDeclaration ts -> ts @ acc
+    
+    let buildType (env: Map<string, TypeDefinition>) = function
+        | id, typeDecl -> env.Add(id, typeDecl)
+    
+    List.fold unfoldTypeEnvironments [] _AST |> List.fold buildType Map.empty

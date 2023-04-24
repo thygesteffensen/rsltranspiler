@@ -12,8 +12,10 @@
         <Content Include="Samples\*.rsl">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Compile Include="Common\*.fs" />
         <Compile Include="UnitTestType.fs" />
         <Compile Include="UnitTestValue.fs" />
+        <Compile Include="Logic\TestTranspiler.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

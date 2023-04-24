@@ -1,41 +1,22 @@
 module TranspilerTest.Value
 
 open NUnit.Framework
-open FSharp.Text.Lexing
 open Transpiler
+open TranspilerTest.Common
 
-[<SetUp>]
-let Setup () = ()
+let input: obj[] list =
+    [ [| "Samples/ValueNat.rsl"
+         Scheme("ValueNat", [ (Value [ ExplicitValue("T", Name "Nat", None) ]) ]) |]
+      [| "Samples/ValueGeneric.rsl"
+         Scheme(
+             "ValueGeneric",
+             [ TypeDeclaration([ ("TrainId", Union([ "t1"; "t2"; "t3" ])) ])
+               Value([ GenericValue("position", [ SingleTyping("t", Name "TrainId") ], Name "Nat") ]) ]
+         ) |] ]
 
-let testLexerAndParserFromFile (fileName: string) =
-    use textReader = new System.IO.StreamReader(fileName)
-    let lexbuf = LexBuffer<char>.FromTextReader textReader
-
-
-    Parser.start Lexer.read lexbuf
-
-
-[<Test>]
-let TestValueNat () =
-    let expected =
-        Scheme("ValueNat", [ (Value [ ExplicitValue("T", Name "Nat", None) ]) ])
-
-    let actual = testLexerAndParserFromFile "Samples/ValueNat.rsl"
-
-    match actual with
-    | Some t -> Assert.AreEqual(expected, t)
-    | None -> Assert.Fail "Should succeed"
-
-[<Test>]
-let TestValueGeneric () =
-    let expected =
-        Scheme(
-            "ValueGeneric",
-            [ TypeDeclaration([ ("TrainId", Union([ "t1"; "t2"; "t3" ])) ])
-              Value([ GenericValue("position", [ SingleTyping("t", Name "TrainId") ], Name "Nat") ]) ]
-        )
-
-    let actual = testLexerAndParserFromFile "Samples/ValueGeneric.rsl"
+[<TestCaseSource(nameof input)>]
+let TestValueNat (source: string) expected =
+    let actual = testLexerAndParserFromFile source
 
     match actual with
     | Some t -> Assert.AreEqual(expected, t)
