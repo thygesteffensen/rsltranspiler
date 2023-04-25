@@ -1,0 +1,7 @@
+scheme ValueGeneric_unfolded =
+	class
+		type
+			TrainId = t1 | t2 | t3
+		value
+			position [ t : TrainId ] = Nat
+	end

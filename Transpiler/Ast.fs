@@ -49,11 +49,12 @@ type ValueExpression =
 
 // AST Node
 type ValueDeclaration =
-    | ExplicitValue of (Id * TypeExpression * Option<ValueExpression>)
+    | ExplicitValue of (Id * TypeExpression * ValueExpression)
     | ImplicitValue
     | ExplicitFunction
     | ImplicitFunction
     | GenericValue of (Id * Typing list * TypeExpression)
+    | Typing of Typing
 
 type Declaration =
     | Value of ValueDeclaration list

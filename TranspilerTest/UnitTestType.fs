@@ -10,7 +10,12 @@ let input: obj[] list =
       [| "Samples/TypeConcrete.rsl"
          Scheme("TypeConcrete", [ TypeDeclaration [ ("T", Concrete(Name "Nat")) ] ]) |]
       [| "Samples/TypeUnion.rsl"
-         Scheme("TypeUnion", [ TypeDeclaration [ ("T", Union([ "t1"; "t2"; "t3" ])) ] ]) |] ]
+         Scheme("TypeUnion", [ TypeDeclaration [ ("T", Union([ "t1"; "t2"; "t3" ])) ] ]) |]
+      [| "Samples/TypesAll.rsl"
+         Scheme(
+             "TypesAll",
+             [ TypeDeclaration [ ("T", Abstract); ("T1", Concrete(Name "Nat")); ("T2", Union([ "t1"; "t2" ])) ] ]
+         ) |] ]
 
 [<TestCaseSource(nameof input)>]
 let TestType source expected =

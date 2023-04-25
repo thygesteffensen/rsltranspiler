@@ -1,0 +1,7 @@
+scheme TypesAll =
+    class
+        type
+            T,
+            T1 = Nat,
+            T2 == t1 | t2
+    end

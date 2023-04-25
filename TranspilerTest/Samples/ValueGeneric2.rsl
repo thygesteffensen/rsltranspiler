@@ -1,0 +1,8 @@
+scheme ValueGeneric2 =
+    class
+        type
+            TrainId == t1 | t2 | t3,
+            SectionId == s1 | s2 | s3
+        value
+            position [ t : TrainId, s : SectionId ] : Nat 
+    end

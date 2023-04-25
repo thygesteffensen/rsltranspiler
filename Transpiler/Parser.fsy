@@ -35,15 +35,15 @@ declarations:
     | declarations declaration                                          { $2 :: $1 }
 
 declaration: 
-    | TYPE type_declarations                                            { TypeDeclaration($2) }
-    | VALUE value_declarations                                          { Value($2) }
+    | TYPE type_declarations                                            { TypeDeclaration(List.rev $2) }
+    | VALUE value_declarations                                          { Value(List.rev $2) }
 
 value_declarations:
     | value_declaration                                                 { [$1] }
     | value_declarations COMMA value_declaration                        { $3 :: $1 }
 
 value_declaration:
-    | TEXT COLON type_expression                                        { ExplicitValue($1, $3, None) }
+    | TEXT COLON type_expression                                        { Typing(SingleTyping($1, $3)) }
     | TEXT LBRACKET typing_list RBRACKET COLON type_expression          { GenericValue($1, $3, $6) } 
 
 typing:
@@ -55,7 +55,7 @@ typing_list:
 
 type_declarations:
     | TEXT type_definition                                              { [($1, $2)] }
-    | type_declarations COMMA ID type_definition                        { ($3, $4) :: $1 }
+    | type_declarations COMMA TEXT type_definition                       { ($3, $4) :: $1 }
 
 type_definition:
     |                                                                   { Abstract }

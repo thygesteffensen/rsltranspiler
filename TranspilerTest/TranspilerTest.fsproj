@@ -17,6 +17,7 @@
         <Compile Include="UnitTestValue.fs" />
         <Compile Include="Logic\TestTranspiler.fs" />
         <Compile Include="Program.fs" />
+        <None Include="Playground.fsx" />
     </ItemGroup>
 
     <ItemGroup>

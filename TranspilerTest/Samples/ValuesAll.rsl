@@ -1,0 +1,8 @@
+scheme ValuesAll =
+    class
+        type
+            TrainId == t1 | t2 | t3
+        value
+            position [ t : TrainId ] : Nat,
+            segment : Nat
+    end
