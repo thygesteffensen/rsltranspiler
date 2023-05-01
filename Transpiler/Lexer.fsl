@@ -22,7 +22,9 @@ let keywords =
         "scheme", SCHEME;
         "type", TYPE;
         "value", VALUE;
+        "axiom", AXIOM;
         "end", END;
+        "all", ALL;
     ] |> Map.ofList   
  
 let ops =   
@@ -32,6 +34,8 @@ let ops =
         "<=",   LE;   
         ">",    GT;   
         ">=",   GE;   
+        "-",    MI;
+        "+",    PL;
     ] |> Map.ofList   
 }
 
@@ -42,7 +46,7 @@ let newline     = '\r' | '\n' | "\r\n"
 let char        = ['a'-'z' 'A'-'Z']   
 let digit       = ['0'-'9']
 let text  = char(char|digit|['-' '_' '.'])*   
-let operator    = ">" | ">=" | "<" | "<=" | "="  
+let operator    = ">" | ">=" | "<" | "<=" | "=" | "-" | "+" 
 
 rule read =
     parse
@@ -58,6 +62,10 @@ rule read =
     | ':'       { COLON }
     | '['       { LBRACKET }
     | ']'       { RBRACKET }
+    | '('       { LPAREN }
+    | ')'       { RPAREN }
     | '|'       { BAR }
+    | '"'       { QUOTE }
+    | ['-']?digit+   { INT (Int32.Parse(lexeme lexbuf))} 
     | eof       { EOF }
     | _         { EOF }

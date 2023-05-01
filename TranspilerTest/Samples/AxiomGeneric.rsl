@@ -1,0 +1,9 @@
+scheme AxiomGeneric =
+    class
+        type
+            Pos == t1 | t2 | t3
+        value
+            A [ t: Pos ] : Nat
+        axiom 
+            (all x : Pos :- A[x] = 2)
+    end

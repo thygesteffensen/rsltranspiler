@@ -1,0 +1,7 @@
+scheme AxiomSimple =
+    class
+        value
+            A: Text
+        axiom
+            A = "a"
+    end

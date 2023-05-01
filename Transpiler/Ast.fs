@@ -56,10 +56,19 @@ type ValueDeclaration =
     | GenericValue of (Id * Typing list * TypeExpression)
     | Typing of Typing
 
+type Accessor =
+    | Id of Id
+    | Generic of (Id * ValueExpression list)
+
+type Axiom =
+    | Axiom of (Accessor * ValueExpression)
+    | Forall of (Typing list * Axiom)
+
 type Declaration =
     | Value of ValueDeclaration list
     | TypeDeclaration of (Id * TypeDefinition) list
-
+    | AxiomDeclaration of Axiom list
+    
 type Class = Declaration list
 
 type Scheme = Id * Class
