@@ -32,6 +32,7 @@ let input2: obj[] list =
     [
         [| "Samples/ValueGeneric.rsl"; "Samples/ValueGeneric_unfolded.rsl" |]
         [| "Samples/ValueGeneric2.rsl"; "Samples/ValueGeneric2_unfolded.rsl" |]
+        [| "Samples/AxiomGeneric.rsl"; "Samples/AxiomGeneric_unfolded.rsl" |]
     ]
 
 [<TestCaseSource(nameof input2)>]
@@ -50,6 +51,11 @@ let input3: obj[] list =
     [
         [| "Samples/ValueGeneric.rsl" |]
     ]
+
+[<TestCase>]
+let test () =
+    testLexerAndParserFromFile "Samples/AxiomGeneric_unfolded.rsl" |> ignore
+    ()
 
 [<TestCaseSource(nameof input3)>]
 let write source =
