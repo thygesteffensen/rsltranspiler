@@ -1,0 +1,13 @@
+scheme AxiomGeneric_unfolded = 
+class
+type
+Pos == t1 | t2 | t3
+
+value
+A_t1 : Nat = 2,
+
+A_t2 : Nat = 2,
+
+A_t3 : Nat = 2
+
+end
