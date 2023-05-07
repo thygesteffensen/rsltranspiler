@@ -52,7 +52,6 @@ type ValueExpression =
     | Equivalence of (ValueExpression * ValueExpression)
     | Quantified of (Quantifier * Typing list * ValueExpression)
 
-
 // AST Node
 type ValueDeclaration =
     | ExplicitValue of (Id * TypeExpression * ValueExpression)
