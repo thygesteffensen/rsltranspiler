@@ -1,0 +1,7 @@
+scheme Playground =
+    class
+        type
+            A = Nat
+        value
+            A : Int = 2
+    end

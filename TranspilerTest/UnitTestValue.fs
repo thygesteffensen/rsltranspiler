@@ -6,30 +6,30 @@ open TranspilerTest.Common
 
 
 let temp =
-    GenericValue("position", [ SingleTyping("t", Name "TrainId") ], Name "Nat")
+    GenericValue("position", [ SingleTyping("t", TName "TrainId") ], TName "Nat")
 
-let temp1 = Typing(SingleTyping("segment", Name "Nat"))
+let temp1 = Typing(SingleTyping("segment", TName "Nat"))
 
 let temp2 =
-    [ GenericValue("position", [ SingleTyping("t", Name "TrainId") ], Name "Nat")
-      Typing(SingleTyping("segment", Name "Nat")) ]
+    [ GenericValue("position", [ SingleTyping("t", TName "TrainId") ], TName "Nat")
+      Typing(SingleTyping("segment", TName "Nat")) ]
 
 let input: obj[] list =
     [ [| "Samples/ValueNat.rsl"
-         Scheme("ValueNat", [ (Value [ Typing(SingleTyping("T", Name "Nat")) ]) ]) |]
+         Scheme("ValueNat", [ (Value [ Typing(SingleTyping("T", TName "Nat")) ]) ]) |]
       [| "Samples/ValueGeneric.rsl"
          Scheme(
              "ValueGeneric",
              [ TypeDeclaration([ ("TrainId", Union([ "t1"; "t2"; "t3" ])) ])
-               Value([ GenericValue("position", [ SingleTyping("t", Name "TrainId") ], Name "Nat") ]) ]
+               Value([ GenericValue("position", [ SingleTyping("t", TName "TrainId") ], TName "Nat") ]) ]
          ) |]
       [| "Samples/ValuesAll.rsl"
          Scheme(
              "ValuesAll",
              [ TypeDeclaration([ ("TrainId", Union([ "t1"; "t2"; "t3" ])) ])
                Value(
-                   [ GenericValue("position", [ SingleTyping("t", Name "TrainId") ], Name "Nat")
-                     Typing(SingleTyping("segment", Name "Nat")) ]
+                   [ GenericValue("position", [ SingleTyping("t", TName "TrainId") ], TName "Nat")
+                     Typing(SingleTyping("segment", TName "Nat")) ]
                ) ]
          ) |] ]
 

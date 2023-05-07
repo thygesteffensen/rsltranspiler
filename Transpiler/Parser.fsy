@@ -11,7 +11,7 @@ let parse_error_rich = Some Helpers.error_handler
 %token <char> CHAR
 %token TRUE FALSE
 %token EQ LT LE GT GE MI PL
-%token SCHEME CLASS TYPE VALUE AXIOM END ALL
+%token SCHEME CLASS TYPE VALUE AXIOM END ALL EXISTS EXACTLY_ONE
 %token COMMA COLON BAR LBRACKET RBRACKET QUOTE LPAREN RPAREN
 %token EOF
 
@@ -32,30 +32,27 @@ declarations:
 declaration: 
     | TYPE type_declarations                                            { TypeDeclaration(List.rev $2) }
     | VALUE value_declarations                                          { Value(List.rev $2) }
-    | AXIOM axioms                                                      { AxiomDeclaration(List.rev $2) }
+    | AXIOM value_expressions                                           { AxiomDeclaration(List.rev $2) }
     
-axioms:
-    | axiom                                                             { [$1] }
-    | axioms COMMA axiom                                                { $3 :: $1 }
-    
-axiom:
-    | accessor EQ value_expression                                      { Axiom($1, $3) }
-    | LPAREN ALL typing_list COLON MI axiom RPAREN                      { Forall($3, $6) }
-
-accessor:
-    | TEXT                                                              { Id $1 }
-    | TEXT LBRACKET value_expressions RBRACKET                          { Generic($1, $3) }  
 
 value_expressions:
     | value_expression                                                  { [$1] }
     | value_expressions COMMA value_expression                          { ($3 :: $1 ) }
 
 value_expression:
-    | TRUE                                                              { ValueLiteral (VBool true) }
-    | FALSE                                                             { ValueLiteral (VBool false) }
-    | INT                                                               { ValueLiteral (VInt $1) }
-    | QUOTE TEXT QUOTE                                                  { ValueLiteral (VText $2) }
-    | TEXT                                                              { ValueLiteral (VText $1) }
+    | TRUE                                                              { ValueLiteral(VBool true) }
+    | FALSE                                                             { ValueLiteral(VBool false) }
+    | INT                                                               { ValueLiteral(VInt $1) }
+    | QUOTE TEXT QUOTE                                                  { ValueLiteral(VText $2) }
+    | TEXT                                                              { VName $1 }
+    | TEXT LBRACKET value_expressions RBRACKET                          { GenericName($1, $3) }
+    | value_expression EQ value_expression                              { Equivalence($1, $3) }
+    | quantifier typing_list COLON MI value_expression                  { Quantified($1, $2, $5) }
+    
+quantifier:
+    | ALL                                                               { All }
+    | EXISTS                                                            { Exists }
+    | EXACTLY_ONE                                                       { ExactlyOne }
     
 value_declarations:
     | value_declaration                                                 { [$1] }
@@ -75,7 +72,7 @@ typing_list:
 
 type_declarations:
     | TEXT type_definition                                              { [($1, $2)] }
-    | type_declarations COMMA TEXT type_definition                       { ($3, $4) :: $1 }
+    | type_declarations COMMA TEXT type_definition                      { ($3, $4) :: $1 }
 
 type_definition:
     |                                                                   { Abstract }
@@ -87,4 +84,4 @@ type_declaration_union:
     | type_declaration_union BAR TEXT                                   { $3 :: $1 }
     
 type_expression:
-    | TEXT                                                              { Name($1) }
+    | TEXT                                                              { TName($1) }

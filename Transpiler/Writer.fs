@@ -24,7 +24,7 @@ let getTypeLiteralString = function
 let writeTypeExpression (stream: StreamWriter) depth typeExpression =
     match typeExpression with
     | Literal lit -> stream.Write (getTypeLiteralString lit )
-    | Name n -> stream.Write n
+    | TName n -> stream.Write n
     | Product l -> failwith "todo"
     | Set e -> failwith "todo"
     | List e -> failwith "todo"

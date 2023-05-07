@@ -25,6 +25,8 @@ let keywords =
         "axiom", AXIOM;
         "end", END;
         "all", ALL;
+        "exists", EXISTS;
+        "exists!", EXACTLY_ONE;
     ] |> Map.ofList   
  
 let ops =   

@@ -8,15 +8,15 @@ let input: obj[] list =
     [ [| "Samples/AxiomSimple.rsl"
          Scheme(
              "AxiomSimple",
-             [ Value([ Typing(SingleTyping("A", Name "Text")) ])
-               AxiomDeclaration([ Axiom(Id "A", ValueLiteral(VText "a")) ]) ]
+             [ Value([ Typing(SingleTyping("A", TName "Text")) ])
+               AxiomDeclaration([ Equivalence(VName "A", ValueLiteral(VText "a")) ]) ]
          ) |]
       [| "Samples/AxiomGeneric.rsl"
          Scheme(
              "AxiomGeneric",
              [ TypeDeclaration([ ("Pos", Union([ "t1"; "t2"; "t3" ])) ])
-               Value([ GenericValue("A", [ SingleTyping("t", Name "Pos") ], Name "Nat") ])
-               AxiomDeclaration([ Forall([ SingleTyping("t", Name "Nat") ], Axiom(Id "A", ValueLiteral(VInt 2))) ]) ]
+               Value([ GenericValue("A", [ SingleTyping("t", TName "Pos") ], TName "Nat") ])
+               AxiomDeclaration([ Quantified(All, [SingleTyping("x", TName "Pos")], Equivalence(GenericName("A", [VName "x"]), ValueLiteral (VInt 2)))]) ] 
          ) |] ]
 
 [<TestCaseSource(nameof input)>]

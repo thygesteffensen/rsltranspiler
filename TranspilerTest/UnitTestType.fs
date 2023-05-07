@@ -8,13 +8,13 @@ let input: obj[] list =
     [ [| "Samples/TypeAbstract.rsl"
          Scheme("TypeAbstract", [ TypeDeclaration [ ("T", Abstract) ] ]) |]
       [| "Samples/TypeConcrete.rsl"
-         Scheme("TypeConcrete", [ TypeDeclaration [ ("T", Concrete(Name "Nat")) ] ]) |]
+         Scheme("TypeConcrete", [ TypeDeclaration [ ("T", Concrete(TName "Nat")) ] ]) |]
       [| "Samples/TypeUnion.rsl"
          Scheme("TypeUnion", [ TypeDeclaration [ ("T", Union([ "t1"; "t2"; "t3" ])) ] ]) |]
       [| "Samples/TypesAll.rsl"
          Scheme(
              "TypesAll",
-             [ TypeDeclaration [ ("T", Abstract); ("T1", Concrete(Name "Nat")); ("T2", Union([ "t1"; "t2" ])) ] ]
+             [ TypeDeclaration [ ("T", Abstract); ("T1", Concrete(TName "Nat")); ("T2", Union([ "t1"; "t2" ])) ] ]
          ) |] ]
 
 [<TestCaseSource(nameof input)>]
