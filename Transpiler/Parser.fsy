@@ -67,6 +67,9 @@ typing:
     | TEXT COLON type_expression                                        { SingleTyping($1, $3) }
 
 typing_list:
+    | rev_typing_list                                                   { List.rev $1 }
+
+rev_typing_list:
     | typing                                                            { [$1] }
     | typing_list COMMA typing                                          { $3 :: $1 }
 
