@@ -69,6 +69,8 @@ type TransitionSystem =
     | Variable of (Identifier * TypeExpression * Option<ValueExpression>) list
     | InitConstraint of ValueExpression list
     | TransitionRule of (ValueExpression * ValueExpression) list
+    
+
 
 type Declaration =
     | Value of ValueDeclaration list

@@ -28,6 +28,7 @@ let keywords =
         "exists", EXISTS;
         "exists!", EXACTLY_ONE;
         "transition_system", TS;
+        "transition_rules", TR;
         "variable", VARIABLE;
         "init_constraint", INIT_CONSTRAINT;
     ] |> Map.ofList   
