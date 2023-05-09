@@ -27,6 +27,9 @@ let keywords =
         "all", ALL;
         "exists", EXISTS;
         "exists!", EXACTLY_ONE;
+        "transition_system", TS;
+        "variable", VARIABLE;
+        "init_constraint", INIT_CONSTRAINT;
     ] |> Map.ofList   
  
 let ops =   
@@ -68,6 +71,8 @@ rule read =
     | ')'       { RPAREN }
     | '|'       { BAR }
     | '"'       { QUOTE }
+    | '/'       { SLASH }
+    | '\\'      { BSLASH }
     | ['-']?digit+   { INT (Int32.Parse(lexeme lexbuf))} 
     | eof       { EOF }
     | _         { EOF }

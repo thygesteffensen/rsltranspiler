@@ -61,10 +61,20 @@ type ValueDeclaration =
     | GenericValue of (Id * Typing list * TypeExpression)
     | Typing of Typing
 
+type Identifier =
+    | Simple of string
+    | Generic of (string * Typing list)
+
+type TransitionSystem =
+    | Variable of (Identifier * TypeExpression * Option<ValueExpression>) list
+    | InitConstraint of ValueExpression list
+
 type Declaration =
     | Value of ValueDeclaration list
     | TypeDeclaration of (Id * TypeDefinition) list
     | AxiomDeclaration of ValueExpression list
+    | TransitionSystemDeclaration of (Id * TransitionSystem list)
+    
     
 type Class = Declaration list
 

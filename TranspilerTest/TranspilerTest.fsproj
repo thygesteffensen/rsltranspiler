@@ -16,8 +16,8 @@
         <Compile Include="UnitTestType.fs" />
         <Compile Include="UnitTestValue.fs" />
         <Compile Include="UnitTestAxiom.fs" />
-        <Compile Include="Logic\TestTranspiler.fs" />
-        <Compile Include="Logic\TestIntermediateRepresentation.fs" />
+        <Compile Include="Logic\*.fs" />
+        <Compile Include="Parser\*.fs" />
         <Compile Include="Program.fs" />
         <None Include="Playground.fsx" />
     </ItemGroup>

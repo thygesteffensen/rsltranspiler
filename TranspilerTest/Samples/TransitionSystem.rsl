@@ -1,0 +1,15 @@
+﻿scheme TransitionSystem =
+    class
+        type
+            Pos == p1 | p2
+        transition_system [ TS ]
+            variable
+                v1 : Nat,
+                v2 [ t : Pos ] : Nat,
+                v3 : Nat := 3
+            init_constraint
+                v1 = 1 /\
+                v3 = 3 /\
+                all t : Pos :- v2[t] = 2
+        end
+    end
