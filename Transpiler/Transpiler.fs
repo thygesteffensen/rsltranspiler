@@ -150,9 +150,9 @@ let unfoldClass typeEnv valueEnv cls =
 
 [<Struct>]
 type Intermediate =
-    { Type: Declaration
-      Value: Map<string, ValueDeclaration>
-      Axiom: Declaration }
+    { Type: Option<Declaration>
+      Value: Option<Map<string, ValueDeclaration>>
+      Axiom: Option<Declaration> }
 
 let rec convertToIntermediate (cls: Class) (intermediate: Intermediate) =
     match cls with
@@ -161,7 +161,10 @@ let rec convertToIntermediate (cls: Class) (intermediate: Intermediate) =
         let intermediate' =
             match decl with
             | Value valueDeclarations ->
-                let mutable map = intermediate.Value
+                let mutable map =
+                    match intermediate.Value with
+                    | None -> Map.empty
+                    | Some m -> m
 
                 valueDeclarations
                 |> List.iter (fun e ->
@@ -171,16 +174,61 @@ let rec convertToIntermediate (cls: Class) (intermediate: Intermediate) =
                     | ExplicitFunction -> failwith "todo"
                     | ImplicitFunction -> failwith "todo"
                     | GenericValue(id, _, _) as gv -> map <- map.Add(id, gv)
-                    | Typing typing -> failwith "todo")
+                    | Typing _ -> failwith "todo")
 
-                { intermediate with Value = map }
-            | TypeDeclaration _ as td -> { intermediate with Type = td }
-            | AxiomDeclaration _ as ad -> { intermediate with Axiom = ad }
+                { intermediate with Value = Some(map) }
+            | TypeDeclaration _ as td -> { intermediate with Type = Some(td) }
+            | AxiomDeclaration _ as ad -> { intermediate with Axiom = Some(ad) }
 
         convertToIntermediate decls intermediate'
 
+let rec convertToAst (intermediate: Intermediate) (acc: Class) =
+    let acc1 =
+        match intermediate.Axiom with
+        | None -> acc
+        | Some v -> v :: acc
+
+    let acc2 =
+        match intermediate.Value with
+        | None -> acc
+        | Some v ->
+            let value = Map.foldBack (fun _ v a -> v :: a) v []
+            (Value value) :: acc1
+
+    match intermediate.Type with
+    | None -> acc2
+    | Some v -> v :: acc2
+
+let unfoldTypings typeEnv valueEnv (intermediate: Intermediate) =
+    let map =
+        match intermediate.Value with
+        | Some m -> m
+        | None -> Map.empty
+
+    let mapFolder (s: Map<string, ValueDeclaration>) k v =
+        match v with
+        | GenericValue(id, typingList, typeExpression) ->
+            let postfix = buildTypePostfixStrings typeEnv valueEnv typingList
+            
+            // YTou got tyo
+            let s' = s.Remove k
+
+            List.foldBack
+                (fun e (acc: Map<string, ValueDeclaration>) ->
+                    acc.Add($"{id}{e}", Typing(SingleTyping($"{id}{e}", typeExpression))))
+                postfix
+                s'
+        | _ -> s
+
+    // q: Why use map as state and input?
+    // a: The we don't have to add un-processed items to the new state, since they are already there
+    let map' = Map.fold mapFolder map map
+
+    { intermediate with Value = Some(map') }
+
+
 let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
-    let mutable map = intermediate.Value
+    let mutable map = intermediate.Value.Value
 
     let unfoldValueExpression =
         function
@@ -190,6 +238,7 @@ let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
             match ve with
             | Equivalence(GenericName(name, _), value_expr) ->
                 let valueType = Map.find name valueEnv
+                map <- map.Remove name
 
                 prefixes
                 |> List.iter (fun e -> map <- map.Add($"{name}{e}", ExplicitValue($"{name}{e}", valueType, value_expr)))
@@ -201,11 +250,14 @@ let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
         Value = _
         Axiom = axiomDecl } ->
         match axiomDecl with
-        | Value _ -> failwith "todo"
-        | TypeDeclaration _ -> failwith "todo"
-        | AxiomDeclaration axioms ->
-            axioms
-            |> List.iter unfoldValueExpression
+        | Some(Value _) -> failwith "todo"
+        | Some(TypeDeclaration _) -> failwith "todo"
+        | Some(AxiomDeclaration axioms) -> axioms |> List.iter unfoldValueExpression
+        | None -> ()
+
+    { intermediate with
+        Value = Some(map)
+        Axiom = None }
 
 let transpile ((specification, cls): Scheme) =
     let typeEnvironment = buildSymbolTable cls
@@ -214,10 +266,12 @@ let transpile ((specification, cls): Scheme) =
     let intermediate =
         convertToIntermediate
             cls
-            { Type = TypeDeclaration []
-              Value = Map.empty
-              Axiom = AxiomDeclaration [] }
+            { Type = None
+              Value = None
+              Axiom = None }
 
-    let unfolded = unfoldClass typeEnvironment valueEnvironment cls
+    let axiomsUnfolded = unfoldAxioms typeEnvironment valueEnvironment intermediate
+    let genericsTypeUnfolded = unfoldTypings typeEnvironment valueEnvironment axiomsUnfolded
 
-    Scheme($"{specification}_unfolded", unfolded)
+    let t = convertToAst genericsTypeUnfolded []
+    Scheme($"{specification}_unfolded", t)
