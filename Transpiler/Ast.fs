@@ -22,28 +22,30 @@ type ValueLiteral =
     | VNat of int
     | VText of string
 
-type TypeExpression = 
+type TypeExpression =
     | Literal of TypeLiteral
     | TName of Id
     | Product of TypeExpression list
     | Set of TypeExpression
     | List of TypeExpression
     | Map of (TypeExpression * TypeExpression)
-    // | Function
-    // | Subtype
-    // | Bracketed // Necessary?
+// | Function
+// | Subtype
+// | Bracketed // Necessary?
 
 // AST Node
 type TypeDefinition =
     | Abstract // Sort
     | Concrete of TypeExpression // Abbreviation t = Nat
     | Union of Id list
-    // | Typing of TypeExpression // t : Nat
+// | Typing of TypeExpression // t : Nat
 
-type Typing =
-    | SingleTyping of Id * TypeExpression 
+type Typing = SingleTyping of Id * TypeExpression
 
-type Quantifier = All | Exists | ExactlyOne
+type Quantifier =
+    | All
+    | Exists
+    | ExactlyOne
 
 type ValueExpression =
     | ValueLiteral of ValueLiteral
@@ -65,18 +67,28 @@ type Identifier =
     | Simple of string
     | Generic of (string * Typing list)
 
+type Choice =
+    | Deterministic
+    | NonDeterministic
+
+type GuardedExpression = ValueExpression * ValueExpression
+type Rule =
+    | Single of GuardedExpression
+    | Chain of GuardedExpression * Choice * Rule
+
 type TransitionSystem =
     | Variable of (Identifier * TypeExpression * Option<ValueExpression>) list
     | InitConstraint of ValueExpression list
-    | TransitionRule of (ValueExpression * ValueExpression) list
+    | TransitionRule of Rule
+
 
 type Declaration =
     | Value of ValueDeclaration list
     | TypeDeclaration of (Id * TypeDefinition) list
     | AxiomDeclaration of ValueExpression list
     | TransitionSystemDeclaration of (Id * TransitionSystem list)
-    
-    
+
+
 type Class = Declaration list
 
 type Scheme = Id * Class

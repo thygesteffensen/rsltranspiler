@@ -279,6 +279,7 @@ let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
                     List.foldBack (fun e a -> flatten typeEnv valueEnv (instances.Add(i, e)) ts ve' a) possibilities acc
 
                 | [] -> Map.add "" (unfoldValueExpr instances ve') acc // Convert all generic accessors to the typed in, using instances and add them to the map
+            ()
         | _ -> failwith "Not supported in axiom unfolding."
 
     match intermediate with
