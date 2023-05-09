@@ -16,7 +16,32 @@ let input: obj[] list =
              "AxiomGeneric",
              [ TypeDeclaration([ ("Pos", Union([ "t1"; "t2"; "t3" ])) ])
                Value([ GenericValue("A", [ SingleTyping("t", TName "Pos") ], TName "Nat") ])
-               AxiomDeclaration([ Quantified(All, [SingleTyping("x", TName "Pos")], Equivalence(GenericName("A", [VName "x"]), ValueLiteral (VInt 2)))]) ] 
+               AxiomDeclaration(
+                   [ Quantified(
+                         All,
+                         [ SingleTyping("x", TName "Pos") ],
+                         Equivalence(GenericName("A", [ VName "x" ]), ValueLiteral(VInt 2))
+                     ) ]
+               ) ]
+         ) |]
+      [| "Samples/AxiomGeneric2.rsl"
+         Scheme(
+             "AxiomGeneric",
+             [ TypeDeclaration([ ("Pos", Union([ "t1"; "t2"; "t3" ])) ])
+               Value(
+                   [ GenericValue(
+                         "A",
+                         [ SingleTyping("t1", TName "Pos"); SingleTyping("t2", TName "Pos") ],
+                         TName "Nat"
+                     ) ]
+               )
+               AxiomDeclaration(
+                   [ Quantified(
+                         All,
+                         [ SingleTyping("x", TName "Pos") ],
+                         Equivalence(GenericName("A", [ VName "x"; VName "x" ]), ValueLiteral(VInt 2))
+                     ) ]
+               ) ]
          ) |] ]
 
 [<TestCaseSource(nameof input)>]
