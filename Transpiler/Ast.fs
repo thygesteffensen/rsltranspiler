@@ -2,6 +2,8 @@
 
 open Microsoft.FSharp.Core
 
+
+
 type Id = string
 
 type TypeLiteral =
@@ -92,3 +94,10 @@ type Declaration =
 type Class = Declaration list
 
 type Scheme = Id * Class
+
+
+[<Struct>]
+type Intermediate =
+    { Type: Option<Declaration>
+      Value: Option<Map<string, ValueDeclaration>>
+      Axiom: Option<Declaration> }

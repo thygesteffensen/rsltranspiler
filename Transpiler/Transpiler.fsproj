@@ -6,8 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Helpers.fs" />
         <Compile Include="Ast.fs" />
+        <Compile Include="Helpers.fs" />
+        <Compile Include="RuleCollection\*.fs" />
         <FsYacc Include="Parser.fsy">
             <OtherFlags>--module Parser</OtherFlags>
         </FsYacc>
@@ -19,7 +20,6 @@
         <Compile Include="Lexer.fs" />
         <Compile Include="Transpiler.fs" />
         <Compile Include="Writer.fs" />
-<!--        <Compile Include="Program.fs" />-->
     </ItemGroup>
 
     <ItemGroup>
