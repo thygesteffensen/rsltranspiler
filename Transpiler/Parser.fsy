@@ -42,11 +42,18 @@ transition_systems:
 transition_system:
     | VARIABLE variable_definitions                                     { Variable(List.rev $2) }
     | INIT_CONSTRAINT init_constraints                                  { InitConstraint(List.rev $2) }
-    | TR transition_rules                                               { TransitionRule(List.rev $2) }
-    
+    | TR transition_rules                                               { TransitionRule($2) }
+
 transition_rules:
-    | value_expression MI MI GT value_expression                        { [(($1, $5), None, None)] }
-    | transition
+    | transition_rule                                                   { Rule.Single($1) }
+    | transition_rule choice transition_rules                           { Rule.Chain($1, $2, $3) }
+
+transition_rule:
+    | value_expression MI MI GT value_expression                        { ($1, $5) }
+    
+choice:
+    | LBRACKET EQ RBRACKET                                              { Deterministic }
+    | LBRACKET GT RBRACKET                                              { NonDeterministic } 
     
 variable_definitions:
     | variable_definition                                               { [$1] }
@@ -58,18 +65,7 @@ variable_definition:
 
 init_constraints:
     | value_expression                                                  { [$1] }
-    | init_constraints SLASH BSLASH value_expression                    { $4 :: $1 }
-
-transition_rules:
-    | value_expression MI MI GT value_expression                        { ($1, $3) }
-    | transition_rules choice value_expression MI MI GT value_expression{ ($3, $5) :: $1 }
-
-rule:
-    | value_expression                                                  { $1 }
-    | value_expression LBRACKET EQ RBRACKET rule                        { ($1, EQ, $5) } 
-    
-choice:
-    | LBRACKET EQ RBRACKET                                              {  }
+    | init_constraints SLASH BSLASH value_expression                    { $4 :: $1 } 
     
 identifier:
     | TEXT                                                              { Identifier.Simple($1) }
@@ -88,6 +84,7 @@ value_expression:
     | TEXT LBRACKET value_expressions RBRACKET                          { GenericName($1, $3) }
     | value_expression EQ value_expression                              { Equivalence($1, $3) }
     | quantifier typing_list COLON MI value_expression                  { Quantified($1, $2, $5) }
+    | LPAREN value_expression RPAREN                                    { $2 }
     
 quantifier:
     | ALL                                                               { All }

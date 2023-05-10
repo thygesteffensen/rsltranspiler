@@ -5,5 +5,5 @@ scheme AxiomGeneric =
         value
             A [ t: Pos ] : Nat
         axiom 
-            (all x : Pos :- A[x] = 2) = (all x : Pos :- A[x] = 2)
+            (all x : Pos :- A[x] = 2)
     end

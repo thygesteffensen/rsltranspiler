@@ -133,7 +133,7 @@ let unfoldType typeEnv valueEnv (id, typeDefinition as t) =
     | Concrete typeExpr -> failwith "todo"
     | Union idList -> [ (id, Union idList) ]
 
-let unfoldDeclaration typeEnv valueEnv decl =
+(*let unfoldDeclaration typeEnv valueEnv decl =
     match decl with
     | Value valueDeclarations ->
         Value(List.foldBack (fun valueDecl acc -> (unfoldValue typeEnv valueEnv valueDecl) @ acc) valueDeclarations [])
@@ -143,10 +143,10 @@ let unfoldDeclaration typeEnv valueEnv decl =
         )
     // We need to remove typings if present?
     | AxiomDeclaration axioms ->
-        Value(List.foldBack (fun e acc -> (unfoldValueExpr typeEnv valueEnv e) @ acc) axioms [])
+        Value(List.foldBack (fun e acc -> (unfoldValueExpr typeEnv valueEnv e) @ acc) axioms [])*)
 
-let unfoldClass typeEnv valueEnv cls =
-    List.foldBack (fun declaration acc -> (unfoldDeclaration typeEnv valueEnv declaration) :: acc) cls []
+(*let unfoldClass typeEnv valueEnv cls =
+    List.foldBack (fun declaration acc -> (unfoldDeclaration typeEnv valueEnv declaration) :: acc) cls []*)
 
 [<Struct>]
 type Intermediate =
@@ -279,6 +279,7 @@ let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
                     List.foldBack (fun e a -> flatten typeEnv valueEnv (instances.Add(i, e)) ts ve' a) possibilities acc
 
                 | [] -> Map.add "" (unfoldValueExpr instances ve') acc // Convert all generic accessors to the typed in, using instances and add them to the map
+            ()
         | _ -> failwith "Not supported in axiom unfolding."
 
     match intermediate with
