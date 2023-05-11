@@ -20,12 +20,12 @@ let testInput: obj[] list =
 
 [<TestCaseSource(nameof testInput)>]
 let testAst2Ir2Ast decl =
-    let t: Transpiler.Intermediate =
+    let t: Intermediate =
         { Type = None
           Value = None
           Axiom = None }
 
-    Transpiler.convertToIntermediate decl t |> ignore
-    let actual = Transpiler.convertToAst (Transpiler.convertToIntermediate decl t) []
+    Helpers.convertToIntermediate decl t |> ignore
+    let actual = Helpers.convertToAst (Helpers.convertToIntermediate decl t) []
 
     Assert.AreEqual(decl, actual)
