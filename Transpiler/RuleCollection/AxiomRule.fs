@@ -5,15 +5,15 @@ module Transpiler.RuleCollection.AxiomRule
 
 open Transpiler
 
-let valueExpressionToString (valueExpr: ValueExpression) =
+(*let valueExpressionToString (valueExpr: ValueExpression) =
     match valueExpr with
     | ValueLiteral valueLiteral -> failwith "todo"
     | VName s -> s
     | GenericName foo -> failwith "todo"
     | Equivalence foo -> failwith "todo"
-    | Quantified foo -> failwith "todo"
+    | Quantified foo -> failwith "todo"*)
 
-let rec unfoldValueExpr typeEnv valueEnv (valueExpr: ValueExpression) =
+(*let rec unfoldValueExpr typeEnv valueEnv (valueExpr: ValueExpression) =
     match valueExpr with
     | ValueLiteral valueLiteral -> failwith "todo"
     | VName s -> failwith "todo"
@@ -25,8 +25,9 @@ let rec unfoldValueExpr typeEnv valueEnv (valueExpr: ValueExpression) =
             + List.foldBack (fun v s -> (valueExpressionToString v) + s) valueExpressions ""
         ) // And the resr
     | Equivalence(rhs, lhs) -> failwith "todo" //Equivalence(unfoldValueExpr instances rhs, unfoldValueExpr instances lhs)
-    | Quantified foo -> failwith "todo"
+    | Quantified foo -> failwith "todo"*)
 
+(*
 let unfoldValueExpression typeEnv valueEnv =
     function
     | Quantified(_, tl, ve) ->
@@ -56,11 +57,68 @@ let unfoldValueExpression typeEnv valueEnv =
 
         ()
     | _ -> failwith "Not supported in axiom unfolding."
+    *)
 
-let axiomFolder typeEnv valueEnv (map: Map<string, ValueDeclaration>) (axiom: ValueExpression) =
+let flattenGenericName (valueExpr: ValueExpression) =
+    match valueExpr with
+    | ValueLiteral _ as vl -> vl
+    | VName _ as n -> n
+    | GenericName(s, valueExpressions) ->
+        
+    | Equivalence _ -> failwith "Equivalence expressions are not allowed here"
+    | Quantified _ -> failwith "Quantified expressions are not allowed here"
+
+
+/// <summary>
+/// We allow unfolding value expression until the
+/// </summary>
+/// <param name="typeEnv"></param>
+/// <param name="valueEnv"></param>
+/// <param name="map"></param>
+/// <param name="instances"></param>
+/// <param name="axiom"></param>
+let rec axiomFolder typeEnv valueEnv (map: Map<string, ValueDeclaration>) (instances: Map<string, string>) (axiom: ValueExpression) =
     match axiom with
-    | Quantified(quantifier, typings, valueExpression) -> failwith "todo"
-    | Equivalence(rhs, lhs) -> // Here
+    | Quantified(quantifier, typings, valueExpr) ->
+        // 1. Create instance lookup
+        
+        // Instances is a map from string to string
+        // key: Is the tempt bounded variable
+        // value: Is the current value of the key, used to unfold
+        
+        // Iterate over typings in the typing list and increment each typing once - x nested for loop
+        // 
+        let rec instantiateTypings (typing: Typing list) (instances: Map<string,string>) valueExpr' =
+            match typing with
+            | [] ->
+                // When we get here, all typings for this quantified expression is instantiated
+                // and we are ready for continuing unfolded the quantified inner expression.
+                axiomFolder typeEnv valueEnv map instances valueExpr' // Inner for loop
+            | SingleTyping(s, typeExpr)::ts -> // n'th for looooooop
+                match Map.find s typeEnv with
+                | Abstract -> failwith "todo"
+                | Concrete typeExpression -> failwith "todo"
+                | Union l ->
+                    // It is folding the list of variants, for each variant it recurse into itself,
+                    // populating the instance to instances and reached a point where all typings are
+                    // instantiated and then the valueExpr can be unfolded.
+                    List.foldBack (fun v m -> instantiateTypings ts (Map.add s v instances) valueExpr') l map
+                     
+        instantiateTypings typings instances valueExpr
+    | Equivalence(rhs, lhs) ->
+        let flattened = flattenGenericName lhs
+        match rhs with
+        | VName s ->
+            let valueType = Map.find s valueEnv
+            map.Add(s, ExplicitValue(s, valueType, flattened))
+            
+        | GenericName(s, valueExpressions) ->
+            // 1. Create instance lookup 
+            // For each instance add s of instance and flattened to map
+            let valueType = Map.find s valueEnv
+            let t = "" // This need to be the string name, which I have already done somewhere
+            map.Add(t, ExplicitValue(t, valueType, flattened))
+        | _ -> failwith "Rhs can only be a value or variable name"
         
     | _ -> failwith "Axiom can only be a Quantified expression or an Equivalence"
 
@@ -78,7 +136,7 @@ let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
             match axiomDecl with
             | Some(Value _) -> failwith "todo"
             | Some(TypeDeclaration _) -> failwith "todo"
-            | Some(AxiomDeclaration axioms) -> List.foldBack (fun e a -> a) axioms map
+            | Some(AxiomDeclaration axioms) -> List.foldBack (fun e a -> a) axioms map // axiomFolder should be used here
             | Some(TransitionSystemDeclaration _) -> failwith "todo"
             | None -> Map.empty 
 
