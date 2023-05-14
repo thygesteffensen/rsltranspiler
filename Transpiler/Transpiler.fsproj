@@ -10,7 +10,7 @@
         <Compile Include="Helpers.fs" />
         <Compile Include="RuleCollection\*.fs" />
         <FsYacc Include="Parser.fsy">
-            <OtherFlags>--module Parser</OtherFlags>
+            <OtherFlags>--module Parser -v</OtherFlags>
         </FsYacc>
         <FsLex Include="Lexer.fsl">
             <OtherFlags>--module Lexer --unicode</OtherFlags>
@@ -23,9 +23,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="FsLex.Core" Version="11.0.1" />
-      <PackageReference Include="FsLexYacc" Version="11.0.1" />
-      <PackageReference Include="FsLexYacc.Runtime" Version="11.0.1" />
+      <PackageReference Include="FsLex.Core" Version="11.2.0" />
+      <PackageReference Include="FsLexYacc" Version="11.2.0" />
+      <PackageReference Include="FsLexYacc.Runtime" Version="11.2.0" />
     </ItemGroup>
 
 </Project>

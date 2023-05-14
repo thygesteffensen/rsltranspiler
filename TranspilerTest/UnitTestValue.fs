@@ -40,3 +40,98 @@ let TestValueNat (source: string) expected =
     match actual with
     | Some t -> Assert.AreEqual(expected, t)
     | None -> Assert.Fail "Should succeed"
+
+let t =
+    Infix(
+        Infix(
+            Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool true)),
+            Guard,
+            Infix(
+                PGenericName("v2", [ VName "p1" ]),
+                Equal,
+                Infix(GenericName("v2", [ VName "p1" ]), Plus, ValueLiteral(VInt 1))
+            )
+        ),
+        Deterministic,
+        Infix(
+            Infix(
+                Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool false)),
+                Guard,
+                Infix(VPName "v1", Equal, Infix(VName "v3", Plus, ValueLiteral(VInt 1)))
+            ),
+            NonDeterministic,
+            Quantified(
+                Quantifier.NonDeterministic,
+                [ SingleTyping("t", TName "Pos") ],
+                Infix(
+                    Infix(ValueLiteral(VBool false), Equal, ValueLiteral(VBool false)),
+                    Guard,
+                    Infix(
+                        PGenericName("v2", [ VName "t" ]),
+                        Equal,
+                        Infix(GenericName("v2", [ VName "t" ]), Plus, ValueLiteral(VInt 1))
+                    )
+                )
+            )
+        )
+    )
+
+let tt =
+    Infix(
+        Infix(
+            Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool true)),
+            Guard,
+            Infix(
+                PGenericName("v2", [ VName "p1" ]),
+                Equal,
+                Infix(GenericName("v2", [ VName "p1" ]), Plus, ValueLiteral(VInt 1))
+            )
+        ),
+        Deterministic,
+        Infix(
+            Infix(
+                Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool false)),
+                Guard,
+                Infix(VPName "v1", Equal, Infix(VName "v3", Plus, ValueLiteral(VInt 1)))
+            ),
+            NonDeterministic,
+            Quantified(
+                Quantifier.NonDeterministic,
+                [ SingleTyping("t", TName "Pos") ],
+                Infix(
+                    Infix(ValueLiteral(VBool false), Equal, ValueLiteral(VBool false)),
+                    Guard,
+                    Infix(
+                        PGenericName("v2", [ VName "t" ]),
+                        Equal,
+                        Infix(GenericName("v2", [ VName "t" ]), Plus, ValueLiteral(VInt 1))
+                    )
+                )
+            )
+        )
+    )
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

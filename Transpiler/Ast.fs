@@ -33,14 +33,12 @@ type TypeExpression =
     | Map of (TypeExpression * TypeExpression)
 // | Function
 // | Subtype
-// | Bracketed // Necessary?
 
 // AST Node
 type TypeDefinition =
     | Abstract // Sort
     | Concrete of TypeExpression // Abbreviation t = Nat
     | Union of Id list
-// | Typing of TypeExpression // t : Nat
 
 type Typing = SingleTyping of Id * TypeExpression
 
@@ -48,13 +46,27 @@ type Quantifier =
     | All
     | Exists
     | ExactlyOne
+    | Deterministic
+    | NonDeterministic
+
+type InfixOp =
+    | Equal
+    | Plus
+    | Guard
+    | Deterministic
+    | NonDeterministic
+    | LessThan
+    | LessThanOrEqual
 
 type ValueExpression =
     | ValueLiteral of ValueLiteral
     | VName of Id
+    | VPName of Id
     | GenericName of (Id * ValueExpression list)
+    | PGenericName of (Id * ValueExpression list)
     | Equivalence of (ValueExpression * ValueExpression)
     | Quantified of (Quantifier * Typing list * ValueExpression)
+    | Infix of (ValueExpression * InfixOp * ValueExpression)
 
 // AST Node
 type ValueDeclaration =
@@ -69,20 +81,10 @@ type Identifier =
     | Simple of string
     | Generic of (string * Typing list)
 
-type Choice =
-    | Deterministic
-    | NonDeterministic
-
-type GuardedExpression = ValueExpression * ValueExpression
-type Rule =
-    | Single of GuardedExpression
-    | Chain of GuardedExpression * Choice * Rule
-
 type TransitionSystem =
     | Variable of (Identifier * TypeExpression * Option<ValueExpression>) list
     | InitConstraint of ValueExpression list
-    | TransitionRule of Rule
-
+    | TransitionRule of ValueExpression * (string * ValueExpression) list
 
 type Declaration =
     | Value of ValueDeclaration list
@@ -90,11 +92,9 @@ type Declaration =
     | AxiomDeclaration of ValueExpression list
     | TransitionSystemDeclaration of (Id * TransitionSystem list)
 
-
 type Class = Declaration list
 
 type Scheme = Id * Class
-
 
 [<Struct>]
 type Intermediate =

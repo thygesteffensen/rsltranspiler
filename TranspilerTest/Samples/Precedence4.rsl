@@ -1,0 +1,5 @@
+scheme Precedence4 = 
+    class
+        value
+            a: Nat = 1 ==> v1' = v3 + 1 [=] 1
+    end

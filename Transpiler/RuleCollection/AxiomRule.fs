@@ -43,11 +43,11 @@ let rec axiomFolder
 
         instantiateTypings typeEnv valueEnv map instances valueExpr  typings
 
-    | Equivalence(rhs, lhs) ->
-        match rhs with
+    | Infix(lhs, Equal, rhs) ->
+        match lhs with
         | VName s ->
             let valueType = Map.find s valueEnv
-            map.Add(s, ExplicitValue(s, valueType, lhs))
+            map.Add(s, ExplicitValue(s, valueType, rhs))
 
         | GenericName(s, valueExpressions) ->
             let valueType = Map.find s valueEnv
@@ -64,7 +64,7 @@ let rec axiomFolder
             let tt = $"{s}{t}"
             let map' = map.Remove s
             
-            map'.Add(tt, ExplicitValue(tt, valueType, lhs))
+            map'.Add(tt, ExplicitValue(tt, valueType, rhs))
 
         | _ -> failwith "Rhs can only be a value or variable name"
 

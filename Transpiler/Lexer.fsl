@@ -29,6 +29,7 @@ let keywords =
         "exists!", EXACTLY_ONE;
         "transition_system", TS;
         "transition_rules", TR;
+        "where", WHERE;
         "variable", VARIABLE;
         "init_constraint", INIT_CONSTRAINT;
     ] |> Map.ofList   
@@ -36,12 +37,16 @@ let keywords =
 let ops =   
     [   
         "=",    EQ;   
+        "==>",  GU;
         "<",    LT;   
         "<=",   LE;   
         ">",    GT;   
         ">=",   GE;   
         "-",    MI;
         "+",    PL;
+        ":-",   IS;
+        "[=]",  NONDETERMINISTIC;
+        "[>]",  DETERMINISTIC;
     ] |> Map.ofList   
 }
 
@@ -52,7 +57,7 @@ let newline     = '\r' | '\n' | "\r\n"
 let char        = ['a'-'z' 'A'-'Z']   
 let digit       = ['0'-'9']
 let text  = char(char|digit|['-' '_' '.'])*   
-let operator    = ">" | ">=" | "<" | "<=" | "=" | "-" | "+" 
+let operator    = ">" | ">=" | "<" | "<=" | "=" | "-" | "+" | "==>" | "[=]" | "[>]" | ":-"
 
 rule read =
     parse
@@ -73,6 +78,7 @@ rule read =
     | '|'       { BAR }
     | '"'       { QUOTE }
     | '/'       { SLASH }
+    | '\''      { PRIME }
     | '\\'      { BSLASH }
     | ['-']?digit+   { INT (Int32.Parse(lexeme lexbuf))} 
     | eof       { EOF }

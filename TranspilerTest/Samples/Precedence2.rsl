@@ -1,0 +1,5 @@
+scheme Precedence2 = 
+    class
+        value
+            a: Nat = 1 + 1 ==> false
+    end

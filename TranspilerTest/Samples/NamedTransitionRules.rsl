@@ -1,4 +1,4 @@
-scheme TransitionSystem =
+scheme NamedTransitionRules =
     class
         type
             Pos == p1 | p2
@@ -13,13 +13,16 @@ scheme TransitionSystem =
                 (all t : Pos :- v2[t] = 2)
             
             transition_rules
-                (true = true ==>
-                    v2'[p1] = v2[p1] + 1)
-                [>]
-                (true = false ==>
-                v1' = v3 + 1)
-                [=]
-                ([=] t : Pos :- false = false ==> v2'[t] = v2[t] + 1)
+                TR1 [=] TR2 [=]
+                true = false ==>
+                v1' = v3
+                
+                where 
+                    [TR1] = 
+                        (true = true ==>
+                            v2'[p1] = v2[p1] + 1),
+                    [TR2] =
+                        (([=] t : Pos :- false = false ==> v2'[t] = v2[t] + 1))
                 
         end
     end

@@ -9,7 +9,7 @@ let input: obj[] list =
          Scheme(
              "AxiomSimple",
              [ Value([ Typing(SingleTyping("A", TName "Text")) ])
-               AxiomDeclaration([ Equivalence(VName "A", ValueLiteral(VText "a")) ]) ]
+               AxiomDeclaration([ Infix(VName "A", Equal, ValueLiteral(VText "a")) ]) ]
          ) |]
       [| "Samples/AxiomGeneric.rsl"
          Scheme(
@@ -20,7 +20,7 @@ let input: obj[] list =
                    [ Quantified(
                          All,
                          [ SingleTyping("x", TName "Pos") ],
-                         Equivalence(GenericName("A", [ VName "x" ]), ValueLiteral(VInt 2))
+                         Infix(GenericName("A", [ VName "x" ]), Equal, ValueLiteral(VInt 2))
                      ) ]
                ) ]
          ) |]
@@ -39,7 +39,7 @@ let input: obj[] list =
                    [ Quantified(
                          All,
                          [ SingleTyping("x", TName "Pos") ],
-                         Equivalence(GenericName("A", [ VName "x"; VName "x" ]), ValueLiteral(VInt 2))
+                         Infix(GenericName("A", [ VName "x"; VName "x" ]), Equal, ValueLiteral(VInt 2))
                      ) ]
                ) ]
          ) |] ]
