@@ -16,10 +16,11 @@ let parse_error_rich = Some Helpers.error_handler
 %token COMMA COLON BAR LBRACKET RBRACKET QUOTE LPAREN RPAREN SLASH BSLASH PRIME
 %token EOF
 
-%right DETERMINISTIC NONDETERMINISTIC
-%left IS
+%left DETERMINISTIC NONDETERMINISTIC
+%right IS
 %left GU
-%left EQ LT LE GT GE 
+%right EQ
+%left LT LE GT GE 
 %left MI PL
 
 
@@ -50,7 +51,7 @@ transition_systems:
 transition_system:
     | VARIABLE variable_definitions                                     { Variable(List.rev $2) }
     | INIT_CONSTRAINT init_constraints                                  { InitConstraint(List.rev $2) }
-    | TR value_expression                                         { TransitionRule($2, []) }
+    | TR value_expression                                               { TransitionRule($2, []) }
     
 where:
     |                                                                   { [] }
