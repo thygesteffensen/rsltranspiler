@@ -33,31 +33,27 @@ let rec axiomFolder
     valueEnv
     (map: Map<string, ValueDeclaration>)
     (instances: Map<string, string>)
-    (axiom: ValueExpression)
+    (axiom: IrAxiomDeclaration)
     =
     match axiom with
-    | Quantified(quantifier, typings, valueExpr) ->
-        match quantifier with
-        | All -> ()
-        | _ -> failwith "Only forall quantifier is allowed"
-
+    | IrQuantified(typings, valueExpr) ->
         instantiateTypings typeEnv valueEnv map instances valueExpr  typings
-
-    | Infix(lhs, Equal, rhs) ->
-        match lhs with
-        | VName s ->
+        
+    | IrInfix(identifier, rhs) ->
+        match identifier with
+        | Simple s -> 
             let valueType = Map.find s valueEnv
             map.Add(s, ExplicitValue(s, valueType, rhs))
-
-        | GenericName(s, valueExpressions) ->
+        | Generic(s, valueExpressions) -> 
             let valueType = Map.find s valueEnv
-            // let flattened = flattenGenericName typeEnv valueEnv instances rhs
+            
             let stringer ve =
                 match ve with
                 | ValueLiteral valueLiteral -> literalToString valueLiteral
-                | VName s -> Map.find s instances
-                | GenericName foo -> failwith "todo"
-                | Equivalence foo -> failwith "todo"
+                | VName s ->
+                    match s with
+                    | Simple s -> Map.find s instances
+                    | Generic(s, valueExpressions) -> failwith "todo"
                 | Quantified foo -> failwith "todo"
 
             let t = List.foldBack (fun e a -> $"_{stringer e}{a}") valueExpressions ""
@@ -65,10 +61,6 @@ let rec axiomFolder
             let map' = map.Remove s
             
             map'.Add(tt, ExplicitValue(tt, valueType, rhs))
-
-        | _ -> failwith "Rhs can only be a value or variable name"
-
-    | _ -> failwith "Axiom can only be a Quantified expression or an Equivalence"
 
 /// <summary>
 /// Iterate through each typing in the typing list and for each combination the value expression <see cref="valueExpr"/>
@@ -121,12 +113,9 @@ let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
             Value = _
             Axiom = axiomDecl } ->
             match axiomDecl with
-            | Some(Value _) -> failwith "todo"
-            | Some(TypeDeclaration _) -> failwith "todo"
-            | Some(AxiomDeclaration axioms) ->
-                List.foldBack (fun e a -> axiomFolder typeEnv valueEnv a Map.empty e) axioms map
-            | Some(TransitionSystemDeclaration _) -> failwith "todo"
             | None -> map
+            | Some axioms ->
+                List.foldBack (fun e a -> axiomFolder typeEnv valueEnv a Map.empty e) axioms map
 
     { intermediate with
         Value = Some(map)

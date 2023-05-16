@@ -20,6 +20,11 @@ scheme TransitionSystem =
                 v1' = v3 + 1)
                 [=]
                 ([=] t : Pos :- false = false ==> v2'[t] = v2[t] + 1)
+                [=]
+                TR1
+                
+                where
+                    [TR1] = 
                 
         end
     end

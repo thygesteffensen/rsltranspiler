@@ -7,6 +7,7 @@
 
     <ItemGroup>
         <Compile Include="Ast.fs" />
+        <Compile Include="IntermediateRepresentation.fs" />
         <Compile Include="Helpers.fs" />
         <Compile Include="RuleCollection\*.fs" />
         <FsYacc Include="Parser.fsy">

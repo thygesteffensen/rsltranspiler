@@ -1,9 +1,24 @@
-
 module Transpiler.Helpers
 
-let error_handler (tok: FSharp.Text.Parsing.ParseErrorContext<_>): unit =
+let error_handler (tok: FSharp.Text.Parsing.ParseErrorContext<_>) : unit =
     printfn $"Current token: {tok.CurrentToken} and {tok.ShiftTokens}"
     ()
+
+let convertAxiomDeclToIr (valueExprList: ValueExpression list) =
+
+    let rec valueExpressionToIr (valueExpr: ValueExpression) =
+        match valueExpr with
+        | Quantified(All, typings, valueExpression) -> IrQuantified(typings, valueExpressionToIr valueExpression)
+        | Infix(VName accessor, Equal, expression) -> IrInfix(accessor, expression)
+
+        | Quantified _ -> failwith "Quantified expression must use the all quantifier"
+        | Infix _ -> failwith "Infix expression in axioms must be on the form: <Accessor> = <ValueExpr>"
+
+        | _ -> failwith "Axioms can only be a Quantified or Infix expression"
+
+
+    List.foldBack (fun e a -> valueExpressionToIr e :: a) valueExprList []
+
 
 /// <summary>
 /// Convert AST to intermediate representation.
@@ -36,7 +51,9 @@ let rec convertToIntermediate (cls: Class) (intermediate: Intermediate) =
 
                 { intermediate with Value = Some(map) }
             | TypeDeclaration _ as td -> { intermediate with Type = Some(td) }
-            | AxiomDeclaration _ as ad -> { intermediate with Axiom = Some(ad) }
+            | AxiomDeclaration ad ->
+                { intermediate with
+                    Axiom = Some(convertAxiomDeclToIr ad) }
 
         convertToIntermediate decls intermediate'
 
@@ -49,9 +66,14 @@ let rec convertToIntermediate (cls: Class) (intermediate: Intermediate) =
 /// <param name="acc"></param>
 let rec convertToAst (intermediate: Intermediate) (acc: Class) =
     let acc1 =
+        let rec axiomIrToAst (a: IrAxiomDeclaration) =
+            match a with
+            | IrQuantified(typings, irAxiomDeclaration) -> Quantified(All, typings, axiomIrToAst irAxiomDeclaration)
+            | IrInfix(accessor, valueExpression) -> Infix(VName accessor, Equal, valueExpression)
+            
         match intermediate.Axiom with
         | None -> acc
-        | Some v -> v :: acc
+        | Some v -> (AxiomDeclaration (List.foldBack (fun e a -> (axiomIrToAst e)::a) v [])) :: acc
 
     let acc2 =
         match intermediate.Value with
@@ -63,7 +85,7 @@ let rec convertToAst (intermediate: Intermediate) (acc: Class) =
     match intermediate.Type with
     | None -> acc2
     | Some v -> v :: acc2
-    
+
 /// <summary>
 /// Build symbol table for given Abstract Syntax Tree
 /// </summary>

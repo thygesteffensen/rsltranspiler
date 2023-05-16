@@ -1,8 +1,5 @@
 ﻿namespace Transpiler
 
-open Microsoft.FSharp.Core
-
-
 
 type Id = string
 
@@ -58,15 +55,21 @@ type InfixOp =
     | LessThan
     | LessThanOrEqual
 
+type Identifier =
+    | Simple of Id
+    | Generic of (Id * Typing list)
+
 type ValueExpression =
     | ValueLiteral of ValueLiteral
-    | VName of Id
-    | VPName of Id
-    | GenericName of (Id * ValueExpression list)
-    | PGenericName of (Id * ValueExpression list)
-    | Equivalence of (ValueExpression * ValueExpression)
+    | VName of Accessor
+    | VPName of Accessor
+    // | GenericName of (Id * ValueExpression list)
+    // | PGenericName of (Id * ValueExpression list)
     | Quantified of (Quantifier * Typing list * ValueExpression)
     | Infix of (ValueExpression * InfixOp * ValueExpression)
+and Accessor =
+    | Simple of Id
+    | Generic of (Id * ValueExpression list)
 
 // AST Node
 type ValueDeclaration =
@@ -77,9 +80,6 @@ type ValueDeclaration =
     | GenericValue of (Id * Typing list * TypeExpression)
     | Typing of Typing
 
-type Identifier =
-    | Simple of string
-    | Generic of (string * Typing list)
 
 type TransitionSystem =
     | Variable of (Identifier * TypeExpression * Option<ValueExpression>) list
@@ -96,8 +96,3 @@ type Class = Declaration list
 
 type Scheme = Id * Class
 
-[<Struct>]
-type Intermediate =
-    { Type: Option<Declaration>
-      Value: Option<Map<string, ValueDeclaration>>
-      Axiom: Option<Declaration> }

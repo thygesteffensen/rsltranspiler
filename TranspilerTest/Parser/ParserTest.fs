@@ -37,7 +37,7 @@ let textInput: obj[] list =
                  Infix(
                      ValueLiteral(VInt 1),
                      Guard,
-                     Infix(VPName("v1"), Equal, Infix(VName("v3"), Plus, ValueLiteral(VInt 1)))
+                     Infix(VPName(Simple "v1"), Equal, Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1)))
                  ),
                  NonDeterministic,
                  ValueLiteral(VInt 1)
@@ -45,12 +45,12 @@ let textInput: obj[] list =
       [| "Samples/Precedence5.rsl"
          generate
              "Precedence5"
-             (Infix(Infix(VName("v3"), Plus, ValueLiteral(VInt 1)), NonDeterministic, ValueLiteral(VInt 1))) |]
+             (Infix(Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1)), NonDeterministic, ValueLiteral(VInt 1))) |]
       [| "Samples/Precedence6.rsl"
          generate
              "Precedence6"
              (Infix(
-                 Infix(VPName("v1"), Equal, Infix(VName("v3"), Plus, ValueLiteral(VInt 1))),
+                 Infix(VPName(Simple "v1"), Equal, Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1))),
                  NonDeterministic,
                  ValueLiteral(VInt 1)
              )) |]
@@ -64,9 +64,9 @@ let textInput: obj[] list =
                      Infix(ValueLiteral(VBool false), Equal, ValueLiteral(VBool false)),
                      Guard,
                      Infix(
-                         PGenericName("v2", [ VName "t" ]),
+                         VPName(Generic("v2", [ VName(Simple "t") ])),
                          Equal,
-                         Infix(GenericName("v2", [ VName "t" ]), Plus, ValueLiteral(VInt 1))
+                         Infix(VName(Generic("v2", [ VName(Simple "t") ])), Plus, ValueLiteral(VInt 1))
                      )
                  )
              )) |] ]

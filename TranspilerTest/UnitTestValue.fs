@@ -47,9 +47,9 @@ let t =
             Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool true)),
             Guard,
             Infix(
-                PGenericName("v2", [ VName "p1" ]),
+                VName(Generic("v2", [ VName (Simple "p1") ])),
                 Equal,
-                Infix(GenericName("v2", [ VName "p1" ]), Plus, ValueLiteral(VInt 1))
+                Infix(VName(Generic("v2", [ VName (Simple "p1") ])), Plus, ValueLiteral(VInt 1))
             )
         ),
         Deterministic,
@@ -57,7 +57,7 @@ let t =
             Infix(
                 Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool false)),
                 Guard,
-                Infix(VPName "v1", Equal, Infix(VName "v3", Plus, ValueLiteral(VInt 1)))
+                Infix(VPName(Simple "v1"), Equal, Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1)))
             ),
             NonDeterministic,
             Quantified(
@@ -67,9 +67,9 @@ let t =
                     Infix(ValueLiteral(VBool false), Equal, ValueLiteral(VBool false)),
                     Guard,
                     Infix(
-                        PGenericName("v2", [ VName "t" ]),
+                        VPName(Generic("v2", [ VName(Simple "t") ])),
                         Equal,
-                        Infix(GenericName("v2", [ VName "t" ]), Plus, ValueLiteral(VInt 1))
+                        Infix(VName(Generic("v2", [ VName(Simple "t") ])), Plus, ValueLiteral(VInt 1))
                     )
                 )
             )
@@ -82,9 +82,9 @@ let tt =
             Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool true)),
             Guard,
             Infix(
-                PGenericName("v2", [ VName "p1" ]),
+                VPName(Generic("v2", [ VName(Simple "p1") ])),
                 Equal,
-                Infix(GenericName("v2", [ VName "p1" ]), Plus, ValueLiteral(VInt 1))
+                Infix(VName(Generic("v2", [ VName(Simple "p1") ])), Plus, ValueLiteral(VInt 1))
             )
         ),
         Deterministic,
@@ -92,19 +92,19 @@ let tt =
             Infix(
                 Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool false)),
                 Guard,
-                Infix(VPName "v1", Equal, Infix(VName "v3", Plus, ValueLiteral(VInt 1)))
+                Infix(VPName(Simple "v1"), Equal, Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1)))
             ),
             NonDeterministic,
             Quantified(
                 Quantifier.NonDeterministic,
-                [ SingleTyping("t", TName "Pos") ],
+                [ SingleTyping("t", TName("Pos")) ],
                 Infix(
                     Infix(ValueLiteral(VBool false), Equal, ValueLiteral(VBool false)),
                     Guard,
                     Infix(
-                        PGenericName("v2", [ VName "t" ]),
+                        VPName(Generic("v2", [ VName(Simple "t") ])),
                         Equal,
-                        Infix(GenericName("v2", [ VName "t" ]), Plus, ValueLiteral(VInt 1))
+                        Infix(VName(Generic("v2", [ VName(Simple "t") ])), Plus, ValueLiteral(VInt 1))
                     )
                 )
             )
