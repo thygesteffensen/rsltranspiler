@@ -33,14 +33,14 @@ let writeTypeExpression (stream: StreamWriter) depth typeExpression =
 
 let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
     match valueExpression with
-    | ValueLiteral literal -> stream.Write (literal |> getValueLiteralString)
+    | ValueLiteral (literal, _) -> stream.Write (literal |>  getValueLiteralString)
 
 let rec writeValue (stream: StreamWriter) depth valueDeclaration =
     stream.Write(String.replicate depth "\t")
 
     match valueDeclaration with
     | ExplicitValue(id, typeExpr, valueExpr) ->
-        stream.Write (id + " : ")
+        stream.Write (fst id + " : ")
         writeTypeExpression stream depth typeExpr
         writeValueExpression stream depth valueExpr
         stream.Write ""
@@ -49,26 +49,26 @@ let rec writeValue (stream: StreamWriter) depth valueDeclaration =
     | ImplicitFunction -> failwith "todo"
     | GenericValue(id, typingList, typeExpr) as gv ->
         // TODO: This one is a bit hacky due to 0 as depth as constructing a type
-        stream.Write (id + " [ ")
+        stream.Write (fst id + " [ ")
         List.iter (fun e -> (writeValue stream 0 (Typing e))) typingList
         stream.Write " ] = "
         writeTypeExpression stream depth typeExpr
         stream.Write ""
         
     | Typing(SingleTyping(s, typeExpression)) ->
-        stream.Write(s + " : ")
+        stream.Write(fst s + " : ")
         writeTypeExpression stream depth typeExpression
         stream.Write ""
     |> ignore
 
 
-let writeType (stream: StreamWriter) depth (id: string, typeDefinition) =
+let writeType (stream: StreamWriter) depth (id: Pos<string>, typeDefinition) =
     stream.Write(String.replicate depth "\t")
 
     match typeDefinition with
-    | Abstract -> stream.WriteLine id
+    | Abstract -> stream.WriteLine (fst id)
     | Concrete typeExpr -> failwith "todo"
-    | Union idList -> stream.WriteLine(id + " = " + (idList |> String.concat " | "))
+    | Union ((head, _)::tail) -> stream.WriteLine((fst id) + " = " + (List.foldBack (fun (e, _) a -> $"{e} | {a}") tail head))
     |> ignore
 
 let writeDeclaration (stream: StreamWriter) depth decl =
@@ -86,8 +86,7 @@ let writeClass (stream: StreamWriter) depth cls =
     stream.WriteLine ("\n" + String.replicate depth "\t" + "end")
 
 let write ((specification, cls): Scheme) =
-    // Path.get
-    // use streamWriter = new StreamWriter($"{specification}_unfolded.rsl", false)
+    
     use streamWriter = new StreamWriter("/home/thyge/dev/rsltranspiler/TranspilerTest/Samples/ValueNat2.rsl", false)
 
     streamWriter.WriteLine $"scheme {specification}_unfolded ="

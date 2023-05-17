@@ -14,8 +14,8 @@ type TT =
 
 let input: obj[] list =
     [ [| "Samples/TypeAbstract.rsl"; Map.empty.Add("T", Abstract) |]
-      [| "Samples/TypeConcrete.rsl"; Map.empty.Add("T", Concrete(TName "Nat")) |]
-      [| "Samples/TypeUnion.rsl"; Map.empty.Add("T", Union [ "t1"; "t2"; "t3" ]) |] ]
+      [| "Samples/TypeConcrete.rsl"; Map.empty.Add("T", Concrete(TName ("Nat", pos 4 17 64 "TypeConcrete.rsl"))) |]
+      [| "Samples/TypeUnion.rsl"; Map.empty.Add("T", Union [ ("t1", pos 4 18 62 "TypeUnion.rsl"); ("t2", pos 4 23 67 "TypeUnion.rsl"); ("t3", pos 4 28 72 "TypeUnion.rsl") ]) |] ]
 
 [<TestCaseSource(nameof input)>]
 let buildSymbolTableTester source expected =
@@ -54,9 +54,9 @@ let test () =
 
 let postfixSource: obj[] list =
     [ [| Map.empty
-             .Add("A", Union([ "a1"; "a2"; "a3" ]))
-             .Add("B", Union([ "b1"; "b2"; "b3" ]))
-         [ SingleTyping("t", TName "A"); SingleTyping("y", TName "B") ]
+             .Add("A", Union([ ("a1", pos 1 2 3 ""); ("a2", pos 1 2 3 ""); ("a3", pos 1 2 3 "") ]))
+             .Add("B", Union([ ("b1", pos 1 2 3 ""); ("b2", pos 1 2 3 ""); ("b3", pos 1 2 3 "") ]))
+         [ SingleTyping(("t", pos 1 2 3 ""), TName ("A", pos 1 2 3 "")); SingleTyping(("y", pos 1 2 3 ""), TName ("B", pos 1 2 3 "")) ]
          [ "_a1_b1"
            "_a2_b1"
            "_a3_b1"

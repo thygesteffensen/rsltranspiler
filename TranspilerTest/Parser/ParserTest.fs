@@ -10,63 +10,63 @@ let setup () = ()
 
 
 let generate name rhs =
-    Scheme(name, [ Value([ ExplicitValue("a", TName "Nat", rhs) ]) ])
+    Scheme((name, pos 1 8 7 $"{name}.rsl"), [ Value([ ExplicitValue(("a", pos 4 13 60 $"{name}.rsl"), TName ("Nat", pos 4 16 63 $"{name}.rsl"), rhs) ]) ])
 
 
 let textInput: obj[] list =
     [ [| "Samples/Precedence.rsl"
          generate
              "Precedence"
-             (Infix(Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool true)), Guard, ValueLiteral(VBool false))) |]
+             (Infix(Infix(ValueLiteral((VBool true, pos 4 22 69 "Precedence.rsl")), Equal, ValueLiteral((VBool true, pos 4 29 76 "Precedence.rsl"))), Guard, ValueLiteral((VBool false, pos 4 38 85 "Precedence.rsl")))) |]
       [| "Samples/Precedence2.rsl"
          generate
              "Precedence2"
-             (Infix(Infix(ValueLiteral(VInt 1), Plus, ValueLiteral(VInt 1)), Guard, ValueLiteral(VBool false))) |]
+             (Infix(Infix(ValueLiteral((VInt 1, pos 4 22 70 "Precedence2.rsl")), Plus, ValueLiteral((VInt 1, pos 4 26 74 "Precedence2.rsl"))), Guard, ValueLiteral((VBool false, pos 4 32 80 "Precedence2.rsl")))) |]
       [| "Samples/Precedence3.rsl"
          generate
              "Precedence3"
              (Infix(
-                 Infix(ValueLiteral(VInt 1), Plus, ValueLiteral(VInt 1)),
+                 Infix(ValueLiteral((VInt 1, pos 4 22 70 "Precedence3.rsl")), Plus, ValueLiteral((VInt 1, pos 4 26 74 "Precedence3.rsl"))),
                  NonDeterministic,
-                 Infix(ValueLiteral(VInt 2), Plus, ValueLiteral(VInt 2))
+                 Infix(ValueLiteral((VInt 2, pos 4 32 80 "Precedence3.rsl")), Plus, ValueLiteral((VInt 2, pos 4 36 84 "Precedence3.rsl")))
              )) |]
       [| "Samples/Precedence4.rsl"
          generate
              "Precedence4"
              (Infix(
                  Infix(
-                     ValueLiteral(VInt 1),
+                     ValueLiteral((VInt 1, pos 4 22 70 "Precedence4.rsl")),
                      Guard,
-                     Infix(VPName(Simple "v1"), Equal, Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1)))
+                     Infix(VPName (Simple ("v1", pos 4 28 76 "Precedence4.rsl") ), Equal, Infix(VName(Simple ("v3", pos 4 34 82 "Precedence4.rsl")), Plus, ValueLiteral((VInt 1, pos 4 39 87 "Precedence4.rsl"))))
                  ),
                  NonDeterministic,
-                 ValueLiteral(VInt 1)
+                 ValueLiteral((VInt 1, pos 4 45 93 "Precedence4.rsl"))
              )) |]
       [| "Samples/Precedence5.rsl"
          generate
              "Precedence5"
-             (Infix(Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1)), NonDeterministic, ValueLiteral(VInt 1))) |]
+             (Infix(Infix(VName(Simple ("v3", pos 4 22 70 "Precedence5.rsl")), Plus, ValueLiteral((VInt 1, pos 4 27 75 "Precedence5.rsl"))), NonDeterministic, ValueLiteral((VInt 1, pos 4 33 81 "Precedence5.rsl")))) |]
       [| "Samples/Precedence6.rsl"
          generate
              "Precedence6"
              (Infix(
-                 Infix(VPName(Simple "v1"), Equal, Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1))),
+                 Infix(VPName(Simple ("v1", pos 4 22 70 "Precedence6.rsl")), Equal, Infix(VName(Simple ("v3", pos 4 28 76 "Precedence6.rsl")), Plus, ValueLiteral((VInt 1, pos 4 33 81 "Precedence6.rsl")))),
                  NonDeterministic,
-                 ValueLiteral(VInt 1)
+                 ValueLiteral((VInt 1), pos 4 39 87 "Precedence6.rsl")
              )) |]
       [| "Samples/Precedence7.rsl"
          generate
              "Precedence7"
              (Quantified(
                  Quantifier.NonDeterministic,
-                 [ SingleTyping("t", TName "Pos") ],
+                 [ SingleTyping(("t", pos 4 27 75  "Precedence7.rsl"), TName ("Pos", pos 4 31 79 "Precedence7.rsl")) ],
                  Infix(
-                     Infix(ValueLiteral(VBool false), Equal, ValueLiteral(VBool false)),
+                     Infix(ValueLiteral((VBool false, pos 4 38 86 "Precedence7.rsl")), Equal, ValueLiteral((VBool false, pos 4 46 94 "Precedence7.rsl"))),
                      Guard,
                      Infix(
-                         VPName(Generic("v2", [ VName(Simple "t") ])),
+                         VPName(Generic(("v2", pos 4 56 104 "Precedence7.rsl"), [ VName(Simple ("t", pos 4 60 108 "Precedence7.rsl")) ])),
                          Equal,
-                         Infix(VName(Generic("v2", [ VName(Simple "t") ])), Plus, ValueLiteral(VInt 1))
+                         Infix(VName(Generic(("v2", pos 4 65 113 "Precedence7.rsl"), [ VName(Simple ("t", pos 4 68 116 "Precedence7.rsl")) ])), Plus, ValueLiteral((VInt 1, pos 4 73 121 "Precedence7.rsl")))
                      )
                  )
              )) |] ]

@@ -4,57 +4,58 @@ open NUnit.Framework
 open Transpiler
 open TranspilerTest.Common
 
+let f1 = "TransitionSystem.rsl"
 let input: obj[] list =
     [ [| "Samples/TransitionSystem.rsl"
          Scheme(
-             "TransitionSystem",
-             [ TypeDeclaration([ ("Pos", Union([ "p1"; "p2" ])) ])
+             ("TransitionSystem", pos 1 8 7 f1),
+             [ TypeDeclaration([ (("Pos", pos 4 13 64 f1), Union([ ("p1", pos 4 20 71 f1); ("p2", pos 4 25 76 f1) ])) ])
                TransitionSystemDeclaration(
-                   ("TS",
+                   (("TS", pos 5 29 108 f1),
                     [ Variable(
-                          [ (Identifier.Simple "v1", TName "Nat", None)
-                            (Identifier.Generic("v2", [ SingleTyping("t", TName "Pos") ]), TName "Nat", None)
-                            (Identifier.Simple("v3"), TName "Nat", Some(ValueLiteral(VInt 3))) ]
+                          [ (Identifier.Simple ("v1", pos 7 17 152 f1), TName ("Nat", pos 7 22 157 f1), None)
+                            (Identifier.Generic(("v2", pos 8 17 179 f1), [ SingleTyping(("t", pos 8 22 184 f1), TName ("Pos", pos 8 26 188 f1)) ]), TName ("Nat", pos 8 34 196 f1), None)
+                            (Identifier.Simple(("v3", pos 9 17 218 f1)), TName ("Nat", pos 9 22 223 f1), Some(ValueLiteral((VInt 3, pos 9 29 230 f1)))) ]
                       )
                       InitConstraint(
-                          [ Infix(VName(Simple "v1"), Equal, ValueLiteral(VInt 1))
-                            Infix(VName(Simple "v3"), Equal, ValueLiteral(VInt 3))
+                          [ Infix(VName(Simple ("v1", pos 11 17 278 f1)), Equal, ValueLiteral((VInt 1, pos 11 22 283 f1)))
+                            Infix(VName(Simple ("v3", pos 12 17 305 f1)), Equal, ValueLiteral((VInt 3, pos 12 22 310 f1)))
                             Quantified(
                                 All,
-                                [ SingleTyping("t", TName "Pos") ],
-                                Infix(VName(Generic("v2", [ VName(Simple "t") ])), Equal, ValueLiteral(VInt 2))
+                                [ SingleTyping(("t", pos 13 22 337 f1), TName ("Pos", pos 13 26 341 f1)) ],
+                                Infix(VName(Generic(("v2", pos 13 33 348 f1), [ VName(Simple ("t", pos 13 36 351 f1)) ])), Equal, ValueLiteral((VInt 2, pos 13 41 356 f1)))
                             ) ]
                       )
                       TransitionRule(
                           Infix(
                               Infix(
                                   Infix(
-                                      Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool true)),
+                                      Infix(ValueLiteral((VBool true, pos 16 18 421 f1)), Equal, ValueLiteral((VBool true, pos 16 25 428 f1))),
                                       Guard,
                                       Infix(
-                                          VPName(Generic("v2", [ VName(Simple "p1") ])),
+                                          VPName(Generic(("v2", pos 17 21 458 f1), [ VName(Simple ("p1", pos 17 25 462 f1)) ])),
                                           Equal,
-                                          Infix(VName(Generic("v2", [ VName(Simple "p1") ])), Plus, ValueLiteral(VInt 1))
+                                          Infix(VName(Generic(("v2", pos 17 31 468 f1), [ VName(Simple ("p1", pos 17 34 471 f1)) ])), Plus, ValueLiteral((VInt 1, pos 17 40 477 f1)))
                                       )
                                   ),
                                   Deterministic,
                                   Infix(
-                                      Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool false)),
+                                      Infix(ValueLiteral((VBool true, pos 19 18 519 f1)), Equal, ValueLiteral((VBool false, pos 19 25 526 f1))),
                                       Guard,
-                                      Infix(VPName(Simple "v1"), Equal, Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1)))
+                                      Infix(VPName(Simple ("v1", pos 20 17 553 f1)), Equal, Infix(VName(Simple ("v3", pos 20 23 559 f1)), Plus, ValueLiteral((VInt 1, pos 20 28 564 f1))))
                                   )
                               ),
                               NonDeterministic,
                               Quantified(
                                   Quantifier.NonDeterministic,
-                                  [ SingleTyping("t", TName "Pos") ],
+                                  [ SingleTyping(("t", pos 22 22 610 f1), TName ("Pos", pos 22 26 614 f1)) ],
                                   Infix(
-                                      Infix(ValueLiteral(VBool false), Equal, ValueLiteral(VBool false)),
+                                      Infix(ValueLiteral((VBool false, pos 22 33 621 f1)), Equal, ValueLiteral((VBool false, pos 22 41 629 f1))),
                                       Guard,
                                       Infix(
-                                          VPName(Generic("v2", [ VName(Simple "t") ])),
+                                          VPName(Generic(("v2", pos 22 51 639 f1), [ VName(Simple ("t", pos 22 55 643 f1)) ])),
                                           Equal,
-                                          Infix(VName(Generic("v2", [ VName(Simple "t") ])), Plus, ValueLiteral(VInt 1))
+                                          Infix(VName(Generic(("v2", pos 22 60 648 f1), [ VName(Simple ("t", pos 22 63 651 f1)) ])), Plus, ValueLiteral((VInt 1, pos 22 68 656 f1)))
                                       )
                                   )
                               )

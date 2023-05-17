@@ -1,4 +1,4 @@
-scheme AxiomGeneric =
+scheme AxiomGeneric2 =
     class
         type
             Pos == t1 | t2 | t3

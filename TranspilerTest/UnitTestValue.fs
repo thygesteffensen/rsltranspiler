@@ -4,32 +4,27 @@ open NUnit.Framework
 open Transpiler
 open TranspilerTest.Common
 
+let f1 = "ValueNat.rsl"
+let f2 = "ValueGeneric.rsl"
+let f3 = "ValuesAll.rsl"
 
-let temp =
-    GenericValue("position", [ SingleTyping("t", TName "TrainId") ], TName "Nat")
-
-let temp1 = Typing(SingleTyping("segment", TName "Nat"))
-
-let temp2 =
-    [ GenericValue("position", [ SingleTyping("t", TName "TrainId") ], TName "Nat")
-      Typing(SingleTyping("segment", TName "Nat")) ]
 
 let input: obj[] list =
-    [ [| "Samples/ValueNat.rsl"
-         Scheme("ValueNat", [ (Value [ Typing(SingleTyping("T", TName "Nat")) ]) ]) |]
-      [| "Samples/ValueGeneric.rsl"
+    [ [| "Samples/" + f1 
+         Scheme(("ValueNat", pos 1 8 7 f1), [ (Value [ Typing(SingleTyping(("T", pos 4 13 57 f1), TName ("Nat", pos 4 17 61 f1))) ]) ]) |]
+      [| "Samples/" + f2 
          Scheme(
-             "ValueGeneric",
-             [ TypeDeclaration([ ("TrainId", Union([ "t1"; "t2"; "t3" ])) ])
-               Value([ GenericValue("position", [ SingleTyping("t", TName "TrainId") ], TName "Nat") ]) ]
+             ("ValueGeneric", pos 1 8 7 f2),
+             [ TypeDeclaration([ (("TrainId", pos 4 13 60 f2), Union([ ("t1", pos 4 24 71 f2); ("t2", pos 4 29 76 f2); ("t3", pos 4 34 81 f2) ])) ])
+               Value([ GenericValue(("position", pos 6 13 112 f2), [ SingleTyping(("t", pos 6 24 123 f2), TName ("TrainId", pos 6 28 127 f2)) ], TName ("Nat", pos 6 40 139 f2)) ]) ]
          ) |]
-      [| "Samples/ValuesAll.rsl"
+      [| "Samples/" + f3 
          Scheme(
-             "ValuesAll",
-             [ TypeDeclaration([ ("TrainId", Union([ "t1"; "t2"; "t3" ])) ])
+             ("ValuesAll", pos 1 8 7 f3),
+             [ TypeDeclaration([ (("TrainId", pos 4 13 57 f3), Union([ ("t1", pos 4 24 68 f3); ("t2", pos 4 29 73 f3); ("t3", pos 4 34 78 f3) ])) ])
                Value(
-                   [ GenericValue("position", [ SingleTyping("t", TName "TrainId") ], TName "Nat")
-                     Typing(SingleTyping("segment", TName "Nat")) ]
+                   [ GenericValue(("position", pos 6 13 109 f3), [ SingleTyping(("t", pos 6 24 120 f3), TName ("TrainId",pos 6 28 124 f3)) ], TName ("Nat",pos 6 40 136 f3))
+                     Typing(SingleTyping(("segment", pos 7 13 154 f3), TName ("Nat", pos 7 23 164 f3))) ]
                ) ]
          ) |] ]
 
@@ -40,98 +35,3 @@ let TestValueNat (source: string) expected =
     match actual with
     | Some t -> Assert.AreEqual(expected, t)
     | None -> Assert.Fail "Should succeed"
-
-let t =
-    Infix(
-        Infix(
-            Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool true)),
-            Guard,
-            Infix(
-                VName(Generic("v2", [ VName (Simple "p1") ])),
-                Equal,
-                Infix(VName(Generic("v2", [ VName (Simple "p1") ])), Plus, ValueLiteral(VInt 1))
-            )
-        ),
-        Deterministic,
-        Infix(
-            Infix(
-                Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool false)),
-                Guard,
-                Infix(VPName(Simple "v1"), Equal, Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1)))
-            ),
-            NonDeterministic,
-            Quantified(
-                Quantifier.NonDeterministic,
-                [ SingleTyping("t", TName "Pos") ],
-                Infix(
-                    Infix(ValueLiteral(VBool false), Equal, ValueLiteral(VBool false)),
-                    Guard,
-                    Infix(
-                        VPName(Generic("v2", [ VName(Simple "t") ])),
-                        Equal,
-                        Infix(VName(Generic("v2", [ VName(Simple "t") ])), Plus, ValueLiteral(VInt 1))
-                    )
-                )
-            )
-        )
-    )
-
-let tt =
-    Infix(
-        Infix(
-            Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool true)),
-            Guard,
-            Infix(
-                VPName(Generic("v2", [ VName(Simple "p1") ])),
-                Equal,
-                Infix(VName(Generic("v2", [ VName(Simple "p1") ])), Plus, ValueLiteral(VInt 1))
-            )
-        ),
-        Deterministic,
-        Infix(
-            Infix(
-                Infix(ValueLiteral(VBool true), Equal, ValueLiteral(VBool false)),
-                Guard,
-                Infix(VPName(Simple "v1"), Equal, Infix(VName(Simple "v3"), Plus, ValueLiteral(VInt 1)))
-            ),
-            NonDeterministic,
-            Quantified(
-                Quantifier.NonDeterministic,
-                [ SingleTyping("t", TName("Pos")) ],
-                Infix(
-                    Infix(ValueLiteral(VBool false), Equal, ValueLiteral(VBool false)),
-                    Guard,
-                    Infix(
-                        VPName(Generic("v2", [ VName(Simple "t") ])),
-                        Equal,
-                        Infix(VName(Generic("v2", [ VName(Simple "t") ])), Plus, ValueLiteral(VInt 1))
-                    )
-                )
-            )
-        )
-    )
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
