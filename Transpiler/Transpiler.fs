@@ -4,8 +4,6 @@ open Transpiler.RuleCollection.AxiomRule
 open Transpiler.RuleCollection.TypeRule
 open Transpiler.Helpers
 
-
-
 let transpile ((specification, cls): Scheme) =
     let typeEnvironment = buildSymbolTable cls
     let valueEnvironment = buildValueTable cls
@@ -23,4 +21,4 @@ let transpile ((specification, cls): Scheme) =
         unfoldTypings typeEnvironment valueEnvironment axiomsUnfolded
 
     let t = convertToAst genericsTypeUnfolded []
-    Scheme($"{specification}_unfolded", t)
+    Scheme(($"{specification}_unfolded", snd specification), t)

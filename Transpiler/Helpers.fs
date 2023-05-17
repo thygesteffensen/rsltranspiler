@@ -42,11 +42,11 @@ let rec convertToIntermediate (cls: Class) (intermediate: Intermediate) =
                 valueDeclarations
                 |> List.iter (fun e ->
                     match e with
-                    | ExplicitValue(id, _, _) as ev -> map <- map.Add(id, ev)
+                    | ExplicitValue(id, _, _) as ev -> map <- map.Add((fst id), ev)
                     | ImplicitValue -> failwith "todo"
                     | ExplicitFunction -> failwith "todo"
                     | ImplicitFunction -> failwith "todo"
-                    | GenericValue(id, _, _) as gv -> map <- map.Add(id, gv)
+                    | GenericValue(id, _, _) as gv -> map <- map.Add((fst id), gv)
                     | Typing _ -> failwith "todo")
 
                 { intermediate with Value = Some(map) }
@@ -100,7 +100,7 @@ let buildSymbolTable (_AST: Class) =
 
     let buildType (env: Map<string, TypeDefinition>) =
         function
-        | id, typeDecl -> env.Add(id, typeDecl)
+        | id, typeDecl -> env.Add((fst id), typeDecl)
 
     List.fold unfoldTypeEnvironments [] _AST |> List.fold buildType Map.empty
 
@@ -115,10 +115,10 @@ let buildValueTable (_AST: Class) =
         | Value v -> v @ acc
         | _ -> acc
 
-    let unfoldValueValues (map: Map<string, TypeExpression>) =
-        function
-        | ExplicitValue(s, typeExpression, _) -> map.Add(s, typeExpression)
-        | GenericValue(s, _, typeExpression) -> map.Add(s, typeExpression)
+    let unfoldValueValues (map: Map<string, TypeExpression>) valueExpr =
+        match valueExpr with 
+        | ExplicitValue(s, typeExpression, _) -> map.Add((fst s), typeExpression)
+        | GenericValue(s, _, typeExpression) -> map.Add((fst s), typeExpression)
         | _ -> map
 
     List.fold unfoldValueEnvironments [] _AST

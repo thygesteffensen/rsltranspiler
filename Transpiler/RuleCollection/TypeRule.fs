@@ -26,14 +26,15 @@ open Transpiler
 /// <param name="typingList">The typing list for which the post fixes are generated</param>
 /// <param name="typeEnv">Type environment</param>
 let buildTypePostfixStrings typeEnv valueEnv typingList =
+    
     // Matrix
     let first :: second =
         List.foldBack
             (fun (SingleTyping(_, typeExpr)) acc ->
                 match typeExpr with
                 | TName n ->
-                    match Map.find n typeEnv with
-                    | Union l -> (List.foldBack (fun e bb -> e :: bb) l []) :: acc)
+                    match Map.find (fst n) typeEnv with
+                    | Union l -> (List.foldBack (fun (e, _) bb -> e :: bb) l []) :: acc)
             typingList
             []
 
@@ -54,15 +55,14 @@ let unfoldTypings typeEnv valueEnv (intermediate: Intermediate) =
 
     let mapFolder (s: Map<string, ValueDeclaration>) k v =
         match v with
-        | GenericValue(id, typingList, typeExpression) ->
+        | GenericValue((id, pos), typingList, typeExpression) ->
             let postfix = buildTypePostfixStrings typeEnv valueEnv typingList
 
-            // YTou got tyo
             let s' = s.Remove k
 
             List.foldBack
                 (fun e (acc: Map<string, ValueDeclaration>) ->
-                    acc.Add($"{id}{e}", Typing(SingleTyping($"{id}{e}", typeExpression))))
+                    acc.Add($"{id}{e}", Typing(SingleTyping(($"{id}{e}", pos), typeExpression))))
                 postfix
                 s'
         | _ -> s

@@ -10,14 +10,14 @@ open Transpiler
 /// </summary>
 /// <param name="valueLiteral"></param>
 let literalToString valueLiteral =
-        match valueLiteral with
-        | VUnit unit -> failwith "todo"
-        | VBool b -> failwith "todo"
-        | VInt i -> string i
-        | VReal i -> string i
-        | VChar c -> string c
-        | VNat i -> string i
-        | VText s -> s
+    match valueLiteral with
+    | VUnit unit -> failwith "todo"
+    | VBool b -> failwith "todo"
+    | VInt i -> string i
+    | VReal i -> string i
+    | VChar c -> string c
+    | VNat i -> string i
+    | VText s -> s
 
 
 /// <summary>
@@ -36,35 +36,34 @@ let rec axiomFolder
     (axiom: IrAxiomDeclaration)
     =
     match axiom with
-    | IrQuantified(typings, valueExpr) ->
-        instantiateTypings typeEnv valueEnv map instances valueExpr  typings
-        
+    | IrQuantified(typings, valueExpr) -> instantiateTypings typeEnv valueEnv map instances valueExpr typings
+
     | IrInfix(identifier, rhs) ->
         match identifier with
-        | Simple s -> 
-            let valueType = Map.find s valueEnv
-            map.Add(s, ExplicitValue(s, valueType, rhs))
-        | Generic(s, valueExpressions) -> 
-            let valueType = Map.find s valueEnv
-            
+        | Simple s ->
+            let valueType = Map.find (fst s) valueEnv
+            map.Add(fst s, ExplicitValue(s, valueType, rhs))
+        | Generic(s, valueExpressions) ->
+            let valueType = Map.find (fst s) valueEnv
+
             let stringer ve =
                 match ve with
-                | ValueLiteral valueLiteral -> literalToString valueLiteral
+                | ValueLiteral valueLiteral -> literalToString (fst valueLiteral)
                 | VName s ->
                     match s with
-                    | Simple s -> Map.find s instances
+                    | Simple s -> Map.find (fst s) instances
                     | Generic(s, valueExpressions) -> failwith "todo"
                 | Quantified foo -> failwith "todo"
 
             let t = List.foldBack (fun e a -> $"_{stringer e}{a}") valueExpressions ""
             let tt = $"{s}{t}"
-            let map' = map.Remove s
-            
-            map'.Add(tt, ExplicitValue(tt, valueType, rhs))
+            let map' = map.Remove(fst s)
+
+            map'.Add(tt, ExplicitValue((tt, (snd s)), valueType, rhs))
 
 /// <summary>
 /// Iterate through each typing in the typing list and for each combination the value expression <see cref="valueExpr"/>
-/// is unfolded and added to the value declaration map. 
+/// is unfolded and added to the value declaration map.
 /// </summary>
 /// <param name="typeEnv">Type environment</param>
 /// <param name="valueEnv">Value environment</param>
@@ -88,11 +87,14 @@ and instantiateTypings typeEnv valueEnv map (instances: Map<string, string>) val
             | List _ -> failwith "todo"
             | Map _ -> failwith "todo"
 
-        match Map.find t typeEnv with
+        match Map.find (fst t) typeEnv with
         | Abstract -> failwith "todo"
         | Concrete _ -> failwith "todo"
         | Union l ->
-            List.foldBack (fun v m -> instantiateTypings typeEnv valueEnv m (Map.add s v instances) valueExpr  ts) l map
+            List.foldBack
+                (fun (v, _) m -> instantiateTypings typeEnv valueEnv m (Map.add (fst s) v instances) valueExpr ts)
+                l
+                map
 
 /// <summary>
 /// Go through all axioms in the axiom declaration and add the unfolded axioms to the value map and remove the
@@ -114,8 +116,7 @@ let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
             Axiom = axiomDecl } ->
             match axiomDecl with
             | None -> map
-            | Some axioms ->
-                List.foldBack (fun e a -> axiomFolder typeEnv valueEnv a Map.empty e) axioms map
+            | Some axioms -> List.foldBack (fun e a -> axiomFolder typeEnv valueEnv a Map.empty e) axioms map
 
     { intermediate with
         Value = Some(map)

@@ -1,5 +1,10 @@
 ﻿namespace Transpiler
 
+open FSharp.Text.Lexing
+
+type Pos<'a> = 'a * Position
+
+type TokenPosition = { Line: int; Column: int }
 
 type Id = string
 
@@ -23,7 +28,7 @@ type ValueLiteral =
 
 type TypeExpression =
     | Literal of TypeLiteral
-    | TName of Id
+    | TName of Pos<Id>
     | Product of TypeExpression list
     | Set of TypeExpression
     | List of TypeExpression
@@ -35,9 +40,9 @@ type TypeExpression =
 type TypeDefinition =
     | Abstract // Sort
     | Concrete of TypeExpression // Abbreviation t = Nat
-    | Union of Id list
+    | Union of Pos<Id> list
 
-type Typing = SingleTyping of Id * TypeExpression
+type Typing = SingleTyping of Pos<Id> * TypeExpression
 
 type Quantifier =
     | All
@@ -56,28 +61,29 @@ type InfixOp =
     | LessThanOrEqual
 
 type Identifier =
-    | Simple of Id
-    | Generic of (Id * Typing list)
+    | Simple of Pos<Id>
+    | Generic of (Pos<Id> * Typing list)
 
 type ValueExpression =
-    | ValueLiteral of ValueLiteral
+    | ValueLiteral of Pos<ValueLiteral>
     | VName of Accessor
     | VPName of Accessor
     // | GenericName of (Id * ValueExpression list)
     // | PGenericName of (Id * ValueExpression list)
     | Quantified of (Quantifier * Typing list * ValueExpression)
     | Infix of (ValueExpression * InfixOp * ValueExpression)
+    
 and Accessor =
-    | Simple of Id
-    | Generic of (Id * ValueExpression list)
+    | Simple of Pos<Id>
+    | Generic of (Pos<Id> * ValueExpression list)
 
 // AST Node
 type ValueDeclaration =
-    | ExplicitValue of (Id * TypeExpression * ValueExpression)
+    | ExplicitValue of (Pos<Id> * TypeExpression * ValueExpression)
     | ImplicitValue
     | ExplicitFunction
     | ImplicitFunction
-    | GenericValue of (Id * Typing list * TypeExpression)
+    | GenericValue of (Pos<Id> * Typing list * TypeExpression)
     | Typing of Typing
 
 
@@ -88,11 +94,11 @@ type TransitionSystem =
 
 type Declaration =
     | Value of ValueDeclaration list
-    | TypeDeclaration of (Id * TypeDefinition) list
+    | TypeDeclaration of (Pos<Id> * TypeDefinition) list
     | AxiomDeclaration of ValueExpression list
-    | TransitionSystemDeclaration of (Id * TransitionSystem list)
+    | TransitionSystemDeclaration of (Pos<Id> * TransitionSystem list)
 
 type Class = Declaration list
 
-type Scheme = Id * Class
+type Scheme = Pos<Id> * Class
 

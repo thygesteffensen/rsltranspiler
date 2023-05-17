@@ -10,9 +10,49 @@ exception SyntaxError of string
 
 let lexeme = LexBuffer<_>.LexemeString
 
-let newline (lexbuf: LexBuffer<_>) = 
-  lexbuf.StartPos <- lexbuf.StartPos.NextLine
-  
+let mutable line = 1
+let mutable column = 1
+let mutable filename = ""
+
+/// <summary>
+/// Set filename in Lexer and reset counters
+/// </summary>
+/// <param name="f">Filename of the file being lexed</param>
+let setFilename (f: string) = 
+    filename <- f
+    line <- 1
+    column <- 1
+
+/// <summary>
+/// Increment line counter and reset column counter
+/// </summary>
+let newline () = 
+    line <- line + 1
+    column <- 1
+    
+/// <summary>
+/// Increment column counter based on whitespace
+/// </summary>
+/// <param name="lexbuf">LexBuffer</param>
+let whitespace (lexbuf: LexBuffer<_>) =
+    match lexbuf.LexemeChar 0 with
+    | ' '  -> column <- column + 1
+    | '\t' -> column <- column + 4
+    | _ -> ()
+
+/// <summary>
+/// Increment column counter based on lexed string and return the current <see cref="FSharp.Text.Lexing.Position"/>
+/// </summary>
+/// <param name="lexbuf">LexBuffer</param>
+let getPos (lexbuf: LexBuffer<_>) =
+    let c = column
+    column <- column + lexbuf.LexemeLength
+    
+    { pos_bol = lexbuf.StartPos.pos_cnum
+      pos_cnum = c
+      pos_fname = filename
+      pos_lnum = line
+      pos_orig_lnum = line }
   
 // This is to avoid state explosion
 // https://v2.ocaml.org/manual/lexyacc.html Section 7 Common errors
@@ -50,8 +90,8 @@ let ops =
     ] |> Map.ofList   
 }
 
-
-let white       = [' ' '\t']+
+let c           = '.'
+let white       = ' ' | '\t'
 let newline     = '\r' | '\n' | "\r\n"
 
 let char        = ['a'-'z' 'A'-'Z']   
@@ -61,25 +101,42 @@ let operator    = ">" | ">=" | "<" | "<=" | "=" | "-" | "+" | "==>" | "[=]" | "[
 
 rule read =
     parse
-    | white     { read lexbuf }
-    | newline   { newline lexbuf; read lexbuf }
-    | "true"    { TRUE }
-    | "false"   { FALSE }
-    | operator  { ops.[LexBuffer<_>.LexemeString lexbuf] } 
-    | text      { match keywords.TryFind(LexBuffer<_>.LexemeString lexbuf) with
-                  | Some(token) -> token
-                  | None -> TEXT(LexBuffer<_>.LexemeString lexbuf) }
-    | ','       { COMMA }
-    | ':'       { COLON }
-    | '['       { LBRACKET }
-    | ']'       { RBRACKET }
-    | '('       { LPAREN }
-    | ')'       { RPAREN }
-    | '|'       { BAR }
-    | '"'       { QUOTE }
-    | '/'       { SLASH }
-    | '\''      { PRIME }
-    | '\\'      { BSLASH }
-    | ['-']?digit+   { INT (Int32.Parse(lexeme lexbuf))} 
-    | eof       { EOF }
-    | _         { EOF }
+    | white     { whitespace(lexbuf); read lexbuf }
+    | newline   { newline (); read lexbuf }
+    | "true"    { let start = getPos(lexbuf)
+                  TRUE(start) }
+    | "false"   { let start = getPos(lexbuf)
+                  FALSE(start) }
+    | operator  { let start = getPos(lexbuf)
+                  ops.[lexeme lexbuf](start) } 
+    | text      { let start = getPos(lexbuf)
+                  match keywords.TryFind(lexeme lexbuf) with
+                  | Some(token) -> token(start)
+                  | None -> TEXT(lexeme lexbuf, (start))
+                }
+    | ','       { let start = getPos(lexbuf)
+                  COMMA(start) }
+    | ':'       { let start = getPos(lexbuf)
+                  COLON(start) }
+    | '['       { let start = getPos(lexbuf)
+                  LBRACKET(start) }
+    | ']'       { let start = getPos(lexbuf)
+                  RBRACKET(start) }
+    | '('       { let start = getPos(lexbuf)
+                  LPAREN(start) }
+    | ')'       { let start = getPos(lexbuf)
+                  RPAREN(start) }
+    | '|'       { let start = getPos(lexbuf)
+                  BAR(start) }
+    | '"'       { let start = getPos(lexbuf)
+                  QUOTE(start) }
+    | '/'       { let start = getPos(lexbuf)
+                  SLASH(start) }
+    | '\''      { let start = getPos(lexbuf)
+                  PRIME(start) }
+    | '\\'      { let start = getPos(lexbuf)
+                  BSLASH(start) }
+    | ['-']?digit+   { let start = getPos(lexbuf)
+                       INT(Int32.Parse(lexeme lexbuf), (start))} 
+    | eof       { EOF(lexbuf.EndPos) }
+    | _         { EOF(lexbuf.EndPos) }
