@@ -1,5 +1,0 @@
-scheme Precedence = 
-    class
-        value
-            a: Nat = true = true ==> false
-    end

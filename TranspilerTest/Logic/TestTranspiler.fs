@@ -56,7 +56,7 @@ let postfixSource: obj[] list =
     [ [| Map.empty
              .Add("A", Union([ ("a1", pos 1 2 3 ""); ("a2", pos 1 2 3 ""); ("a3", pos 1 2 3 "") ]))
              .Add("B", Union([ ("b1", pos 1 2 3 ""); ("b2", pos 1 2 3 ""); ("b3", pos 1 2 3 "") ]))
-         [ SingleTyping(("t", pos 1 2 3 ""), TName ("A", pos 1 2 3 "")); SingleTyping(("y", pos 1 2 3 ""), TName ("B", pos 1 2 3 "")) ]
+         [ SingleTyping(ISimple("t", pos 1 2 3 ""), TName ("A", pos 1 2 3 "")); SingleTyping(ISimple("y", pos 1 2 3 ""), TName ("B", pos 1 2 3 "")) ]
          [ "_a1_b1"
            "_a2_b1"
            "_a3_b1"
@@ -79,9 +79,6 @@ let rec buildTypePostfixStringsTest typeEnv typingList expected =
 let write source =
     let expected = testLexerAndParserFromFile source
 
-    // [<Test>]
-    // let test () =
-    // let expected = testLexerAndParserFromFile "Samples/ValueGeneric.rsl"
     Assert.IsNotNull expected
 
     write expected.Value

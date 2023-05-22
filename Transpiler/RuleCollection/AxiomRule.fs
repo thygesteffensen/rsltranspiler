@@ -40,10 +40,10 @@ let rec axiomFolder
 
     | IrInfix(identifier, rhs) ->
         match identifier with
-        | Simple s ->
+        | ASimple s ->
             let valueType = Map.find (fst s) valueEnv
-            map.Add(fst s, ExplicitValue(s, valueType, rhs))
-        | Generic(s, valueExpressions) ->
+            map.Add(fst s, ExplicitValue(Identifier.ISimple s, valueType, rhs))
+        | AGeneric(s, valueExpressions) ->
             let valueType = Map.find (fst s) valueEnv
 
             let stringer ve =
@@ -51,15 +51,15 @@ let rec axiomFolder
                 | ValueLiteral valueLiteral -> literalToString (fst valueLiteral)
                 | VName s ->
                     match s with
-                    | Simple s -> Map.find (fst s) instances
-                    | Generic(s, valueExpressions) -> failwith "todo"
+                    | ASimple s -> Map.find (fst s) instances
+                    | AGeneric(s, valueExpressions) -> failwith "todo"
                 | Quantified foo -> failwith "todo"
 
             let t = List.foldBack (fun e a -> $"_{stringer e}{a}") valueExpressions ""
             let tt = $"{s}{t}"
             let map' = map.Remove(fst s)
 
-            map'.Add(tt, ExplicitValue((tt, (snd s)), valueType, rhs))
+            map'.Add(tt, ExplicitValue(ISimple(tt, (snd s)), valueType, rhs))
 
 /// <summary>
 /// Iterate through each typing in the typing list and for each combination the value expression <see cref="valueExpr"/>
@@ -78,23 +78,27 @@ and instantiateTypings typeEnv valueEnv map (instances: Map<string, string>) val
         // and we are ready for continuing unfolded the quantified inner expression.
         axiomFolder typeEnv valueEnv map instances valueExpr // Inner for loop
     | SingleTyping(s, typeExpr) :: ts ->
-        let t =
-            match typeExpr with
-            | Literal _ -> failwith "todo"
-            | TName s -> s
-            | Product _ -> failwith "todo"
-            | Set _ -> failwith "todo"
-            | List _ -> failwith "todo"
-            | Map _ -> failwith "todo"
+        match s with
+        | ISimple (id, pos) ->
 
-        match Map.find (fst t) typeEnv with
-        | Abstract -> failwith "todo"
-        | Concrete _ -> failwith "todo"
-        | Union l ->
-            List.foldBack
-                (fun (v, _) m -> instantiateTypings typeEnv valueEnv m (Map.add (fst s) v instances) valueExpr ts)
-                l
-                map
+            let t =
+                match typeExpr with
+                | Literal _ -> failwith "todo"
+                | TName s -> s
+                | Product _ -> failwith "todo"
+                | Set _ -> failwith "todo"
+                | List _ -> failwith "todo"
+                | Map _ -> failwith "todo"
+
+            match Map.find (fst t) typeEnv with
+            | Abstract -> failwith "todo"
+            | Concrete _ -> failwith "todo"
+            | Union l ->
+                List.foldBack
+                    (fun (v, _) m -> instantiateTypings typeEnv valueEnv m (Map.add id v instances) valueExpr ts)
+                    l
+                    map
+        | IGeneric _ -> failwith "todo"
 
 /// <summary>
 /// Go through all axioms in the axiom declaration and add the unfolded axioms to the value map and remove the

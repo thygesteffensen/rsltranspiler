@@ -29,6 +29,15 @@ let writeTypeExpression (stream: StreamWriter) depth typeExpression =
     | Set e -> failwith "todo"
     | List e -> failwith "todo"
     | Map e -> failwith "todo"
+    
+let writeTyping (stream: StreamWriter) depth (typing: Typing) =
+    match typing with
+    | SingleTyping(identifier, typeExpression) ->
+        match identifier with
+        | IGeneric foo -> failwith "todo"
+        | ISimple (id, _) -> 
+            stream.Write(id + " : ")
+            writeTypeExpression stream depth typeExpression
 
 
 let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
@@ -40,25 +49,37 @@ let rec writeValue (stream: StreamWriter) depth valueDeclaration =
 
     match valueDeclaration with
     | ExplicitValue(id, typeExpr, valueExpr) ->
-        stream.Write (fst id + " : ")
-        writeTypeExpression stream depth typeExpr
-        writeValueExpression stream depth valueExpr
-        stream.Write ""
+        match id with
+        | ISimple (id, pos) ->
+            stream.Write (id + " : ")
+            writeTypeExpression stream depth typeExpr
+            writeValueExpression stream depth valueExpr
+            stream.Write ""
+        | IGeneric _ -> failwith "todo"
     | ImplicitValue -> failwith "todo"
     | ExplicitFunction -> failwith "todo"
     | ImplicitFunction -> failwith "todo"
     | GenericValue(id, typingList, typeExpr) as gv ->
-        // TODO: This one is a bit hacky due to 0 as depth as constructing a type
-        stream.Write (fst id + " [ ")
-        List.iter (fun e -> (writeValue stream 0 (Typing e))) typingList
-        stream.Write " ] = "
-        writeTypeExpression stream depth typeExpr
-        stream.Write ""
+        match id with
+        | ISimple (id, pos) ->
+            // TODO: This one is a bit hacky due to 0 as depth as constructing a type
+            stream.Write (id + " [ ")
+            List.iter (fun e -> (writeValue stream 0 (Typing e))) typingList
+            stream.Write " ] = "
+            writeTypeExpression stream depth typeExpr
+            stream.Write ""
+        | IGeneric _ -> failwith "todo"
         
     | Typing(SingleTyping(s, typeExpression)) ->
-        stream.Write(fst s + " : ")
-        writeTypeExpression stream depth typeExpression
-        stream.Write ""
+        match s with
+        | ISimple (id, _) -> 
+            stream.Write(id + " : ")
+            writeTypeExpression stream depth typeExpression
+            stream.Write ""
+        | IGeneric ((id, _), typeExprl) ->
+            stream.Write(id + " [ ")
+            List.iter (fun e -> writeTyping stream depth e) typeExprl
+            stream.Write(" ]")
     |> ignore
 
 

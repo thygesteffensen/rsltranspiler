@@ -53,7 +53,7 @@ transition_systems:
 transition_system:
     | VARIABLE variable_definitions                                     { Variable(List.rev $2) }
     | INIT_CONSTRAINT init_constraints                                  { InitConstraint(List.rev $2) }
-    | TR value_expression                                               { TransitionRule($2, []) }
+    | TR value_expression where                                         { TransitionRule($2, $3) }
     
 where:
     |                                                                   { [] }
@@ -72,16 +72,16 @@ variable_definitions:
     | variable_definitions COMMA variable_definition                    { $3 :: $1 }
 
 variable_definition:
-    | identifier COLON type_expression                                  { ($1, $3, None) }
-    | identifier COLON type_expression COLON EQ value_expression        { ($1, $3, Some($6)) }
+    | identifier COLON type_expression                                  { Typing(SingleTyping($1, $3)) }
+    | identifier COLON type_expression COLON EQ value_expression        { ExplicitValue($1, $3, $6) }
 
 init_constraints:
     | value_expression                                                  { [$1] }
     | init_constraints SLASH BSLASH value_expression                    { $4 :: $1 } 
     
 identifier:
-    | TEXT                                                              { Identifier.Simple($1) }
-    | TEXT LBRACKET typing_list RBRACKET                                { Identifier.Generic($1, $3) } 
+    | TEXT                                                              { ISimple($1) }
+    | TEXT LBRACKET typing_list RBRACKET                                { IGeneric($1, $3) } 
 
 value_expressions:
     | value_expression                                                  { [$1] }
@@ -102,10 +102,10 @@ value_expression:
     | infix                                                             { $1 }
     
 accessor:
-    | TEXT                                                              { VName (Simple $1) }
-    | TEXT PRIME                                                        { VPName (Simple $1) }
-    | TEXT LBRACKET value_expressions RBRACKET                          { VName(Generic($1, List.rev $3)) }
-    | TEXT PRIME LBRACKET value_expressions RBRACKET                    { VPName(Generic($1, List.rev $4)) }
+    | TEXT                                                              { VName (ASimple $1) }
+    | TEXT PRIME                                                        { VPName (ASimple $1) }
+    | TEXT LBRACKET value_expressions RBRACKET                          { VName(AGeneric($1, List.rev $3)) }
+    | TEXT PRIME LBRACKET value_expressions RBRACKET                    { VPName(AGeneric($1, List.rev $4)) }
 
 infix:
     | value_expression DETERMINISTIC value_expression                   { Infix($1, Deterministic, $3) }
@@ -128,12 +128,12 @@ value_declarations:
     | value_declarations COMMA value_declaration                        { $3 :: $1 }
 
 value_declaration:
-    | TEXT COLON type_expression                                        { Typing(SingleTyping($1, $3)) }
-    | TEXT LBRACKET typing_list RBRACKET COLON type_expression          { GenericValue($1, $3, $6) } 
-    | TEXT COLON type_expression EQ value_expression                    { ExplicitValue($1, $3, $5) }
+    | identifier COLON type_expression                                  { Typing(SingleTyping($1, $3)) }
+    | identifier LBRACKET typing_list RBRACKET COLON type_expression    { GenericValue($1, $3, $6) } 
+    | identifier COLON type_expression EQ value_expression              { ExplicitValue($1, $3, $5) }
 
 typing:
-    | TEXT COLON type_expression                                        { SingleTyping($1, $3) }
+    | identifier COLON type_expression                                  { SingleTyping($1, $3) }
 
 typing_list:
     | rev_typing_list                                                   { List.rev $1 }

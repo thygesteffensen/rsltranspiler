@@ -13,7 +13,8 @@ let transpile ((specification, cls): Scheme) =
             cls
             { Type = None
               Value = None
-              Axiom = None }
+              Axiom = None
+              TransitionSystem = None }
 
     let axiomsUnfolded = unfoldAxioms typeEnvironment valueEnvironment intermediate
 
@@ -21,4 +22,4 @@ let transpile ((specification, cls): Scheme) =
         unfoldTypings typeEnvironment valueEnvironment axiomsUnfolded
 
     let t = convertToAst genericsTypeUnfolded []
-    Scheme(($"{specification}_unfolded", snd specification), t)
+    Scheme(($"{fst specification}_unfolded", snd specification), t)

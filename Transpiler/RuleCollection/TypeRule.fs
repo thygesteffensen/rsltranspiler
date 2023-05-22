@@ -55,14 +55,14 @@ let unfoldTypings typeEnv valueEnv (intermediate: Intermediate) =
 
     let mapFolder (s: Map<string, ValueDeclaration>) k v =
         match v with
-        | GenericValue((id, pos), typingList, typeExpression) ->
+        | GenericValue(ISimple(id, pos), typingList, typeExpression) ->
             let postfix = buildTypePostfixStrings typeEnv valueEnv typingList
 
             let s' = s.Remove k
 
             List.foldBack
                 (fun e (acc: Map<string, ValueDeclaration>) ->
-                    acc.Add($"{id}{e}", Typing(SingleTyping(($"{id}{e}", pos), typeExpression))))
+                    acc.Add($"{id}{e}", Typing(SingleTyping(ISimple($"{id}{e}", pos), typeExpression))))
                 postfix
                 s'
         | _ -> s

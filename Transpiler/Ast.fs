@@ -42,7 +42,11 @@ type TypeDefinition =
     | Concrete of TypeExpression // Abbreviation t = Nat
     | Union of Pos<Id> list
 
-type Typing = SingleTyping of Pos<Id> * TypeExpression
+type Identifier =
+    | ISimple of Pos<Id>
+    | IGeneric of (Pos<Id> * Typing list)
+
+and Typing = SingleTyping of Identifier * TypeExpression
 
 type Quantifier =
     | All
@@ -60,10 +64,6 @@ type InfixOp =
     | LessThan
     | LessThanOrEqual
 
-type Identifier =
-    | Simple of Pos<Id>
-    | Generic of (Pos<Id> * Typing list)
-
 type ValueExpression =
     | ValueLiteral of Pos<ValueLiteral>
     | VName of Accessor
@@ -74,23 +74,23 @@ type ValueExpression =
     | Infix of (ValueExpression * InfixOp * ValueExpression)
     
 and Accessor =
-    | Simple of Pos<Id>
-    | Generic of (Pos<Id> * ValueExpression list)
+    | ASimple of Pos<Id>
+    | AGeneric of (Pos<Id> * ValueExpression list)
 
 // AST Node
 type ValueDeclaration =
-    | ExplicitValue of (Pos<Id> * TypeExpression * ValueExpression)
+    | ExplicitValue of (Identifier * TypeExpression * ValueExpression)
     | ImplicitValue
     | ExplicitFunction
     | ImplicitFunction
-    | GenericValue of (Pos<Id> * Typing list * TypeExpression)
+    | GenericValue of (Identifier * Typing list * TypeExpression)
     | Typing of Typing
 
 
 type TransitionSystem =
-    | Variable of (Identifier * TypeExpression * Option<ValueExpression>) list
+    | Variable of ValueDeclaration list
     | InitConstraint of ValueExpression list
-    | TransitionRule of ValueExpression * (string * ValueExpression) list
+    | TransitionRule of ValueExpression * (Pos<Id> * ValueExpression) list
 
 type Declaration =
     | Value of ValueDeclaration list

@@ -19,11 +19,62 @@ let convertAxiomDeclToIr (valueExprList: ValueExpression list) =
 
     List.foldBack (fun e a -> valueExpressionToIr e :: a) valueExprList []
 
+let convertValueDeclToIr value valueDecl=
+    let mutable map =
+        match value with
+        | None -> Map.empty
+        | Some m -> m
+
+    valueDecl
+    |> List.iter (fun e ->
+        match e with
+        | ExplicitValue(id, _, _) as ev ->
+            match id with
+            | ISimple id' -> map <- map.Add((fst id'), ev)
+            | IGeneric _ -> failwith "todo"
+        | ImplicitValue -> failwith "todo"
+        | ExplicitFunction -> failwith "todo"
+        | ImplicitFunction -> failwith "todo"
+        | GenericValue(id, _, _) as gv ->
+            match id with
+            | ISimple id' -> map <- map.Add((fst id'), gv)
+            | IGeneric _ -> failwith "todo"
+        | Typing(SingleTyping(id, _)) as t -> 
+            match id with
+            | ISimple id' -> map <- map.Add((fst id'), t)
+            | IGeneric((id', _), _) -> map <- map.Add(id', t))
+    
+    map
+
+
+let convertTransitionRuleToIr valueExpr namedRules =
+    { Rule = valueExpr
+      NamedRules = Map.empty }
+
+let rec convertTransitionSystemToIr (id, trl) =
+    let transitionSystemFolder dec ir =
+        match dec with
+        | Variable l ->
+            { ir with
+                Variable = Some(convertValueDeclToIr ir.Variable l) }
+        | InitConstraint l ->
+            { ir with
+                InitConstraint = Some(convertAxiomDeclToIr l) }
+        | TransitionRule(valueExpr, namedRules) ->
+            { ir with TransitionRule = Some(convertTransitionRuleToIr valueExpr namedRules) }
+
+    let initial =
+        { Name = fst id
+          Variable = None
+          InitConstraint = None
+          TransitionRule = None }
+    
+    List.foldBack transitionSystemFolder trl initial
 
 /// <summary>
 /// Convert AST to intermediate representation.
 ///
-/// This is used before unfolding the speciciation.
+/// This is used before unfolding the specification.
 /// </summary>
 /// <param name="cls"></param>
 /// <param name="intermediate"></param>
@@ -34,26 +85,15 @@ let rec convertToIntermediate (cls: Class) (intermediate: Intermediate) =
         let intermediate' =
             match decl with
             | Value valueDeclarations ->
-                let mutable map =
-                    match intermediate.Value with
-                    | None -> Map.empty
-                    | Some m -> m
-
-                valueDeclarations
-                |> List.iter (fun e ->
-                    match e with
-                    | ExplicitValue(id, _, _) as ev -> map <- map.Add((fst id), ev)
-                    | ImplicitValue -> failwith "todo"
-                    | ExplicitFunction -> failwith "todo"
-                    | ImplicitFunction -> failwith "todo"
-                    | GenericValue(id, _, _) as gv -> map <- map.Add((fst id), gv)
-                    | Typing _ -> failwith "todo")
-
-                { intermediate with Value = Some(map) }
+                let value = convertValueDeclToIr intermediate.Value valueDeclarations
+                
+                { intermediate with Value = Some(value) }
             | TypeDeclaration _ as td -> { intermediate with Type = Some(td) }
             | AxiomDeclaration ad ->
                 { intermediate with
                     Axiom = Some(convertAxiomDeclToIr ad) }
+            | TransitionSystemDeclaration(idPos, transitionSystems) ->
+                { intermediate with TransitionSystem = Some(convertTransitionSystemToIr (idPos, transitionSystems)) }
 
         convertToIntermediate decls intermediate'
 
@@ -92,11 +132,12 @@ let rec convertToAst (intermediate: Intermediate) (acc: Class) =
 /// <param name="_AST"></param>
 let buildSymbolTable (_AST: Class) =
 
-    let unfoldTypeEnvironments acc =
-        function
+    let unfoldTypeEnvironments acc dec =
+        match dec with
         | Value _ -> acc
         | TypeDeclaration ts -> ts @ acc
         | AxiomDeclaration _ -> acc
+        | TransitionSystemDeclaration _ -> acc
 
     let buildType (env: Map<string, TypeDefinition>) =
         function
@@ -117,9 +158,19 @@ let buildValueTable (_AST: Class) =
 
     let unfoldValueValues (map: Map<string, TypeExpression>) valueExpr =
         match valueExpr with 
-        | ExplicitValue(s, typeExpression, _) -> map.Add((fst s), typeExpression)
-        | GenericValue(s, _, typeExpression) -> map.Add((fst s), typeExpression)
+        | ExplicitValue(s, typeExpression, _) ->
+            match s with
+            | ISimple s' -> map.Add((fst s'), typeExpression)
+            | IGeneric _ -> failwith "todo"
+            
+        | GenericValue(s, _, typeExpression) -> 
+            match s with
+            | ISimple s' -> map.Add((fst s'), typeExpression)
+            | IGeneric _ -> failwith "todo"
+        | Typing(SingleTyping(id, typeExpr)) ->
+            match id with
+            | ISimple(id', _)
+            | IGeneric((id', _), _) -> map.Add(id', typeExpr)
         | _ -> map
 
-    List.fold unfoldValueEnvironments [] _AST
-    |> List.fold unfoldValueValues Map.empty
+    List.fold unfoldValueEnvironments [] _AST |> List.fold unfoldValueValues Map.empty
