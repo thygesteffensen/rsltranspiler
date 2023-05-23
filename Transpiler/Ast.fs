@@ -68,10 +68,10 @@ type ValueExpression =
     | ValueLiteral of Pos<ValueLiteral>
     | VName of Accessor
     | VPName of Accessor
-    // | GenericName of (Id * ValueExpression list)
-    // | PGenericName of (Id * ValueExpression list)
+    | Rule of Pos<Id>
     | Quantified of (Quantifier * Typing list * ValueExpression)
     | Infix of (ValueExpression * InfixOp * ValueExpression)
+    | VeList of ValueExpression list
     
 and Accessor =
     | ASimple of Pos<Id>

@@ -5,9 +5,25 @@ type IrAxiomDeclaration =
     // TODO: Determine if the Accessor should be further specified
     | IrInfix of (Accessor * ValueExpression)
 
+type Choice =
+    | NonDeterministic
+    | Deterministic
+
+type IrGc =
+    { Guard: ValueExpression
+      Effect: (Accessor * ValueExpression) list }
+    
+type IrRule =
+    | Guarded of IrGc
+    | Quan of (Choice * Typing list * IrRule)
+    
+type IrTr =
+    | Single of IrRule
+    | Chain of IrRule * Choice * IrTr
+
 type IrTransitionRule =
-    { Rule: ValueExpression
-      NamedRules: Map<string, ValueExpression> }
+    { Rule: IrTr
+      NamedRules: Map<string, IrTr> }
 
 type IrTransitionSystem =
     { Name: string

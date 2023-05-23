@@ -3,6 +3,7 @@ module TranspilerTest.UnitTestTransitionSystem
 open NUnit.Framework
 open Transpiler
 open TranspilerTest.Common
+open TranspilerTest.Compare
 
 [<SetUp>]
 let setup () = ()
@@ -22,4 +23,7 @@ let test input expectedSource =
         | Some(scheme) -> Some(Transpiler.transpile scheme)
         | None -> None
 
-    Assert.AreEqual(expected, actual)
+    match expected, actual with
+    | None, None -> ()
+    | Some e, Some a -> compareScheme(e, a)
+    | _ -> Assert.Fail("Not equal")

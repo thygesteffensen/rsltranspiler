@@ -46,14 +46,7 @@ let buildTypePostfixStrings typeEnv valueEnv typingList =
 
     buildPostfix second first
 
-
-let unfoldTypings typeEnv valueEnv (intermediate: Intermediate) =
-    let map =
-        match intermediate.Value with
-        | Some m -> m
-        | None -> Map.empty
-
-    let mapFolder (s: Map<string, ValueDeclaration>) k v =
+let mapFolder typeEnv valueEnv (s: Map<string, ValueDeclaration>) k v =
         match v with
         | GenericValue(ISimple(id, pos), typingList, typeExpression) ->
             let postfix = buildTypePostfixStrings typeEnv valueEnv typingList
@@ -67,8 +60,71 @@ let unfoldTypings typeEnv valueEnv (intermediate: Intermediate) =
                 s'
         | _ -> s
 
+let rec unfoldValueExpression typeEnv valueEnv (v: ValueExpression) =
+    match v with
+    | ValueLiteral _ as vl -> vl 
+    | VName accessor -> failwith "todo"
+    | VPName accessor -> failwith "todo"
+    | Rule _ as r -> r
+    | Quantified foo -> failwith "todo"
+    | Infix(lhs, infixOp, rhs) ->
+        let lhs' = unfoldValueExpression typeEnv valueEnv lhs
+        let rhs' = unfoldValueExpression typeEnv valueEnv rhs
+        Infix(lhs', infixOp, rhs')
+
+// TODO: Do
+/// <summary>
+/// This is folding over the NamedRules map array and should unfold them
+/// </summary>
+/// <param name="typeEnv"></param>
+/// <param name="valueEnv"></param>
+/// <param name="s"></param>
+/// <param name="k"></param>
+/// <param name="v"></param>
+let namedTransitionRuleFolder typeEnv valueEnv (s: Map<string, IrTr>) k (v: IrTr) =
+        let s' = Map.remove k s
+        match v with
+        | Single irRule ->
+            match irRule with
+            | Guarded irGc -> failwith "todo"
+            | Quan foo -> failwith "todo"
+        | Chain(irRule, choice, irTr) -> failwith "todo"
+        
+
+/// <summary>
+/// Unfold all generics including:
+///     * a
+///     * b
+/// </summary>
+/// <param name="typeEnv"></param>
+/// <param name="valueEnv"></param>
+/// <param name="intermediate"></param>
+let unfoldGenerics typeEnv valueEnv (intermediate: Intermediate) =
     // q: Why use map as state and input?
     // a: The we don't have to add un-processed items to the new state, since they are already there
-    let map' = Map.fold mapFolder map map
+    
+    let unfoldedValueMap =
+        match intermediate.Value with
+        | Some m -> Map.fold (mapFolder typeEnv valueEnv) m m |> Some
+        | None -> None
 
-    { intermediate with Value = Some(map') }
+    let ts =
+        match intermediate.TransitionSystem with
+        | None -> None
+        | Some ts ->
+            let variable =
+                match ts.Variable with
+                | None -> None
+                | Some value ->
+                    Map.fold (mapFolder typeEnv valueEnv) value value |> Some
+            
+            let tr =
+                match ts.TransitionRule with
+                | None -> None
+                | Some value ->
+                    Some({ Rule = value.Rule
+                           NamedRules = Map.fold (namedTransitionRuleFolder typeEnv valueEnv) value.NamedRules value.NamedRules })
+            
+            Some({ ts with Variable = variable; TransitionRule = tr })    
+
+    { intermediate with Value = unfoldedValueMap; TransitionSystem = ts }

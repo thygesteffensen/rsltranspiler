@@ -2,6 +2,7 @@ module Transpiler.Transpiler
 
 open Transpiler.RuleCollection.AxiomRule
 open Transpiler.RuleCollection.TypeRule
+open Transpiler.RuleCollection.TransitionSystemRule
 open Transpiler.Helpers
 
 let transpile ((specification, cls): Scheme) =
@@ -19,7 +20,10 @@ let transpile ((specification, cls): Scheme) =
     let axiomsUnfolded = unfoldAxioms typeEnvironment valueEnvironment intermediate
 
     let genericsTypeUnfolded =
-        unfoldTypings typeEnvironment valueEnvironment axiomsUnfolded
+        unfoldGenerics typeEnvironment valueEnvironment axiomsUnfolded
+        
+    let namedTransitionRulesUnfolded =
+        unfoldNamedTransitionRules typeEnvironment valueEnvironment genericsTypeUnfolded
 
-    let t = convertToAst genericsTypeUnfolded []
+    let t = convertToAst namedTransitionRulesUnfolded
     Scheme(($"{fst specification}_unfolded", snd specification), t)

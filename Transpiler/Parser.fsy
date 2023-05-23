@@ -97,6 +97,7 @@ value_expression:
     | QUOTE TEXT QUOTE                                                  { let text, _ = $2
                                                                           ValueLiteral(VText text, $1) }
     | accessor                                                          { $1 }
+    | LBRACKET TEXT RBRACKET                                            { Rule $2 }
     | quantifier typing_list IS value_expression                        { Quantified($1, $2, $4) }
     | LPAREN value_expression RPAREN                                    { $2 }
     | infix                                                             { $1 }
@@ -108,13 +109,17 @@ accessor:
     | TEXT PRIME LBRACKET value_expressions RBRACKET                    { VPName(AGeneric($1, List.rev $4)) }
 
 infix:
-    | value_expression DETERMINISTIC value_expression                   { Infix($1, Deterministic, $3) }
-    | value_expression NONDETERMINISTIC value_expression                { Infix($1, NonDeterministic, $3) }
-    | value_expression GU value_expression                              { Infix($1, Guard, $3) } 
+    | value_expression DETERMINISTIC value_expression                   { Infix($1, InfixOp.Deterministic, $3) }
+    | value_expression NONDETERMINISTIC value_expression                { Infix($1, InfixOp.NonDeterministic, $3) }
+    | value_expression GU list_expr                                     { Infix($1, Guard, VeList $3) } 
     | value_expression LT value_expression                              { Infix($1, LessThan, $3) } 
     | value_expression LE value_expression                              { Infix($1, LessThanOrEqual, $3) } 
     | value_expression EQ value_expression                              { Infix($1, Equal, $3) }
     | value_expression PL value_expression                              { Infix($1, Plus, $3) }
+    
+list_expr:
+    | value_expression                                                  { [$1] }
+    | list_expr COMMA value_expression                                  { $3 :: $1 }
     
 quantifier:
     | ALL                                                               { All }

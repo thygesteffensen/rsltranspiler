@@ -29,6 +29,6 @@ let testAst2Ir2Ast decl =
           TransitionSystem = None }
 
     Helpers.convertToIntermediate decl t |> ignore
-    let actual = Helpers.convertToAst (Helpers.convertToIntermediate decl t) []
+    let actual = Helpers.convertToAst (Helpers.convertToIntermediate decl t)
 
     Assert.AreEqual(decl, actual)

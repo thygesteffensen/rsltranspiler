@@ -79,7 +79,7 @@ and instantiateTypings typeEnv valueEnv map (instances: Map<string, string>) val
         axiomFolder typeEnv valueEnv map instances valueExpr // Inner for loop
     | SingleTyping(s, typeExpr) :: ts ->
         match s with
-        | ISimple (id, pos) ->
+        | ISimple (id, _pos) ->
 
             let t =
                 match typeExpr with
