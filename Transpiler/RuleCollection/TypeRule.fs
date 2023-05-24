@@ -72,24 +72,81 @@ let rec unfoldValueExpression typeEnv valueEnv (v: ValueExpression) =
         let rhs' = unfoldValueExpression typeEnv valueEnv rhs
         Infix(lhs', infixOp, rhs')
 
-// TODO: Do
 /// <summary>
-/// This is folding over the NamedRules map array and should unfold them
+/// Named Rule folder
+/// 1. Takes a IR Named rule in
+/// 2. Output unfolded IR Named Rule
+///
+/// Quantified expression over the choice must be unfolded.
 /// </summary>
 /// <param name="typeEnv"></param>
 /// <param name="valueEnv"></param>
-/// <param name="s"></param>
+/// <param name="s">Rule Map</param>
+/// <param name="k">Named Rule name</param>
+/// <param name="v">Intermediate Representation Transition Rule to be unfolded</param>
+let rec namedTransitionRuleFolder typeEnv valueEnv (s: Map<string, IrTr>) k (v: IrTr) =
+    let unfoldedRule = namedTransitionRuleFolder typeEnv valueEnv Map.empty k v
+    Map.add k s unfoldedRule
+
+/// <summary>
+/// This is folding over the NamedRules map array and should unfold them
+///
+/// Guarded should be guarded?
+/// Quantified should become a chain?
+/// </summary>
+/// <param name="typeEnv"></param>
+/// <param name="valueEnv"></param>
+/// <param name="instances">Instances</param>
 /// <param name="k"></param>
 /// <param name="v"></param>
-let namedTransitionRuleFolder typeEnv valueEnv (s: Map<string, IrTr>) k (v: IrTr) =
-        let s' = Map.remove k s
-        match v with
-        | Single irRule ->
-            match irRule with
-            | Guarded irGc -> failwith "todo"
-            | Quan foo -> failwith "todo"
-        | Chain(irRule, choice, irTr) -> failwith "todo"
+let rec namedTransitionRuleFolder typeEnv valueEnv (instances: Map<string, string>) k (v: IrTr) =
+    match v with
+    | Single irRule ->
+        match irRule with
+        | Guarded _ as g -> v
+        | Named _ as n -> v
+        | Quan(NonDeterministic, typings, irRule) ->
+            // Choice decides how each irRule should be linked together
+            // each typing needs to be instantiated and for each instance, the irRule unfolded
+            // irRule is the expression that must be unfolded
+            typeInstancer typeEnv valueEnv instances k irRule typings None 
+                
+        | Quan(Choice.Deterministic, _, _) ->
+            failwith "Transition Rules cannot be quantified over the deterministic choice operator"
+                
+            
+    | Chain(irRule, choice, irTr) -> failwith "todo"
+
+and typeInstancer typeEnv valueEnv (instances: Map<string, string>) k v (typings: Typing list) acc =
+    match typings with
+    | [] ->
+        // No more typings to instantiate, proceed to unfolding
+        match acc with
+        | None -> namedTransitionRuleFolder typeEnv valueEnv instances k v
+        | Some ->
+            Chain(
+                namedTransitionRuleFolder typeEnv valueEnv instances k v,
+                choice,
+                acc)
         
+    | SingleTyping(id, typeExpr)::ts ->
+        match id with
+        | ISimple (id, _pos) ->
+
+            let t =
+                match typeExpr with
+                | TName s -> s
+                | _ -> failwith "todo"
+
+            match Map.find (fst t) typeEnv with
+            | Abstract -> failwith "todo"
+            | Concrete _ -> failwith "todo"
+            | Union l ->
+                List.foldBack
+                    (fun (v', _) map -> typeInstancer typeEnv valueEnv (Map.add id v' instances) map k v ts)
+                    l
+                    ruleMap
+        | IGeneric _ -> failwith "todo"
 
 /// <summary>
 /// Unfold all generics including:

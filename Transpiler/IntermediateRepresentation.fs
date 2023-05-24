@@ -14,12 +14,14 @@ type IrGc =
       Effect: (Accessor * ValueExpression) list }
     
 type IrRule =
+    | Named of string
     | Guarded of IrGc
     | Quan of (Choice * Typing list * IrRule)
     
 type IrTr =
     | Single of IrRule
-    | Chain of IrRule * Choice * IrTr
+    | Deterministic of IrTr list
+    | Chain of IrTr * Choice * IrTr
 
 type IrTransitionRule =
     { Rule: IrTr

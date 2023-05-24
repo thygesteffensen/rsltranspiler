@@ -99,15 +99,20 @@ let rec convertValueExpressionToIrRule (valueExpr: ValueExpression) =
         | _ ->
             failwith
                 "Transition rules must either be a guarded expression and a quantified expression of a guarded expression"
+    | VName accessor ->
+        match accessor with
+        | ASimple(ruleName, _pos) ->
+            Named ruleName
+        | AGeneric _ -> failwith "Generic named transition rules references are not allowed"
     | _ -> failwith "Not allowed"
 
 
 let rec convertValueExpressionToIrTr valueExpr =
     match valueExpr with
     | Infix(lhs, InfixOp.Deterministic, rhs) ->
-        Chain ((convertValueExpressionToIrRule rhs), Deterministic, (convertValueExpressionToIrTr lhs))
+        Chain ((convertValueExpressionToIrTr lhs), Deterministic, (convertValueExpressionToIrRule rhs))
     | Infix(lhs, InfixOp.NonDeterministic, rhs) ->
-        Chain ((convertValueExpressionToIrRule rhs), NonDeterministic, (convertValueExpressionToIrTr lhs))
+        Chain ((convertValueExpressionToIrTr lhs), NonDeterministic, (convertValueExpressionToIrRule rhs))
     | _ -> Single (convertValueExpressionToIrRule valueExpr)
 
 let convertTransitionRuleToIr valueExpr namedRules =
@@ -201,9 +206,9 @@ let transitionSystemDec (inp: Option<IrTransitionSystem>) : Option<Declaration> 
         | Chain(irRule, choice, irTr) ->
             match choice with
             | NonDeterministic ->
-                Infix(IrRuleToValueExpression irRule, InfixOp.NonDeterministic, IrTrToValueExpression irTr)
+                Infix(IrTrToValueExpression irRule, InfixOp.NonDeterministic, IrRuleToValueExpression irTr)
             | Deterministic ->
-                Infix(IrRuleToValueExpression irRule, InfixOp.Deterministic, IrTrToValueExpression irTr)
+                Infix(IrTrToValueExpression irRule, InfixOp.Deterministic, IrRuleToValueExpression irTr)
     
     let convertTransitionRule (tr: Option<IrTransitionRule>) acc =
         match tr with
