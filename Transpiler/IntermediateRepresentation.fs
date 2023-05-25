@@ -9,29 +9,20 @@ type Choice =
     | NonDeterministic
     | Deterministic
 
-type IrGc =
-    { Guard: ValueExpression
-      Effect: (Accessor * ValueExpression) list }
-    
-type IrRule =
-    | Named of string
-    | Guarded of IrGc
-    | Quan of (Choice * Typing list * IrRule)
-    
-type IrTr =
-    | Single of IrRule
-    | Deterministic of IrTr list
-    | Chain of IrTr * Choice * IrTr
-
-type IrTransitionRule =
-    { Rule: IrTr
-      NamedRules: Map<string, IrTr> }
+type IrTransitionRules =
+    | Node of IrTransitionRules * Choice * IrTransitionRules
+    | Leaf of IrTransitionRule
+and
+    IrTransitionRule =
+    | Guarded of string * ValueExpression * (Accessor * ValueExpression) list
+    | Name of string
+    | Quantified of Choice * Typing list * IrTransitionRule
 
 type IrTransitionSystem =
     { Name: string
       Variable: Option<Map<string, ValueDeclaration>>
       InitConstraint: Option<IrAxiomDeclaration list>
-      TransitionRule: Option<IrTransitionRule> }
+      TransitionRule: Option<IrTransitionRules * Map<string, IrTransitionRules>> }
 
 [<Struct>]
 type Intermediate =

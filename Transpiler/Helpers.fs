@@ -69,7 +69,7 @@ let rec convertValueExpressionToIrRule (valueExpr: ValueExpression) =
     | Quantified(q, typings, valueExpression) ->
         match q with
         | Quantifier.NonDeterministic -> Quan(NonDeterministic, typings, convertValueExpressionToIrRule valueExpression)
-        | Quantifier.Deterministic -> Quan(Deterministic, typings, convertValueExpressionToIrRule valueExpression)
+        | Quantifier.Deterministic -> Quan(Choice.Deterministic, typings, convertValueExpressionToIrRule valueExpression)
         | _ ->
             failwith
                 "Quantified expression are only allowed to be quantified over the deterministic or non deterministic choice, [=] and [>] respectively"
@@ -110,7 +110,7 @@ let rec convertValueExpressionToIrRule (valueExpr: ValueExpression) =
 let rec convertValueExpressionToIrTr valueExpr =
     match valueExpr with
     | Infix(lhs, InfixOp.Deterministic, rhs) ->
-        Chain ((convertValueExpressionToIrTr lhs), Deterministic, (convertValueExpressionToIrRule rhs))
+        Chain ((convertValueExpressionToIrTr lhs), Choice.Deterministic, (convertValueExpressionToIrRule rhs))
     | Infix(lhs, InfixOp.NonDeterministic, rhs) ->
         Chain ((convertValueExpressionToIrTr lhs), NonDeterministic, (convertValueExpressionToIrRule rhs))
     | _ -> Single (convertValueExpressionToIrRule valueExpr)
@@ -207,7 +207,7 @@ let transitionSystemDec (inp: Option<IrTransitionSystem>) : Option<Declaration> 
             match choice with
             | NonDeterministic ->
                 Infix(IrTrToValueExpression irRule, InfixOp.NonDeterministic, IrRuleToValueExpression irTr)
-            | Deterministic ->
+            | Choice.Deterministic ->
                 Infix(IrTrToValueExpression irRule, InfixOp.Deterministic, IrRuleToValueExpression irTr)
     
     let convertTransitionRule (tr: Option<IrTransitionRule>) acc =
