@@ -1,9 +1,9 @@
 %{
-open Transpiler
+open Transpiler.Ast
 open FSharp.Text
-open Transpiler.Helpers
+open Transpiler.Helpers.Helpers
 
-let parse_error_rich = Some Helpers.error_handler
+let parse_error_rich = Some error_handler
 %}
 
 %token <string * FSharp.Text.Lexing.Position> ID
@@ -27,7 +27,7 @@ let parse_error_rich = Some Helpers.error_handler
 
 
 %start start
-%type <Transpiler.Scheme option> start
+%type <Transpiler.Ast.Scheme option> start
 
 %%
 

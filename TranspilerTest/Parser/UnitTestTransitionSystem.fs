@@ -1,7 +1,7 @@
 ﻿module TranspilerTest.Parser.TransitionSystem
 
 open NUnit.Framework
-open Transpiler
+open Transpiler.Ast
 open TranspilerTest.Common
 
 let f1 = "TransitionSystem.rsl"

@@ -1,8 +1,7 @@
 module TranspilerTest.Axiom
 
-open FSharp.Text.Lexing
 open NUnit.Framework
-open Transpiler
+open Transpiler.Ast
 open TranspilerTest.Common
 
 let f1 = "AxiomSimple.rsl"

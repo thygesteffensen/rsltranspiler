@@ -1,7 +1,7 @@
 ﻿module TranspilerTest.Compare
 
 open NUnit.Framework
-open Transpiler
+open Transpiler.Ast
 
 let rec compareTypeExpression (te1: TypeExpression, te2) =
     match te1, te2 with

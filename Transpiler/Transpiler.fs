@@ -3,7 +3,8 @@ module Transpiler.Transpiler
 open Transpiler.RuleCollection.AxiomRule
 open Transpiler.RuleCollection.TypeRule
 open Transpiler.RuleCollection.TransitionSystemRule
-open Transpiler.Helpers
+open Transpiler.Helpers.Helpers
+open Transpiler.Ast
 
 let transpile ((specification, cls): Scheme) =
     let typeEnvironment = buildSymbolTable cls

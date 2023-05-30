@@ -1,4 +1,8 @@
-module Transpiler.Helpers
+module Transpiler.Helpers.Helpers
+
+open Transpiler.Helpers.IrTransformer
+open Transpiler.Ast
+open Transpiler.Intermediate
 
 open FSharp.Text.Lexing
 

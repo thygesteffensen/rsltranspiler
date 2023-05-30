@@ -1,6 +1,6 @@
 module Transpiler.Writer
 
-open System
+open Transpiler.Ast
 open System.IO
 
 let getValueLiteralString = function

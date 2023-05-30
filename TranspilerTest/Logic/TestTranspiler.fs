@@ -2,6 +2,8 @@ module TranspilerTest.Logic.TestTranspiler
 
 open NUnit.Framework
 open Transpiler
+open Transpiler.Helpers
+open Transpiler.Ast
 open Transpiler.Writer
 open TranspilerTest.Common
 

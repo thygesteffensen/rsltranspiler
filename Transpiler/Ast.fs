@@ -1,4 +1,4 @@
-﻿namespace Transpiler
+﻿namespace Transpiler.Ast
 
 open FSharp.Text.Lexing
 

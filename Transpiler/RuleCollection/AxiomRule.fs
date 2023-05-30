@@ -3,7 +3,8 @@
 /// </summary>
 module Transpiler.RuleCollection.AxiomRule
 
-open Transpiler
+open Transpiler.Ast
+open Transpiler.Intermediate
 
 /// <summary>
 /// toString for value literal
@@ -53,7 +54,7 @@ let rec axiomFolder
                     match s with
                     | ASimple s -> Map.find (fst s) instances
                     | AGeneric(s, valueExpressions) -> failwith "todo"
-                | Quantified foo -> failwith "todo"
+                | ValueExpression.Quantified foo -> failwith "todo"
 
             let t = List.foldBack (fun e a -> $"_{stringer e}{a}") valueExpressions ""
             let tt = $"{s}{t}"
