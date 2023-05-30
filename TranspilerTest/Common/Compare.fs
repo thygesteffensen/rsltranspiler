@@ -49,7 +49,7 @@ let rec compareValueExpression (ve1, ve2) =
     | ValueLiteral(vl1, _), ValueLiteral(vl2, _) -> Assert.AreEqual(vl1, vl2)
     | VName accessor1, VName accessor2 -> compareAccessor (accessor1, accessor2)
     | VPName accessor1, VPName accessor2 -> compareAccessor (accessor1, accessor2)
-    | Quantified(quantifier1, typings1, valueExpr1), Quantified(quantifier2, typings2, valueExpr2) ->
+    | Quantified((quantifier1, _pos1), typings1, valueExpr1), Quantified((quantifier2, _pos2), typings2, valueExpr2) ->
         Assert.AreEqual(quantifier1, quantifier2)
 
         Assert.AreEqual(

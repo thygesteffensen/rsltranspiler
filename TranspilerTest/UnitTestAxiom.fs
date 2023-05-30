@@ -37,7 +37,7 @@ let input: obj[] list =
                )
                AxiomDeclaration(
                    [ Quantified(
-                         All,
+                         (All, pos 8 14 157 f2),
                          [ SingleTyping(ISimple("x", pos 8 18 161 f2), TName("Pos", pos 8 22 165 f2)) ],
                          Infix(
                              VName(AGeneric(("A", pos 8 29 172 f2), [ VName(ASimple("x", pos 8 31 174 f2)) ])),
@@ -68,7 +68,7 @@ let input: obj[] list =
                )
                AxiomDeclaration(
                    [ Quantified(
-                         All,
+                         (All, pos 8 13 167 f3),
                          [ SingleTyping(ISimple("x", pos 8 17 171 f3), TName("Pos", pos 8 21 175 f3)) ],
                          Infix(
                              VName(

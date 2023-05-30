@@ -21,7 +21,7 @@ let input: obj[] list =
                           [ Infix(VName(ASimple ("v1", pos 11 17 278 f1)), Equal, ValueLiteral((VInt 1, pos 11 22 283 f1)))
                             Infix(VName(ASimple ("v3", pos 12 17 305 f1)), Equal, ValueLiteral((VInt 3, pos 12 22 310 f1)))
                             Quantified(
-                                All,
+                                (All, pos 13 18 333 f1),
                                 [ SingleTyping(ISimple("t", pos 13 22 337 f1), TName ("Pos", pos 13 26 341 f1)) ],
                                 Infix(VName(AGeneric(("v2", pos 13 33 348 f1), [ VName(ASimple ("t", pos 13 36 351 f1)) ])), Equal, ValueLiteral((VInt 2, pos 13 41 356 f1)))
                             ) ]
@@ -47,7 +47,7 @@ let input: obj[] list =
                               ),
                               NonDeterministic,
                               Quantified(
-                                  Quantifier.NonDeterministic,
+                                  (Quantifier.NonDeterministic, pos 22 18 606 f1),
                                   [ SingleTyping(ISimple("t", pos 22 22 610 f1), TName ("Pos", pos 22 26 614 f1)) ],
                                   Infix(
                                       Infix(ValueLiteral((VBool false, pos 22 33 621 f1)), Equal, ValueLiteral((VBool false, pos 22 41 629 f1))),

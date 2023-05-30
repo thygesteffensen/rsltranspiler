@@ -69,7 +69,7 @@ type ValueExpression =
     | VName of Accessor
     | VPName of Accessor
     | Rule of Pos<Id>
-    | Quantified of (Quantifier * Typing list * ValueExpression)
+    | Quantified of (Pos<Quantifier> * Typing list * ValueExpression)
     | Infix of (ValueExpression * InfixOp * ValueExpression)
     | VeList of ValueExpression list
     

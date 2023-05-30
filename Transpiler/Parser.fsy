@@ -122,11 +122,11 @@ list_expr:
     | list_expr COMMA value_expression                                  { $3 :: $1 }
     
 quantifier:
-    | ALL                                                               { All }
-    | EXISTS                                                            { Exists }
-    | EXACTLY_ONE                                                       { ExactlyOne }
-    | DETERMINISTIC                                                     { Quantifier.Deterministic }
-    | NONDETERMINISTIC                                                  { Quantifier.NonDeterministic }
+    | ALL                                                               { (All, $1) }
+    | EXISTS                                                            { (Exists, $1) }
+    | EXACTLY_ONE                                                       { (ExactlyOne, $1) }
+    | DETERMINISTIC                                                     { (Quantifier.Deterministic, $1) }
+    | NONDETERMINISTIC                                                  { (Quantifier.NonDeterministic, $1) }
     
 value_declarations:
     | value_declaration                                                 { [$1] }
