@@ -21,14 +21,14 @@ let convertAxiomDeclToIr (valueExprList: ValueExpression list) =
 
     let rec valueExpressionToIr (valueExpr: ValueExpression) =
         match valueExpr with
-        | Quantified(All, typings, valueExpression) -> IrQuantified(typings, valueExpressionToIr valueExpression)
-        | Infix(VName accessor, Equal, expression) ->
-            IrInfix(accessor, expression)
-            // TODO: Expression should be further walked to ensure it does not violate rules.
-            // E.g., it cannot contain quantified generic expression. But then again, that should just evaluate to a
-            // boolean
+        | ValueExpression.Quantified((All, _), typings, valueExpression) ->
+            IrQuantified(typings, valueExpressionToIr valueExpression)
+        | Infix(VName accessor, Equal, expression) -> IrInfix(accessor, expression)
+        // TODO: Expression should be further walked to ensure it does not violate rules.
+        // E.g., it cannot contain quantified generic expression. But then again, that should just evaluate to a
+        // boolean
 
-        | Quantified _ -> failwith "Quantified expression must use the all quantifier"
+        | ValueExpression.Quantified _ -> failwith "Quantified expression must use the all quantifier"
         | Infix _ -> failwith "Infix expression in axioms must be on the form: <Accessor> = <ValueExpr>"
 
         | _ -> failwith "Axioms can only be a Quantified or Infix expression"
@@ -36,7 +36,7 @@ let convertAxiomDeclToIr (valueExprList: ValueExpression list) =
 
     List.foldBack (fun e a -> valueExpressionToIr e :: a) valueExprList []
 
-let convertValueDeclToIr value valueDecl=
+let convertValueDeclToIr value valueDecl =
     let mutable map =
         match value with
         | None -> Map.empty
@@ -56,96 +56,12 @@ let convertValueDeclToIr value valueDecl=
             match id with
             | ISimple id' -> map <- map.Add((fst id'), gv)
             | IGeneric _ -> failwith "todo"
-        | Typing(SingleTyping(id, _)) as t -> 
+        | Typing(SingleTyping(id, _)) as t ->
             match id with
             | ISimple id' -> map <- map.Add((fst id'), t)
             | IGeneric((id', _), _) -> map <- map.Add(id', t))
-    
+
     map
-
-/// <summary>
-/// Convert value expression to IrTr
-/// </summary>
-/// <param name="valueExpr"></param>
-let rec convertValueExpressionToIrRule (valueExpr: ValueExpression) =
-    // TODO: Clean up
-    match valueExpr with
-    | Quantified(q, typings, valueExpression) ->
-        match q with
-        | Quantifier.NonDeterministic -> Quan(NonDeterministic, typings, convertValueExpressionToIrRule valueExpression)
-        | Quantifier.Deterministic -> Quan(Choice.Deterministic, typings, convertValueExpressionToIrRule valueExpression)
-        | _ ->
-            failwith
-                "Quantified expression are only allowed to be quantified over the deterministic or non deterministic choice, [=] and [>] respectively"
-    | Infix(guard, infixOp, effect) ->
-        match infixOp with
-        | Guard ->
-            match effect with
-            | Infix(VPName accessor, Eq, rhs) ->
-                Guarded
-                    { Guard = guard
-                      Effect = [ (accessor, rhs) ] }
-            | VeList valueExpressions ->
-                Guarded
-                    { Guard = guard
-                      Effect =
-                        List.foldBack
-                            (fun e a ->
-                                match e with
-                                | Infix(VPName accessor, Eq, rhs) -> (accessor, rhs) :: a
-                                | _ ->
-                                    failwith
-                                        "Effect in transition rule must be infix expression with lhs being a primed reference")
-                            valueExpressions
-                            [] }
-        
-            | _ -> failwith "Effect in transition rule must be infix expression with lhs being a primed reference"
-        | _ ->
-            failwith
-                "Transition rules must either be a guarded expression and a quantified expression of a guarded expression"
-    | VName accessor ->
-        match accessor with
-        | ASimple(ruleName, _pos) ->
-            Named ruleName
-        | AGeneric _ -> failwith "Generic named transition rules references are not allowed"
-    | _ -> failwith "Not allowed"
-
-
-let rec convertValueExpressionToIrTr valueExpr =
-    match valueExpr with
-    | Infix(lhs, InfixOp.Deterministic, rhs) ->
-        Chain ((convertValueExpressionToIrTr lhs), Choice.Deterministic, (convertValueExpressionToIrRule rhs))
-    | Infix(lhs, InfixOp.NonDeterministic, rhs) ->
-        Chain ((convertValueExpressionToIrTr lhs), NonDeterministic, (convertValueExpressionToIrRule rhs))
-    | _ -> Single (convertValueExpressionToIrRule valueExpr)
-
-let convertTransitionRuleToIr valueExpr namedRules =
-    { Rule = convertValueExpressionToIrTr valueExpr
-      NamedRules =
-        List.foldBack
-            (fun ((id, _pos), valueExpr) a -> a.Add(id, convertValueExpressionToIrTr valueExpr))
-            namedRules
-            Map.empty }
-
-let rec convertTransitionSystemToIr (id, trl) =
-    let transitionSystemFolder dec ir =
-        match dec with
-        | Variable l ->
-            { ir with
-                Variable = Some(convertValueDeclToIr ir.Variable l) }
-        | InitConstraint l ->
-            { ir with
-                InitConstraint = Some(convertAxiomDeclToIr l) }
-        | TransitionRule(valueExpr, namedRules) ->
-            { ir with TransitionRule = Some(convertTransitionRuleToIr valueExpr namedRules) }
-
-    let initial =
-        { Name = fst id
-          Variable = None
-          InitConstraint = None
-          TransitionRule = None }
-    
-    List.foldBack transitionSystemFolder trl initial
 
 /// <summary>
 /// Convert AST to intermediate representation.
@@ -162,76 +78,25 @@ let rec convertToIntermediate (cls: Class) (intermediate: Intermediate) =
             match decl with
             | Value valueDeclarations ->
                 let value = convertValueDeclToIr intermediate.Value valueDeclarations
-                
-                { intermediate with Value = Some(value) }
+
+                { intermediate with
+                    Value = Some(value) }
             | TypeDeclaration _ as td -> { intermediate with Type = Some(td) }
             | AxiomDeclaration ad ->
                 { intermediate with
                     Axiom = Some(convertAxiomDeclToIr ad) }
             | TransitionSystemDeclaration(idPos, transitionSystems) ->
-                { intermediate with TransitionSystem = Some(convertTransitionSystemToIr (idPos, transitionSystems)) }
+                { intermediate with
+                    TransitionSystem = Some(convertAstTransitionSystemToIr idPos transitionSystems) }
 
         convertToIntermediate decls intermediate'
 
 let rec axiomIrToAst (a: IrAxiomDeclaration) =
     match a with
-    | IrQuantified(typings, irAxiomDeclaration) -> Quantified(All, typings, axiomIrToAst irAxiomDeclaration)
+    | IrQuantified(typings, irAxiomDeclaration) ->
+        ValueExpression.Quantified((All, dummyPos), typings, axiomIrToAst irAxiomDeclaration)
     | IrInfix(accessor, valueExpression) -> Infix(VName accessor, Equal, valueExpression)
 
-/// <summary>
-/// Convert <see cref="IrTransitionSystem"/> to <see cref="Declaration"/>
-/// </summary>
-/// <param name="inp"></param>
-let transitionSystemDec (inp: Option<IrTransitionSystem>) : Option<Declaration> =
-    let convertVariable var acc =
-        match var with
-        | None -> acc
-        | Some m -> Variable(Map.foldBack (fun _k e a -> e :: a) m []) :: acc
-
-    let convertInitConstraint ic acc =
-        match ic with
-        | None -> acc
-        | Some l -> InitConstraint(List.foldBack (fun e a -> (axiomIrToAst e) :: a) l []) :: acc
-
-    let IrGcToValueExpression (irGc: IrGc) =
-        match irGc with
-        | { Guard = guard; Effect = [acc, valueExpr] } -> Infix(guard, Guard, Infix(VPName acc, Equal, valueExpr))
-        | { Guard = guard; Effect = tuples } ->
-            Infix(guard, Guard, VeList (List.foldBack (fun (acc, valueExpr) a -> Infix(VPName acc, Equal, valueExpr)::a) tuples []))
-            
-    let IrRuleToValueExpression (irRule: IrRule) =
-        match irRule with
-        | Guarded irGc -> failwith "todo"
-        | Quan foo -> failwith "todo"
-    
-    let rec IrTrToValueExpression (irTr: IrTr) =
-        match irTr with
-        | Single irRule -> failwith "todo"
-        | Chain(irRule, choice, irTr) ->
-            match choice with
-            | NonDeterministic ->
-                Infix(IrTrToValueExpression irRule, InfixOp.NonDeterministic, IrRuleToValueExpression irTr)
-            | Choice.Deterministic ->
-                Infix(IrTrToValueExpression irRule, InfixOp.Deterministic, IrRuleToValueExpression irTr)
-    
-    let convertTransitionRule (tr: Option<IrTransitionRule>) acc =
-        match tr with
-        | None -> acc
-        | Some r ->
-            TransitionRule(IrTrToValueExpression r.Rule, Map.foldBack (fun k e a -> ((k, dp), IrTrToValueExpression e) :: a) r.NamedRules [])
-            :: acc
-
-    match inp with
-    | None -> None
-    | Some ts ->
-        Some(
-            TransitionSystemDeclaration(
-                (ts.Name, dp),
-                (convertTransitionRule ts.TransitionRule []
-                 |> convertInitConstraint ts.InitConstraint)
-                |> convertVariable ts.Variable
-            )
-        )
 
 /// <summary>
 /// Convert Intermediate representation back to AST.
@@ -240,7 +105,10 @@ let transitionSystemDec (inp: Option<IrTransitionSystem>) : Option<Declaration> 
 /// </summary>
 /// <param name="intermediate"></param>
 let rec convertToAst (intermediate: Intermediate) =
-    let trDec = transitionSystemDec intermediate.TransitionSystem
+    let trDec =
+        match intermediate.TransitionSystem with
+        | None -> None
+        | Some v -> Some(convertIrTransitionSystemToAst v)
 
     let axiomDec =
         match intermediate.Axiom with
@@ -249,17 +117,17 @@ let rec convertToAst (intermediate: Intermediate) =
 
     let valueDec =
         match intermediate.Value with
-        | Some v when Map.empty <> v  ->
+        | Some v when Map.empty <> v ->
             let value = Map.foldBack (fun _ v a -> v :: a) v []
-            Some (Value value)
+            Some(Value value)
         | _ -> None
 
     let typeDec =
         match intermediate.Type with
         | None -> None
         | Some v -> Some(v)
-        
-    typeDec :: valueDec :: axiomDec :: [trDec] |> List.choose id 
+
+    typeDec :: valueDec :: axiomDec :: [ trDec ] |> List.choose id
 
 /// <summary>
 /// Build symbol table for given Abstract Syntax Tree
@@ -292,13 +160,13 @@ let buildValueTable (_AST: Class) =
         | _ -> acc
 
     let unfoldValueValues (map: Map<string, TypeExpression>) valueExpr =
-        match valueExpr with 
+        match valueExpr with
         | ExplicitValue(s, typeExpression, _) ->
             match s with
             | ISimple s' -> map.Add((fst s'), typeExpression)
             | IGeneric _ -> failwith "todo"
-            
-        | GenericValue(s, _, typeExpression) -> 
+
+        | GenericValue(s, _, typeExpression) ->
             match s with
             | ISimple s' -> map.Add((fst s'), typeExpression)
             | IGeneric _ -> failwith "todo"
@@ -308,4 +176,5 @@ let buildValueTable (_AST: Class) =
             | IGeneric((id', _), _) -> map.Add(id', typeExpr)
         | _ -> map
 
-    List.fold unfoldValueEnvironments [] _AST |> List.fold unfoldValueValues Map.empty
+    List.fold unfoldValueEnvironments [] _AST
+    |> List.fold unfoldValueValues Map.empty

@@ -1,5 +1,0 @@
-scheme Precedence3 = 
-    class
-        value
-            a: Nat = 1 + 1 [=] 2 + 2
-    end

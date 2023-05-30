@@ -1,4 +1,5 @@
 ﻿module Transpiler.RuleCollection.TransitionSystemRule
+(*
 
 open Transpiler
 
@@ -46,3 +47,4 @@ let unfoldNamedTransitionRules typeEnv valueEnv (intermediate: Intermediate) =
     | Some irTransitionSystem ->
         { intermediate with
             TransitionSystem = Some(tt irTransitionSystem) }
+            *)

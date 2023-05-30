@@ -22,10 +22,8 @@ scheme NamedTransitionRules =
                         (true = true ==>
                             v2'[p1] = v2[p1] + 1),
                     [TR2] =
-                        (([=] t : Pos :- false = false ==> v2'[t] = v2[t] + 1))
-                        
+                        (([=] t : Pos :- false = false ==> v2'[t] = v2[t] + 1)), 
                     [TR] =
-                        false ==> v2'[t] = v2[t] + 1 [=] false ==> v2'[t] = v2[t] + 1) [=]
-                
+                        false ==> v2'[t] = v2[t] + 1 [=] false ==> v2'[t] = v2[t] + 1
         end
     end

@@ -53,15 +53,25 @@ transition_systems:
 transition_system:
     | VARIABLE variable_definitions                                     { Variable(List.rev $2) }
     | INIT_CONSTRAINT init_constraints                                  { InitConstraint(List.rev $2) }
-    | TR value_expression where                                         { TransitionRule($2, $3) }
+    | TR named_rule where                                               { TransitionRule($2, $3) }
     
 where:
     |                                                                   { [] }
     | WHERE named_rules                                                 { $2 }
 
 named_rules:
-    | LBRACKET TEXT RBRACKET EQ value_expression                        { [($2, $5)] }
-    | named_rules COMMA LBRACKET TEXT RBRACKET EQ value_expression      { ($4, $7) :: $1 }
+    | LBRACKET TEXT RBRACKET EQ named_rule                              { [($2, $5)] }
+    | named_rules COMMA LBRACKET TEXT RBRACKET EQ named_rule            { ($4, $7) :: $1 }
+    
+named_rule:
+    | LPAREN named_rule RPAREN                                          { $2 }
+    | named_rule NONDETERMINISTIC named_rule                            { Infix($1, NonDeterministic, $3) } 
+    | TEXT                                                              { VName (ASimple $1) }
+    | NONDETERMINISTIC typing_list IS guarded_value_expr                { Quantified ((Quantifier.NonDeterministic, $1), $2, $4) }
+    | guarded_value_expr                                                { $1 }
+    
+guarded_value_expr:
+    | value_expression GU value_expressions                             { Infix($1, Guard, VeList (List.rev $3)) }
     
 choice:
     | LBRACKET EQ RBRACKET                                              { Deterministic }
@@ -109,9 +119,6 @@ accessor:
     | TEXT PRIME LBRACKET value_expressions RBRACKET                    { VPName(AGeneric($1, List.rev $4)) }
 
 infix:
-    | value_expression DETERMINISTIC value_expression                   { Infix($1, InfixOp.Deterministic, $3) }
-    | value_expression NONDETERMINISTIC value_expression                { Infix($1, InfixOp.NonDeterministic, $3) }
-    | value_expression GU list_expr                                     { Infix($1, Guard, VeList $3) } 
     | value_expression LT value_expression                              { Infix($1, LessThan, $3) } 
     | value_expression LE value_expression                              { Infix($1, LessThanOrEqual, $3) } 
     | value_expression EQ value_expression                              { Infix($1, Equal, $3) }

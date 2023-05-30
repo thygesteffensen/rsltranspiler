@@ -1,4 +1,6 @@
-﻿namespace Transpiler
+﻿namespace Transpiler.Intermediate
+
+open Transpiler.Ast
 
 type IrAxiomDeclaration =
     | IrQuantified of (Typing list * IrAxiomDeclaration)
@@ -14,9 +16,11 @@ type IrTransitionRules =
     | Leaf of IrTransitionRule
 and
     IrTransitionRule =
-    | Guarded of string * ValueExpression * (Accessor * ValueExpression) list
+    | Guarded of ValueExpression * Effect list
     | Name of string
     | Quantified of Choice * Typing list * IrTransitionRule
+    
+and Effect = Accessor * ValueExpression
 
 type IrTransitionSystem =
     { Name: string

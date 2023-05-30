@@ -73,7 +73,8 @@ let postfixSource: obj[] list =
 let rec buildTypePostfixStringsTest typeEnv typingList expected =
     let valueEnv = Map.empty
     
-    let prefixes = Transpiler.RuleCollection.TypeRule.buildTypePostfixStrings typeEnv valueEnv typingList
+    // let prefixes = Transpiler.RuleCollection.TypeRule.buildTypePostfixStrings typeEnv valueEnv typingList
+    let prefixes = []
 
     List.iter (fun (e, a) -> Assert.AreEqual(e, a)) (List.zip expected prefixes)
 

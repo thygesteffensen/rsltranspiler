@@ -1,6 +1,8 @@
 module Transpiler.RuleCollection.TypeRule
 
-open Transpiler
+(*
+open Transpiler.Ast
+open Transpiler.Intermediate
 
 /// <summary>
 /// Given a typing list, this will generate a list of all variants of the typing, prefixed with '_' and seperated by '_' .
@@ -184,4 +186,4 @@ let unfoldGenerics typeEnv valueEnv (intermediate: Intermediate) =
             
             Some({ ts with Variable = variable; TransitionRule = tr })    
 
-    { intermediate with Value = unfoldedValueMap; TransitionSystem = ts }
+    { intermediate with Value = unfoldedValueMap; TransitionSystem = ts }*)
