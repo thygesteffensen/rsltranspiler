@@ -1,0 +1,7 @@
+scheme Precedence0 = 
+    class
+        transition_system [TS]
+            transition_rules
+                true = true ==> false
+        end
+    end

@@ -1,18 +1,24 @@
 module Transpiler.Writer
 
+open System
 open Transpiler.Ast
 open System.IO
 
-let getValueLiteralString = function
+let getValueLiteralString =
+    function
     | VUnit _ -> "()"
-    | VBool b -> string(bool)
-    | VInt i -> string(i)
-    | VReal r -> string(r)
-    | VChar c -> string(c)
-    | VNat n -> string(n)
+    | VBool b ->
+        match b with
+        | true -> "true"
+        | false -> "false"
+    | VInt i -> string i
+    | VReal r -> string r
+    | VChar c -> string c
+    | VNat n -> string n
     | VText t -> t
-    
-let getTypeLiteralString = function
+
+let getTypeLiteralString =
+    function
     | TUnit _ -> "Unit"
     | TBool -> "Bool"
     | TInt -> "Int"
@@ -21,28 +27,105 @@ let getTypeLiteralString = function
     | TNat -> "Nat"
     | TText -> "Text"
 
-let writeTypeExpression (stream: StreamWriter) depth typeExpression =
+let writeTypeExpression (stream: StreamWriter) _depth typeExpression =
     match typeExpression with
-    | Literal lit -> stream.Write (getTypeLiteralString lit )
-    | TName n -> stream.Write n
-    | Product l -> failwith "todo"
-    | Set e -> failwith "todo"
-    | List e -> failwith "todo"
-    | Map e -> failwith "todo"
-    
+    | Literal lit -> stream.Write(getTypeLiteralString lit)
+    | TName(n, _) -> stream.Write n
+    | Product _ -> failwith "todo"
+    | Set _ -> failwith "todo"
+    | List _ -> failwith "todo"
+    | Map _ -> failwith "todo"
+
 let writeTyping (stream: StreamWriter) depth (typing: Typing) =
     match typing with
     | SingleTyping(identifier, typeExpression) ->
         match identifier with
-        | IGeneric foo -> failwith "todo"
-        | ISimple (id, _) -> 
+        | IGeneric _ -> failwith "todo"
+        | ISimple(id, _) ->
             stream.Write(id + " : ")
             writeTypeExpression stream depth typeExpression
 
+let xx (stream: string -> Unit) (delimiter: string) = (fun () -> stream delimiter)
+
+/// <summary>
+/// Iterate through a list and call delimiter function between each element and call elementAction on each element
+/// </summary>
+/// <param name="delimiter"></param>
+/// <param name="list"></param>
+/// <param name="elementAction"></param>
+let listDelimiterAction (delimiter: Unit -> Unit) list elementAction =
+    match list with
+    | [] -> ()
+    | v :: vs ->
+        elementAction v
+
+        List.iter
+            (fun e ->
+                delimiter ()
+                elementAction e)
+            vs
 
 let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
     match valueExpression with
-    | ValueLiteral (literal, _) -> stream.Write (literal |>  getValueLiteralString)
+    | ValueLiteral(literal, _) -> stream.Write(getValueLiteralString literal)
+    | VName accessor -> writeAccessor stream depth accessor false
+    | VPName accessor -> writeAccessor stream depth accessor true
+    | Rule(id, _) -> stream.Write id
+    | Quantified((quantifier, _), typings, valueExpression) ->
+        stream.Write "("
+
+        match quantifier with
+        | All -> stream.Write "all "
+        | Exists -> stream.Write "exists "
+        | ExactlyOne -> stream.Write "exists! "
+        | Quantifier.Deterministic -> stream.Write "[>] "
+        | Quantifier.NonDeterministic -> stream.Write "[=] "
+
+        listDelimiterAction (fun () -> stream.Write ", ") typings (writeTyping stream depth)
+        stream.Write " :- "
+
+        writeValueExpression stream depth valueExpression
+
+        stream.Write ")"
+    | Infix(lhs, infixOp, rhs) ->
+        writeValueExpression stream depth lhs
+
+        match infixOp with
+        | Equal -> stream.Write " = "
+        | Plus -> stream.Write " + "
+        | Guard -> stream.Write " ==> "
+        | Deterministic -> stream.Write " [>] "
+        | NonDeterministic ->
+            stream.WriteLine ()
+            stream.Write (String.replicate depth "\t")
+            stream.WriteLine " [=] "
+            stream.Write (String.replicate depth "\t")
+        | LessThan -> stream.Write " < "
+        | LessThanOrEqual -> stream.Write " <= "
+
+        writeValueExpression stream depth rhs
+    | VeList valueExpressions ->
+        listDelimiterAction (fun () -> stream.Write ", ") valueExpressions (writeValueExpression stream depth)
+
+and writeAccessor (stream: StreamWriter) depth (accessor: Accessor) (prime: Boolean) =
+    match accessor with
+    | ASimple(id, _) ->
+        stream.Write id
+
+        match prime with
+        | true -> stream.Write "'"
+        | false -> ()
+    | AGeneric((id, _), valueExpressions) ->
+        stream.Write id
+
+        match prime with
+        | true -> stream.Write "'"
+        | false -> ()
+
+        stream.Write "["
+        List.iter (writeValueExpression stream depth) valueExpressions
+        stream.Write "]"
+
 
 let rec writeValue (stream: StreamWriter) depth valueDeclaration =
     stream.Write(String.replicate depth "\t")
@@ -50,36 +133,36 @@ let rec writeValue (stream: StreamWriter) depth valueDeclaration =
     match valueDeclaration with
     | ExplicitValue(id, typeExpr, valueExpr) ->
         match id with
-        | ISimple (id, pos) ->
-            stream.Write (id + " : ")
+        | ISimple(id, _) ->
+            stream.Write(id + " : ")
             writeTypeExpression stream depth typeExpr
+            stream.Write " := "
             writeValueExpression stream depth valueExpr
-            stream.Write ""
         | IGeneric _ -> failwith "todo"
     | ImplicitValue -> failwith "todo"
     | ExplicitFunction -> failwith "todo"
     | ImplicitFunction -> failwith "todo"
-    | GenericValue(id, typingList, typeExpr) as gv ->
+    | GenericValue(id, typingList, typeExpr) ->
         match id with
-        | ISimple (id, pos) ->
+        | ISimple(id, _) ->
             // TODO: This one is a bit hacky due to 0 as depth as constructing a type
-            stream.Write (id + " [ ")
+            stream.Write(id + " [ ")
             List.iter (fun e -> (writeValue stream 0 (Typing e))) typingList
             stream.Write " ] = "
             writeTypeExpression stream depth typeExpr
-            stream.Write ""
         | IGeneric _ -> failwith "todo"
-        
+
     | Typing(SingleTyping(s, typeExpression)) ->
         match s with
-        | ISimple (id, _) -> 
+        | ISimple(id, _) ->
             stream.Write(id + " : ")
             writeTypeExpression stream depth typeExpression
-            stream.Write ""
-        | IGeneric ((id, _), typeExprl) ->
+        | IGeneric((id, _), typeExprs) ->
             stream.Write(id + " [ ")
-            List.iter (fun e -> writeTyping stream depth e) typeExprl
+            List.iter (fun e -> writeTyping stream depth e) typeExprs
             stream.Write(" ]")
+            stream.Write(" : ")
+            writeTypeExpression stream depth typeExpression
     |> ignore
 
 
@@ -87,10 +170,51 @@ let writeType (stream: StreamWriter) depth (id: Pos<string>, typeDefinition) =
     stream.Write(String.replicate depth "\t")
 
     match typeDefinition with
-    | Abstract -> stream.WriteLine (fst id)
-    | Concrete typeExpr -> failwith "todo"
-    | Union ((head, _)::tail) -> stream.WriteLine((fst id) + " = " + (List.foldBack (fun (e, _) a -> $"{e} | {a}") tail head))
+    | Abstract -> stream.WriteLine(fst id)
+    | Concrete _ -> failwith "todo"
+    | Union l ->
+        stream.Write((fst id) + " == ")
+        listDelimiterAction (fun () -> stream.Write " | ") l stream.Write
+        stream.WriteLine()
     |> ignore
+
+let writeTransitionSystem (stream: StreamWriter) depth (tr: TransitionSystem) =
+
+    match tr with
+    | Variable valueDeclarations ->
+        stream.WriteLine((String.replicate depth "\t") + "variable")
+
+        listDelimiterAction (xx stream.WriteLine ",") valueDeclarations (writeValue stream (depth + 1))
+        stream.WriteLine()
+
+    | InitConstraint valueExpressions ->
+        stream.WriteLine((String.replicate depth "\t") + "init_constraint")
+
+        listDelimiterAction (xx stream.WriteLine " /\\") valueExpressions (fun e ->
+            stream.Write(String.replicate (depth + 1) "\t")
+            writeValueExpression stream (depth + 1) e)
+
+        stream.WriteLine()
+
+    | TransitionRule(valueExpression, tuples) ->
+        stream.WriteLine((String.replicate depth "\t") + "transition_rules")
+
+        stream.Write(String.replicate (depth + 1) "\t")
+        writeValueExpression stream (depth + 1) valueExpression
+
+        stream.WriteLine()
+
+        match List.isEmpty tuples with
+        | false ->
+            stream.WriteLine((String.replicate (depth + 1) "\t") + "where")
+
+            listDelimiterAction (xx stream.WriteLine ",") tuples (fun ((id, _), e) ->
+                stream.WriteLine((String.replicate (depth + 2) "\t") + "[" + id + "] =")
+                stream.Write(String.replicate (depth + 2) "\t")
+                writeValueExpression stream (depth + 2) e)
+
+            stream.WriteLine()
+        | true -> ()
 
 let writeDeclaration (stream: StreamWriter) depth decl =
     match decl with
@@ -100,15 +224,22 @@ let writeDeclaration (stream: StreamWriter) depth decl =
     | TypeDeclaration typeDeclarations ->
         stream.WriteLine((String.replicate depth "\t") + "type")
         List.iter (fun e -> writeType stream (depth + 1) e) typeDeclarations
+    | AxiomDeclaration valueExpressions ->
+        stream.WriteLine((String.replicate depth "\t") + "axiom")
+        List.iter (fun e -> writeValueExpression stream (depth + 1) e) valueExpressions
+    | TransitionSystemDeclaration((id, _), transitionSystems) ->
+        stream.WriteLine((String.replicate depth "\t") + "transition_system [" + id + "]")
+        List.iter (fun e -> writeTransitionSystem stream (depth + 1) e) transitionSystems
+        stream.WriteLine((String.replicate depth "\t") + "end")
 
 let writeClass (stream: StreamWriter) depth cls =
-    stream.WriteLine (String.replicate depth "\t" + "class")
+    stream.WriteLine(String.replicate depth "\t" + "class")
     List.iter (fun e -> writeDeclaration stream (depth + 1) e) cls
-    stream.WriteLine ("\n" + String.replicate depth "\t" + "end")
+    stream.WriteLine("\n" + String.replicate depth "\t" + "end")
 
-let write ((specification, cls): Scheme) =
-    
-    use streamWriter = new StreamWriter("/home/thyge/dev/rsltranspiler/TranspilerTest/Samples/ValueNat2.rsl", false)
+let write (((specification, _), cls): Scheme) location =
+
+    use streamWriter = new StreamWriter(location, false)
 
     streamWriter.WriteLine $"scheme {specification}_unfolded ="
 

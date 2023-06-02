@@ -23,6 +23,8 @@ let test input expectedSource =
         | Some(scheme) -> Some(Transpiler.transpile scheme)
         | None -> None
 
+    Writer.write expected.Value "/home/thyge/Downloads/Expected.rsl"
+    Writer.write actual.Value "/home/thyge/Downloads/Actual.rsl"
     match expected, actual with
     | None, None -> ()
     | Some e, Some a -> compareScheme(e, a)

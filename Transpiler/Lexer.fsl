@@ -90,6 +90,7 @@ let ops =
     ] |> Map.ofList   
 }
 
+
 let c           = '.'
 let white       = ' ' | '\t'
 let newline     = '\r' | '\n' | "\r\n"
@@ -99,8 +100,72 @@ let digit       = ['0'-'9']
 let text  = char(char|digit|['-' '_' '.'])*   
 let operator    = ">" | ">=" | "<" | "<=" | "=" | "-" | "+" | "==>" | "[=]" | "[>]" | ":-"
 
+
+rule comment = parse
+     |  char
+        { let n, m, args = cargs
+          if not skip then COMMENT (LexCont.Comment(args.ifdefStack, args.stringNest, n, m))
+          else comment (n, m, args) skip lexbuf  }
+    
+     | '"'
+        { let n, m, args = cargs
+          if not skip then COMMENT (LexCont.StringInComment(args.ifdefStack, args.stringNest, LexerStringStyle.SingleQuote, n, m))
+          else stringInComment n m args skip lexbuf }
+    
+     | '"' '"' '"'
+        { let n, m, args = cargs
+          if not skip then COMMENT (LexCont.StringInComment(args.ifdefStack, args.stringNest, LexerStringStyle.TripleQuote, n, m))
+          else tripleQuoteStringInComment n m args skip lexbuf }
+    
+     | '@' '"'
+        { let n, m, args = cargs
+          if not skip then COMMENT (LexCont.StringInComment(args.ifdefStack, args.stringNest, LexerStringStyle.Verbatim, n, m))
+          else verbatimStringInComment n m args skip lexbuf }
+    
+     | "(*)"
+        { let n, m, args = cargs
+          LexbufLocalXmlDocStore.AddGrabPoint(lexbuf)
+          if not skip then COMMENT (LexCont.Comment(args.ifdefStack, args.stringNest, n, m))
+          else comment cargs skip lexbuf }
+    
+     | '(' '*'
+        { let n, m, args = cargs
+          if not skip then COMMENT (LexCont.Comment(args.ifdefStack, args.stringNest, n+1, m))
+          else comment (n+1,m,args) skip lexbuf }
+    
+     | newline
+        { let n, m, args = cargs
+          newline lexbuf
+          if not skip then COMMENT (LexCont.Comment(args.ifdefStack, args.stringNest, n, m))
+          else comment cargs skip lexbuf }
+     | "*)"
+        {
+          let n, m, args = cargs
+          if n > 1 then
+              if not skip then COMMENT (LexCont.Comment(args.ifdefStack, args.stringNest, n-1, m))
+              else comment (n-1,m,args) skip lexbuf
+          else
+              LexbufLocalXmlDocStore.AddGrabPointDelayed(lexbuf)
+              if not skip then COMMENT (LexCont.Token(args.ifdefStack, args.stringNest))
+              else
+                  LexbufCommentStore.SaveBlockComment(lexbuf, m, lexbuf.LexemeRange) 
+                  token args skip lexbuf }
+    
+     | [^ '\'' '(' '*' '\n' '\r' '"' ')' '@' ' ' '\t' ]+
+        { let n, m, args = cargs
+          if not skip then COMMENT (LexCont.Comment(args.ifdefStack, args.stringNest, n, m))
+          else comment cargs skip lexbuf }
+    
+     | eof
+         { let n, m, args = cargs
+           EOF (LexCont.Comment(args.ifdefStack, args.stringNest, n, m)) }
+
+
 rule read =
     parse
+    | "(*"      { let m = lexbuf.LexemeRange
+                  if not skip then COMMENT (LexCont.Comment(args.ifdefStack, args.stringNest, 1, m))
+                  else comment (1,m,args) skip lexbuf }
     | white     { whitespace(lexbuf); read lexbuf }
     | newline   { newline (); read lexbuf }
     | "true"    { let start = getPos(lexbuf)

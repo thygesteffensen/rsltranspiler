@@ -79,7 +79,7 @@ let transitionSystemFolder (tr: TransitionSystem) (acc: IrTransitionSystem) : Ir
             | VName(AGeneric((_, pos), _)) -> failwith $"Value Name at {pos} must be a Named Transition Rule"
 
             | ValueExpression.Quantified((Quantifier.NonDeterministic, _), typings, valueExprs) ->
-                IrTransitionRule.Quantified(Choice.Deterministic, typings, valueExprToTransitionRule valueExprs)
+                IrTransitionRule.Quantified(Choice.NonDeterministic, typings, valueExprToTransitionRule valueExprs)
             | ValueExpression.Quantified _ ->
                 failwith $"Quantified transition rule at {getPosFromValueExpression valueExpr} must be the non deterministic choice"
 
@@ -95,7 +95,7 @@ let transitionSystemFolder (tr: TransitionSystem) (acc: IrTransitionSystem) : Ir
         let rec valueExprToTransitionRules (valueExpr: ValueExpression) : IrTransitionRules =
             match valueExpr with
             | Infix(lhs, InfixOp.NonDeterministic, rhs) ->
-                Node(valueExprToTransitionRules lhs, Choice.Deterministic, valueExprToTransitionRules rhs)
+                Node(valueExprToTransitionRules lhs, Choice.NonDeterministic, valueExprToTransitionRules rhs)
             | _ -> valueExprToTransitionRule valueExpr |> Leaf
 
         let folder (((id, _), valueExpr): Pos<Id> * ValueExpression) acc : Map<string, IrTransitionRules> =
@@ -153,20 +153,20 @@ let convertIrTransitionSystemToAst (irTransitionSystem: IrTransitionSystem) : De
                     Guard,
                     VeList(
                         List.foldBack
-                            (fun (accessor, valueExpr) a -> Infix(VName accessor, Equal, valueExpr) :: a)
+                            (fun (accessor, valueExpr) a -> Infix(VPName accessor, Equal, valueExpr) :: a)
                             effects
                             []
                     )
                 )
-            | Name s -> VName(ASimple((s, dummyPos)))
-            | IrTransitionRule.Quantified(Choice.Deterministic, typings, irTransitionRule) ->
-                ValueExpression.Quantified((All, dummyPos), typings, irTransitionRuleToAst irTransitionRule)
+            | Name s -> VPName(ASimple((s, dummyPos)))
+            | IrTransitionRule.Quantified(Choice.NonDeterministic, typings, irTransitionRule) ->
+                ValueExpression.Quantified((Quantifier.NonDeterministic, dummyPos), typings, irTransitionRuleToAst irTransitionRule)
             | _ -> failwith "Not possible"
 
         let rec irTransitionRulesToAst (ir: IrTransitionRules) : ValueExpression =
             match ir with
-            | Node(lhs, Choice.Deterministic, rhs) ->
-                Infix(irTransitionRulesToAst lhs, InfixOp.Deterministic, irTransitionRulesToAst rhs)
+            | Node(lhs, Choice.NonDeterministic, rhs) ->
+                Infix(irTransitionRulesToAst lhs, InfixOp.NonDeterministic, irTransitionRulesToAst rhs)
             | Leaf irTransitionRule -> irTransitionRuleToAst irTransitionRule
             | _ -> failwith "Not possible"
 
