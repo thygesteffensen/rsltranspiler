@@ -14,24 +14,26 @@ type Choice =
 type IrTransitionRules =
     | Node of IrTransitionRules * Choice * IrTransitionRules
     | Leaf of IrTransitionRule
-and
-    IrTransitionRule =
+
+and IrTransitionRule =
     | Guarded of ValueExpression * Effect list
     | Name of string
     | Quantified of Choice * Typing list * IrTransitionRule
-    
+
 and Effect = Accessor * ValueExpression
+
+type ValueDecMap = Map<int * string, ValueDeclaration>
+type NamedRuleMap = Map<int * string, IrTransitionRules>
 
 type IrTransitionSystem =
     { Name: string
-      Variable: Option<Map<string, ValueDeclaration>>
+      Variable: Option<ValueDecMap>
       InitConstraint: Option<IrAxiomDeclaration list>
-      TransitionRule: Option<IrTransitionRules * Map<string, IrTransitionRules>> }
+      TransitionRule: Option<IrTransitionRules * NamedRuleMap> }
 
 [<Struct>]
 type Intermediate =
     { Type: Option<Declaration>
-      Value: Option<Map<string, ValueDeclaration>>
+      Value: Option<ValueDecMap>
       Axiom: Option<IrAxiomDeclaration list>
       TransitionSystem: Option<IrTransitionSystem> }
-

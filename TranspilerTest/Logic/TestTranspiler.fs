@@ -6,6 +6,7 @@ open Transpiler.Helpers
 open Transpiler.Ast
 open Transpiler.Writer
 open TranspilerTest.Common
+open TranspilerTest.Compare
 
 [<SetUp>]
 let Setup () = ()
@@ -16,8 +17,8 @@ type TT =
 
 let input: obj[] list =
     [ [| "Samples/TypeAbstract.rsl"; Map.empty.Add("T", Abstract) |]
-      [| "Samples/TypeConcrete.rsl"; Map.empty.Add("T", Concrete(TName ("Nat", pos 4 17 64 "TypeConcrete.rsl"))) |]
-      [| "Samples/TypeUnion.rsl"; Map.empty.Add("T", Union [ ("t1", pos 4 18 62 "TypeUnion.rsl"); ("t2", pos 4 23 67 "TypeUnion.rsl"); ("t3", pos 4 28 72 "TypeUnion.rsl") ]) |] ]
+      [| "Samples/TypeConcrete.rsl"; Map.empty.Add("T", Concrete(TName ("Nat", pos 4 17 61 "TypeConcrete.rsl"))) |]
+      [| "Samples/TypeUnion.rsl"; Map.empty.Add("T", Union [ ("t1", pos 4 18 59 "TypeUnion.rsl"); ("t2", pos 4 23 64 "TypeUnion.rsl"); ("t3", pos 4 28 69 "TypeUnion.rsl") ]) |] ]
 
 [<TestCaseSource(nameof input)>]
 let buildSymbolTableTester source expected =
@@ -44,10 +45,15 @@ let unfoldSpecification source expectedSource =
         match testLexerAndParserFromFile source with
         | Some(scheme) -> Some(Transpiler.transpile scheme)
         | None -> None
+        
+    match (expected, actual) with
+    | Some e, Some a ->
+        compareScheme(e, a)
+        // Assert.AreEqual(expected, actual)
+    | None, None -> Assert.Fail("Both none") 
+    | None, _ -> Assert.Fail("Expected none")
+    | _, None -> Assert.Fail("Actual none")
 
-    Assert.AreEqual(expected, actual)
-
-let input3: obj[] list = [ [| "Samples/ValueGeneric.rsl" |] ]
 
 [<TestCase>]
 let test () =
@@ -73,10 +79,12 @@ let postfixSource: obj[] list =
 let rec buildTypePostfixStringsTest typeEnv typingList expected =
     let valueEnv = Map.empty
     
-    // let prefixes = Transpiler.RuleCollection.TypeRule.buildTypePostfixStrings typeEnv valueEnv typingList
-    let prefixes = []
+    let prefixes = Auxiliary.buildTypePostfixStrings typeEnv valueEnv typingList
 
     List.iter (fun (e, a) -> Assert.AreEqual(e, a)) (List.zip expected prefixes)
+
+
+let input3: obj[] list = [ [| "Samples/ValueGeneric.rsl" |] ]
 
 [<TestCaseSource(nameof input3)>]
 let write source =
@@ -84,4 +92,5 @@ let write source =
 
     Assert.IsNotNull expected
 
-    write expected.Value
+    write expected.Value "/home/thyge/Downloads/temp.txt"
+    

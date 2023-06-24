@@ -1,0 +1,20 @@
+scheme NamedTransitionRules1 =
+    class
+        type
+            Pos == p1 | p2
+        transition_system [ TS ]
+            variable
+                v2 [ t : Pos ] : Nat
+            init_constraint
+                (all t : Pos :- v2[t] = 2)
+            
+            transition_rules
+                TR1 [=] false ==> v2'[t] = v2[t] + 1 [=] false ==> v2'[t] = v2[t] + 1
+                where 
+                    [TR1] =
+                        (([=] t : Pos :- false = false ==> v2'[t] = v2[t] + 1)),
+                    [TR2] =
+                        (([=] t : Pos :- false = false ==> v2'[t] = v2[t] + 1))
+                        
+        end
+    end

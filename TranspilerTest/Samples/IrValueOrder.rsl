@@ -1,0 +1,8 @@
+scheme IrValueOrder =
+    class
+        value
+            AValue: Nat,
+            BValue: Nat,
+            DValue: Nat,
+            CValue: Nat
+    end

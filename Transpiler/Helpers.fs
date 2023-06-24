@@ -42,24 +42,25 @@ let convertValueDeclToIr value valueDecl =
         | None -> Map.empty
         | Some m -> m
 
-    valueDecl
-    |> List.iter (fun e ->
+    (List.indexed valueDecl)
+    |> List.iter (fun (i, e) ->
+        let mapKey x = (i, x)
         match e with
         | ExplicitValue(id, _, _) as ev ->
             match id with
-            | ISimple id' -> map <- map.Add((fst id'), ev)
+            | ISimple id' -> map <- map.Add(mapKey (fst id'), ev)
             | IGeneric _ -> failwith "todo"
         | ImplicitValue -> failwith "todo"
         | ExplicitFunction -> failwith "todo"
         | ImplicitFunction -> failwith "todo"
         | GenericValue(id, _, _) as gv ->
             match id with
-            | ISimple id' -> map <- map.Add((fst id'), gv)
+            | ISimple id' -> map <- map.Add(mapKey (fst id'), gv)
             | IGeneric _ -> failwith "todo"
         | Typing(SingleTyping(id, _)) as t ->
             match id with
-            | ISimple id' -> map <- map.Add((fst id'), t)
-            | IGeneric((id', _), _) -> map <- map.Add(id', t))
+            | ISimple id' -> map <- map.Add(mapKey (fst id'), t)
+            | IGeneric((id', _), _) -> map <- map.Add(mapKey id', t))
 
     map
 

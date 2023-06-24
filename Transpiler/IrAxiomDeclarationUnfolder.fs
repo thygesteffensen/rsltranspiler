@@ -49,7 +49,7 @@ let valueExpressionToString (ve: ValueExpression) (instances: Map<string, string
 let rec axiomFolder
     typeEnv
     valueEnv
-    (map: Map<string, ValueDeclaration>)
+    (map: ValueDecMap)
     (instances: Map<string, string>)
     (axiom: IrAxiomDeclaration)
     =
@@ -57,20 +57,22 @@ let rec axiomFolder
     | IrQuantified(typings, valueExpr) -> instantiateTypings typeEnv valueEnv map instances valueExpr typings
 
     | IrInfix(identifier, rhs) ->
+        let findIndex (key: string) : int * string =
+            let i, _ = Map.findKey (fun (_i, k) _v -> k = key) map
+            (i, key)
         match identifier with
-        | ASimple s ->
-            let valueType = Map.find (fst s) valueEnv
-            map.Add(fst s, ExplicitValue(Identifier.ISimple s, valueType, rhs))
-        | AGeneric(s, valueExpressions) ->
-            let valueType = Map.find (fst s) valueEnv
+        | ASimple (s, pos) ->
+            let valueType = Map.find s valueEnv
+            map.Add(findIndex s, ExplicitValue(Identifier.ISimple (s, pos), valueType, rhs))
+        | AGeneric((s, pos), valueExpressions) ->
+            let valueType = Map.find s valueEnv
 
-            
-
-            let t = List.foldBack (fun e a -> $"_{valueExpressionToString e}{a}") valueExpressions ""
+            let t = List.foldBack (fun e a -> $"_{valueExpressionToString e instances}{a}") valueExpressions ""
             let tt = $"{s}{t}"
-            let map' = map.Remove(fst s)
+            let i, _k as key = findIndex s
+            // let map' = map.Remove key
 
-            map'.Add(tt, ExplicitValue(ISimple(tt, (snd s)), valueType, rhs))
+            map.Add((i, tt), ExplicitValue(ISimple(tt, pos), valueType, rhs))
 
 /// <summary>
 /// Iterate through each typing in the typing list and for each combination the value expression <see cref="valueExpr"/>

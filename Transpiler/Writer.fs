@@ -102,6 +102,11 @@ let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
             stream.Write (String.replicate depth "\t")
         | LessThan -> stream.Write " < "
         | LessThanOrEqual -> stream.Write " <= "
+        | GreaterThan -> stream.Write " > "
+        | GreaterThanOrEqual -> stream.Write " >= "
+        | Implies -> stream.Write " => "
+        | LogicalAnd -> stream.Write " /\ "
+        | LogicalOr -> stream.Write " \/ "
 
         writeValueExpression stream depth rhs
     | VeList valueExpressions ->
@@ -189,10 +194,19 @@ let writeTransitionSystem (stream: StreamWriter) depth (tr: TransitionSystem) =
 
     | InitConstraint valueExpressions ->
         stream.WriteLine((String.replicate depth "\t") + "init_constraint")
+        
+        let rec treeWriter (stream: StreamWriter) depth (tree: ValueExpression) =
+            match tree with
+            | Infix(lhs, LogicalAnd, rhs) ->
+                stream.Write(String.replicate depth "\t")
+                writeValueExpression stream depth lhs
+                stream.WriteLine(" /\\")
+                treeWriter stream depth rhs
+            | valueExpr ->
+                stream.Write(String.replicate depth "\t")
+                writeValueExpression stream depth valueExpr
 
-        listDelimiterAction (xx stream.WriteLine " /\\") valueExpressions (fun e ->
-            stream.Write(String.replicate (depth + 1) "\t")
-            writeValueExpression stream (depth + 1) e)
+        treeWriter stream (depth + 1) valueExpressions
 
         stream.WriteLine()
 

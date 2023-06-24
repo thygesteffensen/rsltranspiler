@@ -1,0 +1,9 @@
+scheme ValueArray =
+    class
+        type
+            ArrayIndex = {| i : Int :- i >= 0 /\ i < 5 |},
+            Array = array ArrayIndex of Int
+        value
+            position : Array = {. 1, 2, 3, 3 + 1 .} 
+    end
+    

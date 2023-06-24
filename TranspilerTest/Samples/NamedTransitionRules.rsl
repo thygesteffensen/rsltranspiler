@@ -2,20 +2,28 @@ scheme NamedTransitionRules =
     class
         type
             Pos == p1 | p2
-        transition_system [TS]
+        transition_system [ TS ]
             variable
                 v1 : Nat,
                 v2 [ t : Pos ] : Nat,
                 v3 : Nat := 3
+            init_constraint
+                v1 = 1 /\
+                v3 = 3 /\
+                (all t : Pos :- v2[t] = 2)
+            
             transition_rules
-                TR1 [=] TR2 [=] true = false ==> v1' = v3
+                TR1 [=] TR2 [=]
+                true = false ==>
+                v1' = v3
+                
                 where 
                     [TR1] = 
-                        (true = true ==> v2'[p1] = v2[p1] + 1),
+                        (true = true ==>
+                            v2'[p1] = v2[p1] + 1),
                     [TR2] =
                         (([=] t : Pos :- false = false ==> v2'[t] = v2[t] + 1)), 
-                    [TR] =  
-                        (([=] t : Pos :- false ==> v2'[t] = v2[t] + 1))
+                    [TR] =
+                        false ==> v2'[t1] = v2[t1] + 1 [=] false ==> v2'[t1] = v2[t1] + 1
         end
-
     end

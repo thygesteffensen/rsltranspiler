@@ -1,0 +1,10 @@
+scheme AxiomMissing =
+    class
+        type
+            Pos == t1 | t2 | t3
+        value
+            A [ t: Pos ] : Nat
+        axiom 
+            A[t2] = 2
+    end
+    
