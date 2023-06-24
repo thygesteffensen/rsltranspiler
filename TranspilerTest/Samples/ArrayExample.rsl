@@ -1,0 +1,12 @@
+scheme ArrayExample =
+  class
+    type
+      ArrayType = array IndexType of ValueType,
+      IndexType = {| i : Int :- i >= 0 /\ i <= 10 |},
+      ValueType = Int
+    value
+      arrayValue : ArrayType = {. 1, 2, 3, 4, 5 .},
+      getArrayValue: ArrayType >< IndexType -> ValueType
+      getArrayValue(arr, i) is
+        arr[i]
+  end

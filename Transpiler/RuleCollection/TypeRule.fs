@@ -270,6 +270,7 @@ let transitionSystemFolder
             match value.InitConstraint with
             | None -> None
             | Some value ->
+                None
                 List.foldBack (fun e a -> irAxiomDecUnfold typeEnv valueEnv Map.empty e a) value []
                 |> Some
 

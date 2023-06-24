@@ -6,6 +6,7 @@ open Transpiler.Helpers
 open Transpiler.Ast
 open Transpiler.Writer
 open TranspilerTest.Common
+open TranspilerTest.Compare
 
 [<SetUp>]
 let Setup () = ()
@@ -44,8 +45,14 @@ let unfoldSpecification source expectedSource =
         match testLexerAndParserFromFile source with
         | Some(scheme) -> Some(Transpiler.transpile scheme)
         | None -> None
-
-    Assert.AreEqual(expected, actual)
+        
+    match (expected, actual) with
+    | Some e, Some a ->
+        compareScheme(e, a)
+        // Assert.AreEqual(expected, actual)
+    | None, None -> Assert.Fail("Both none") 
+    | None, _ -> Assert.Fail("Expected none")
+    | _, None -> Assert.Fail("Actual none")
 
 let input3: obj[] list = [ [| "Samples/ValueGeneric.rsl" |] ]
 

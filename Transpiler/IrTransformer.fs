@@ -36,7 +36,7 @@ let idM =
 /// </summary>
 /// <param name="tr"></param>
 /// <param name="acc"></param>
-let transitionSystemFolder (tr: TransitionSystem) (acc: IrTransitionSystem) : IrTransitionSystem =
+let transitionSystemFolder (i: int, tr: TransitionSystem) (acc: IrTransitionSystem) : IrTransitionSystem =
     match tr with
     | Variable valueDeclarations ->
         let name (id: Identifier) : string =
@@ -53,25 +53,22 @@ let transitionSystemFolder (tr: TransitionSystem) (acc: IrTransitionSystem) : Ir
             | GenericValue(id, _, _)
             | Typing(SingleTyping(id, _)) ->
                 { acc with
-                    Variable = Some((idM acc.Variable).Add(name id, valueDec)) }
+                    Variable = Some((idM acc.Variable).Add((i, name id), valueDec)) }
 
         List.foldBack folder valueDeclarations acc
-    | InitConstraint valueExpressions ->
-        // Init Constraint must be assignment expression
-        // <name> ":=" <value_expr>
-        // or an all quantification of this
-        let folder (valueExpr: ValueExpression) (acc: IrTransitionSystem) =
+    | InitConstraint valueExpression ->
+        
+        let rec InitConstraintWalker (valueExpr: ValueExpression) (acc: IrAxiomDeclaration list) : IrAxiomDeclaration list =
             match valueExpr with
+            | Infix(lhs, LogicalAnd, rhs) ->
+                InitConstraintWalker lhs (InitConstraintWalker rhs acc)
             | Infix(VName s, Equal, expression) ->
-                { acc with
-                    InitConstraint = Some(IrInfix(s, expression) :: idL acc.InitConstraint) }
-
+                IrInfix(s, expression) :: acc
             | ValueExpression.Quantified((Quantifier.All, _), typings, Infix(VName s, Equal, expression)) ->
-                { acc with
-                    InitConstraint = Some(IrQuantified(typings, IrInfix(s, expression)) :: idL acc.InitConstraint) }
+                IrQuantified(typings, IrInfix(s, expression)) :: acc
             | _ -> failwith "No allowed as init constraint"
-
-        List.foldBack folder valueExpressions acc
+        
+        { acc with InitConstraint = Some(InitConstraintWalker valueExpression (idL acc.InitConstraint)) }
     | TransitionRule(valueExpr, tuples) ->
         let rec valueExprToTransitionRule (valueExpr: ValueExpression) : IrTransitionRule =
             match valueExpr with
@@ -96,13 +93,15 @@ let transitionSystemFolder (tr: TransitionSystem) (acc: IrTransitionSystem) : Ir
             match valueExpr with
             | Infix(lhs, InfixOp.NonDeterministic, rhs) ->
                 Node(valueExprToTransitionRules lhs, Choice.NonDeterministic, valueExprToTransitionRules rhs)
+            | Infix(lhs, InfixOp.Deterministic, rhs) ->
+                Node(valueExprToTransitionRules lhs, Choice.Deterministic, valueExprToTransitionRules rhs)
             | _ -> valueExprToTransitionRule valueExpr |> Leaf
 
-        let folder (((id, _), valueExpr): Pos<Id> * ValueExpression) acc : Map<string, IrTransitionRules> =
-            Map.add id (valueExprToTransitionRules valueExpr) acc
+        let folder (i: int, ((id, _), valueExpr): Pos<Id> * ValueExpression) acc : Map<int * string, IrTransitionRules> =
+            Map.add (i, id) (valueExprToTransitionRules valueExpr) acc
 
         { acc with
-            TransitionRule = Some(valueExprToTransitionRules valueExpr, List.foldBack folder tuples Map.empty) }
+            TransitionRule = Some(valueExprToTransitionRules valueExpr, List.foldBack folder (List.indexed tuples) Map.empty) }
 
 /// <summary>
 /// Convert Transition System from AST to Intermediate Representation
@@ -116,10 +115,10 @@ let convertAstTransitionSystemToIr (id: Pos<Id>) (trs: TransitionSystem list) : 
           InitConstraint = None
           TransitionRule = None }
 
-    List.foldBack transitionSystemFolder trs initial
+    List.foldBack transitionSystemFolder (List.indexed trs) initial
 
 /// <summary>
-/// Convert Transition System from Intermediate Representation to Ir
+/// Convert Transition System from Intermediate Representation to AST
 /// </summary>
 /// <param name="irTransitionSystem"></param>
 let convertIrTransitionSystemToAst (irTransitionSystem: IrTransitionSystem) : Declaration =
@@ -134,15 +133,29 @@ let convertIrTransitionSystemToAst (irTransitionSystem: IrTransitionSystem) : De
         match irTransitionSystem.InitConstraint with
         | None -> None
         | Some value ->
-            let rec folder (e: IrAxiomDeclaration) (acc: ValueExpression list) : ValueExpression list =
-                match e with
-                | IrQuantified(typings, IrInfix(accessor, valueExpression)) ->
-                    ValueExpression.Quantified((All, dummyPos), typings, Infix(VName accessor, Equal, valueExpression))
-                    :: acc
-                | IrInfix(accessor, valueExpression) -> Infix(VName accessor, Equal, valueExpression) :: acc
+            let rec transformIrListToInfixValueExpr (el: IrAxiomDeclaration list) : ValueExpression =
+                /// <summary>
+                /// This is a tail recursive function building up the function stack.
+                /// The goal is to avoid these, but this is the most efficient solution to tackle this problem
+                /// and no logic is performed, only restructuring of data.
+                /// </summary>
+                /// <param name="declaration"></param>
+                let convertIrAxiomDeclarationToValueExpr (declaration: IrAxiomDeclaration) : ValueExpression =
+                    match declaration with
+                    | IrQuantified(typings, IrInfix(accessor, valueExpression)) ->
+                        ValueExpression.Quantified((All, dummyPos), typings, Infix(VName accessor, Equal, valueExpression))
+                    | IrInfix(accessor, valueExpression) ->
+                        Infix(VName accessor, Equal, valueExpression)
+                    | _ -> failwith "Exception: Other construct should not be encountered here."
+
+                match el with
+                | [ declaration ] ->
+                    convertIrAxiomDeclarationToValueExpr declaration
+                | declaration :: tail ->
+                    Infix(convertIrAxiomDeclarationToValueExpr declaration, LogicalAnd, transformIrListToInfixValueExpr tail)
                 | _ -> failwith "Exception: Other construct should not be encountered here."
 
-            Some(InitConstraint(List.foldBack folder value []))
+            Some(InitConstraint(transformIrListToInfixValueExpr value))
 
     let transitionSystemDeclaration =
         let rec irTransitionRuleToAst (irTransitionRule: IrTransitionRule) : ValueExpression =
@@ -158,7 +171,7 @@ let convertIrTransitionSystemToAst (irTransitionSystem: IrTransitionSystem) : De
                             []
                     )
                 )
-            | Name s -> VPName(ASimple((s, dummyPos)))
+            | Name s -> VName(ASimple((s, dummyPos)))
             | IrTransitionRule.Quantified(Choice.NonDeterministic, typings, irTransitionRule) ->
                 ValueExpression.Quantified((Quantifier.NonDeterministic, dummyPos), typings, irTransitionRuleToAst irTransitionRule)
             | _ -> failwith "Not possible"
@@ -167,8 +180,9 @@ let convertIrTransitionSystemToAst (irTransitionSystem: IrTransitionSystem) : De
             match ir with
             | Node(lhs, Choice.NonDeterministic, rhs) ->
                 Infix(irTransitionRulesToAst lhs, InfixOp.NonDeterministic, irTransitionRulesToAst rhs)
+            | Node(lhs, Choice.Deterministic, rhs) ->
+                Infix(irTransitionRulesToAst lhs, InfixOp.Deterministic, irTransitionRulesToAst rhs)
             | Leaf irTransitionRule -> irTransitionRuleToAst irTransitionRule
-            | _ -> failwith "Not possible"
 
         match irTransitionSystem.TransitionRule with
         | None -> None

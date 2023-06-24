@@ -20,7 +20,6 @@ let transpile ((specification, cls): Scheme) =
 
     let axiomsUnfolded = unfoldAxioms typeEnvironment valueEnvironment intermediate
 
-    
     let genericsTypeUnfolded =
         unfoldGenerics typeEnvironment valueEnvironment axiomsUnfolded
 

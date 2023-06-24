@@ -21,9 +21,7 @@ let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
 
     let map =
         match intermediate with
-        | { Type = _
-            Value = _
-            Axiom = axiomDecl } ->
+        | { Axiom = axiomDecl } ->
             match axiomDecl with
             | None -> map
             | Some axioms -> List.foldBack (fun e a -> axiomFolder typeEnv valueEnv a Map.empty e) axioms map

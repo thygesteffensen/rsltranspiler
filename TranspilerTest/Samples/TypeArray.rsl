@@ -1,0 +1,5 @@
+scheme TypeArray =
+    class
+        type
+            T = array Int of Text
+    end

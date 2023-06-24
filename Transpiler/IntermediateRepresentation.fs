@@ -22,16 +22,20 @@ and
     
 and Effect = Accessor * ValueExpression
 
+type OrderedMap<'key, 'value when 'key: comparison> =
+    { KeyOrder: 'key list
+      Map: Map<'key, 'value> }
+
 type IrTransitionSystem =
     { Name: string
-      Variable: Option<Map<string, ValueDeclaration>>
+      Variable: Option<Map<int * string, ValueDeclaration>>
       InitConstraint: Option<IrAxiomDeclaration list>
-      TransitionRule: Option<IrTransitionRules * Map<string, IrTransitionRules>> }
+      TransitionRule: Option<IrTransitionRules * Map<(int * string), IrTransitionRules>> }
 
 [<Struct>]
 type Intermediate =
     { Type: Option<Declaration>
-      Value: Option<Map<string, ValueDeclaration>>
+      Value: Option<Map<(int * string), ValueDeclaration>>
       Axiom: Option<IrAxiomDeclaration list>
       TransitionSystem: Option<IrTransitionSystem> }
 

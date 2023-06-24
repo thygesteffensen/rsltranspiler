@@ -61,16 +61,14 @@ let rec axiomFolder
         | ASimple s ->
             let valueType = Map.find (fst s) valueEnv
             map.Add(fst s, ExplicitValue(Identifier.ISimple s, valueType, rhs))
-        | AGeneric(s, valueExpressions) ->
-            let valueType = Map.find (fst s) valueEnv
+        | AGeneric((s, pos), valueExpressions) ->
+            let valueType = Map.find (s) valueEnv
 
-            
-
-            let t = List.foldBack (fun e a -> $"_{valueExpressionToString e}{a}") valueExpressions ""
+            let t = List.foldBack (fun e a -> $"_{valueExpressionToString e instances}{a}") valueExpressions ""
             let tt = $"{s}{t}"
-            let map' = map.Remove(fst s)
+            let map' = map.Remove(s)
 
-            map'.Add(tt, ExplicitValue(ISimple(tt, (snd s)), valueType, rhs))
+            map'.Add(tt, ExplicitValue(ISimple(tt, pos), valueType, rhs))
 
 /// <summary>
 /// Iterate through each typing in the typing list and for each combination the value expression <see cref="valueExpr"/>
