@@ -46,13 +46,7 @@ let valueExpressionToString (ve: ValueExpression) (instances: Map<string, string
 /// <param name="map"></param>
 /// <param name="instances"></param>
 /// <param name="axiom"></param>
-let rec axiomFolder
-    typeEnv
-    valueEnv
-    (map: ValueDecMap)
-    (instances: Map<string, string>)
-    (axiom: IrAxiomDeclaration)
-    =
+let rec axiomFolder typeEnv valueEnv (map: ValueDecMap) (instances: Map<string, string>) (axiom: IrAxiomDeclaration) =
     match axiom with
     | IrQuantified(typings, valueExpr) -> instantiateTypings typeEnv valueEnv map instances valueExpr typings
 
@@ -60,19 +54,21 @@ let rec axiomFolder
         let findIndex (key: string) : int * string =
             let i, _ = Map.findKey (fun (_i, k) _v -> k = key) map
             (i, key)
+
         match identifier with
-        | ASimple (s, pos) ->
+        | ASimple(s, pos) ->
             let valueType = Map.find s valueEnv
-            map.Add(findIndex s, ExplicitValue(Identifier.ISimple (s, pos), valueType, rhs))
+            map.Add(findIndex s, ExplicitValue(Identifier.ISimple(s, pos), valueType, rhs))
         | AGeneric((s, pos), valueExpressions) ->
             let valueType = Map.find s valueEnv
 
-            let t = List.foldBack (fun e a -> $"_{valueExpressionToString e instances}{a}") valueExpressions ""
-            let tt = $"{s}{t}"
-            let i, _k as key = findIndex s
-            // let map' = map.Remove key
+            let postfix =
+                List.foldBack (fun e a -> $"_{valueExpressionToString e instances}{a}") valueExpressions ""
 
-            map.Add((i, tt), ExplicitValue(ISimple(tt, pos), valueType, rhs))
+            let identifier = $"{s}{postfix}"
+            let i, _k = findIndex s
+
+            map.Add((i, identifier), ExplicitValue(ISimple(identifier, pos), valueType, rhs))
 
 /// <summary>
 /// Iterate through each typing in the typing list and for each combination the value expression <see cref="valueExpr"/>
@@ -92,7 +88,7 @@ and instantiateTypings typeEnv valueEnv map (instances: Map<string, string>) val
         axiomFolder typeEnv valueEnv map instances valueExpr // Inner for loop
     | SingleTyping(s, typeExpr) :: ts ->
         match s with
-        | ISimple (id, _pos) ->
+        | ISimple(id, _pos) ->
 
             let t =
                 match typeExpr with
@@ -105,7 +101,26 @@ and instantiateTypings typeEnv valueEnv map (instances: Map<string, string>) val
 
             match Map.find (fst t) typeEnv with
             | Abstract -> failwith "todo"
-            | Concrete _ -> failwith "todo"
+            | Concrete typeExpression ->
+                match typeExpression with
+                | Sub([ SingleTyping(ISimple(s0, _), typeExpression) ],
+                      Infix(Infix(VName(ASimple(s, _)), GreaterThanOrEqual, ValueLiteral(VInt 0, _)),
+                            LogicalAnd,
+                            Infix(VName(ASimple(s1, _)), LessThan, ValueLiteral(VInt upperbound, _)))) ->
+                    match typeExpression with
+                    | TName("Nat", _) -> ()
+                    | TName("Int", _) -> ()
+                    | _ -> failwith ""
+
+                    if not (s0 = s1 && s1 = s) then
+                        failwith ""
+
+                    List.foldBack
+                        (fun v m -> instantiateTypings typeEnv valueEnv m (Map.add id v instances) valueExpr ts)
+                        (List.map string [ 0..upperbound ])
+                        map
+
+                | _ -> failwith "Not supported"
             | Union l ->
                 List.foldBack
                     (fun (v, _) m -> instantiateTypings typeEnv valueEnv m (Map.add id v instances) valueExpr ts)

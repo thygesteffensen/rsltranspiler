@@ -12,7 +12,7 @@ let dp: Position =
       pos_orig_lnum = 1
       pos_fname = ""
       pos_lnum = 1 }
-    
+
 let error_handler (tok: FSharp.Text.Parsing.ParseErrorContext<_>) : unit =
     printfn $"Current token: {tok.CurrentToken} and {tok.ShiftTokens}"
     ()
@@ -45,6 +45,7 @@ let convertValueDeclToIr value valueDecl =
     (List.indexed valueDecl)
     |> List.iter (fun (i, e) ->
         let mapKey x = (i, x)
+
         match e with
         | ExplicitValue(id, _, _) as ev ->
             match id with
@@ -131,10 +132,10 @@ let rec convertToAst (intermediate: Intermediate) =
     typeDec :: valueDec :: axiomDec :: [ trDec ] |> List.choose id
 
 /// <summary>
-/// Build symbol table for given Abstract Syntax Tree
+/// Build symbol table for given Abstract Syntax Tree and extract type definition type set if Union or sub type
 /// </summary>
 /// <param name="_AST"></param>
-let buildSymbolTable (_AST: Class) =
+let buildSymbolTable (_AST: Class) : Map<string, TypeDefinition * string list> =
 
     let unfoldTypeEnvironments acc dec =
         match dec with
@@ -143,9 +144,25 @@ let buildSymbolTable (_AST: Class) =
         | AxiomDeclaration _ -> acc
         | TransitionSystemDeclaration _ -> acc
 
-    let buildType (env: Map<string, TypeDefinition>) =
+    let buildType (env: Map<string, TypeDefinition * string list>) =
         function
-        | id, typeDecl -> env.Add((fst id), typeDecl)
+        | id,
+          ((Concrete(Sub([ SingleTyping(ISimple(s0, _), typeExpression) ],
+                         Infix(Infix(VName(ASimple(s, _)), GreaterThanOrEqual, ValueLiteral(VInt 0, _)),
+                               LogicalAnd,
+                               Infix(VName(ASimple(s1, _)), LessThan, ValueLiteral(VInt upperbound, _)))))) as typeDecl) ->
+            match typeExpression with
+                | TName("Nat", _) -> ()
+                | TName("Int", _) -> ()
+                | _ -> failwith ""
+
+            if not (s0 = s1 && s1 = s) then
+                failwith ""
+                
+            env.Add((fst id), (typeDecl, (List.map (fun e -> $"{id}_{e}") [ 0..upperbound ])))
+        | id, (Union tuples as typeDecl) ->
+            env.Add((fst id), (typeDecl, List.foldBack (fun (e, _pos) a -> $"{id}_{e}" :: a) tuples []))
+        | id, typeDecl -> env.Add((fst id), (typeDecl, []))
 
     List.fold unfoldTypeEnvironments [] _AST |> List.fold buildType Map.empty
 

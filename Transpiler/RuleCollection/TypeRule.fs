@@ -8,7 +8,14 @@ open Transpiler.Auxiliary
 
 
 
-// TODO: Cleanup and create doc
+/// <summary>
+/// Unfold Generic typings in ValueDecMap
+/// </summary>
+/// <param name="typeEnv"></param>
+/// <param name="valueEnv"></param>
+/// <param name="s"></param>
+/// <param name="key"></param>
+/// <param name="v"></param>
 let mapFolder typeEnv valueEnv (s: ValueDecMap) (i, k as key) v =
     match v with
     | Typing(SingleTyping(IGeneric((id, position), typings), expression)) ->
@@ -23,16 +30,16 @@ let mapFolder typeEnv valueEnv (s: ValueDecMap) (i, k as key) v =
             s'
 
     | GenericValue(ISimple(id, pos), typingList, typeExpression) ->
-        // TODO: This part is obsolete\
+        // TODO: This part is obsolete
         failwith "Is it absolute?"
-        let postfix = buildTypePostfixStrings typeEnv valueEnv typingList
+        let postfixes = buildTypePostfixStrings typeEnv valueEnv typingList
 
         let s' = s.Remove key
 
         List.foldBack
             (fun e (acc: ValueDecMap) ->
                 acc.Add((i, $"{id}{e}"), Typing(SingleTyping(ISimple($"{id}{e}", pos), typeExpression))))
-            postfix
+            postfixes
             s'
     | _ -> s
 

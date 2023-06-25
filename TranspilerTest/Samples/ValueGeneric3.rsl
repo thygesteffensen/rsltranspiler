@@ -1,0 +1,9 @@
+scheme ValueGeneric3 =
+    class
+        type
+            ArrayIndex = {| i : Int :- i >= 0 /\ i < 5 |}
+        value
+            position [ t : ArrayIndex ] : Nat
+        axiom
+            all ai : ArrayIndex :- position[ai] = 1 
+    end

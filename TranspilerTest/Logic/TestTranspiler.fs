@@ -34,6 +34,7 @@ let buildSymbolTableTester source expected =
 let input2: obj[] list =
     [ [| "Samples/ValueGeneric.rsl"; "Samples/ValueGeneric_unfolded.rsl" |]
       [| "Samples/ValueGeneric2.rsl"; "Samples/ValueGeneric2_unfolded.rsl" |]
+      [| "Samples/ValueGeneric3.rsl"; "Samples/ValueGeneric3_unfolded.rsl" |]
       [| "Samples/AxiomGeneric.rsl"; "Samples/AxiomGeneric_unfolded.rsl" |] ]
 
 [<TestCaseSource(nameof input2)>]
