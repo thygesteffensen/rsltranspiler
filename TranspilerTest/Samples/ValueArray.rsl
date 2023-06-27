@@ -6,3 +6,4 @@ scheme ValueArray =
         value
             position : Array = {. 1, 2, 3, 3 + 1 .} 
     end
+    

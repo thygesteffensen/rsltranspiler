@@ -17,8 +17,8 @@ type TT =
 
 let input: obj[] list =
     [ [| "Samples/TypeAbstract.rsl"; Map.empty.Add("T", Abstract) |]
-      [| "Samples/TypeConcrete.rsl"; Map.empty.Add("T", Concrete(TName ("Nat", pos 4 17 64 "TypeConcrete.rsl"))) |]
-      [| "Samples/TypeUnion.rsl"; Map.empty.Add("T", Union [ ("t1", pos 4 18 62 "TypeUnion.rsl"); ("t2", pos 4 23 67 "TypeUnion.rsl"); ("t3", pos 4 28 72 "TypeUnion.rsl") ]) |] ]
+      [| "Samples/TypeConcrete.rsl"; Map.empty.Add("T", Concrete(TName ("Nat", pos 4 17 61 "TypeConcrete.rsl"))) |]
+      [| "Samples/TypeUnion.rsl"; Map.empty.Add("T", Union [ ("t1", pos 4 18 59 "TypeUnion.rsl"); ("t2", pos 4 23 64 "TypeUnion.rsl"); ("t3", pos 4 28 69 "TypeUnion.rsl") ]) |] ]
 
 [<TestCaseSource(nameof input)>]
 let buildSymbolTableTester source expected =
@@ -34,6 +34,7 @@ let buildSymbolTableTester source expected =
 let input2: obj[] list =
     [ [| "Samples/ValueGeneric.rsl"; "Samples/ValueGeneric_unfolded.rsl" |]
       [| "Samples/ValueGeneric2.rsl"; "Samples/ValueGeneric2_unfolded.rsl" |]
+      [| "Samples/ValueGeneric3.rsl"; "Samples/ValueGeneric3_unfolded.rsl" |]
       [| "Samples/AxiomGeneric.rsl"; "Samples/AxiomGeneric_unfolded.rsl" |] ]
 
 [<TestCaseSource(nameof input2)>]
@@ -54,7 +55,6 @@ let unfoldSpecification source expectedSource =
     | None, _ -> Assert.Fail("Expected none")
     | _, None -> Assert.Fail("Actual none")
 
-let input3: obj[] list = [ [| "Samples/ValueGeneric.rsl" |] ]
 
 [<TestCase>]
 let test () =
@@ -80,10 +80,12 @@ let postfixSource: obj[] list =
 let rec buildTypePostfixStringsTest typeEnv typingList expected =
     let valueEnv = Map.empty
     
-    // let prefixes = Transpiler.RuleCollection.TypeRule.buildTypePostfixStrings typeEnv valueEnv typingList
-    let prefixes = []
+    let prefixes = Auxiliary.buildTypePostfixStrings typeEnv valueEnv typingList
 
     List.iter (fun (e, a) -> Assert.AreEqual(e, a)) (List.zip expected prefixes)
+
+
+let input3: obj[] list = [ [| "Samples/ValueGeneric.rsl" |] ]
 
 [<TestCaseSource(nameof input3)>]
 let write source =
@@ -91,4 +93,4 @@ let write source =
 
     Assert.IsNotNull expected
 
-    write expected.Value
+    write expected.Value "/home/thyge/Downloads/temp.txt"

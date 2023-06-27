@@ -4,77 +4,42 @@ module Transpiler.RuleCollection.TypeRule
 open Transpiler.Ast
 open Transpiler.Intermediate
 open Transpiler.RuleCollection.Helpers
+open Transpiler.Auxiliary
+
+
 
 /// <summary>
-/// Given a typing list, this will generate a list of all variants of the typing, prefixed with '_' and seperated by '_' .
-/// Thus, the typings must be finite, otherwise it will continue forever.
-///
-/// Given
-/// <code>
-///     type
-///         T1 == t1 | t2,
-///         T2 = {| i: Int :- i >=0 /\ i $gt 3 |}
-/// </code>
-/// this would generate:
-/// <code>
-///     [ _t1_0
-///       _t1_1
-///       _t1_2
-///       _t2_0
-///       _t2_1
-///       _t2_3 ]
-/// </code>
-///
+/// Unfold Generic typings in ValueDecMap
 /// </summary>
-/// <param name="typingList">The typing list for which the post fixes are generated</param>
-/// <param name="typeEnv">Type environment</param>
-/// <param name="valueEnv">Value environment</param>
-let buildTypePostfixStrings typeEnv valueEnv typingList =
-
-    // Matrix
-    let first :: second =
-        List.foldBack
-            (fun (SingleTyping(_, typeExpr)) acc ->
-                match typeExpr with
-                | TName n ->
-                    match Map.find (fst n) typeEnv with
-                    | Union l -> (List.foldBack (fun (e, _) bb -> e :: bb) l []) :: acc)
-            typingList
-            []
-
-    let rec buildPostfix (list: string list list) (acc: string list) =
-        match list with
-        | [] -> List.foldBack (fun e acc -> $"_{e}" :: acc) acc []
-        | x :: xs ->
-            buildPostfix xs (List.foldBack (fun (p1, p2) acc1 -> $"{p2}_{p1}" :: acc1) (List.allPairs x acc) [])
-
-    buildPostfix second first
-
-// TODO: Cleanup and create doc
-let mapFolder typeEnv valueEnv (s: Map<string, ValueDeclaration>) k v =
+/// <param name="typeEnv"></param>
+/// <param name="valueEnv"></param>
+/// <param name="s"></param>
+/// <param name="key"></param>
+/// <param name="v"></param>
+let mapFolder typeEnv valueEnv (s: ValueDecMap) (i, k as key) v =
     match v with
     | Typing(SingleTyping(IGeneric((id, position), typings), expression)) ->
-        let postfix = buildTypePostfixStrings typeEnv valueEnv typings
-
-        let s' = s.Remove k
+        let postfixes = buildTypePostfixStrings typeEnv valueEnv typings
+        
+        let s' = s.Remove key
 
         List.foldBack
-            (fun e (acc: Map<string, ValueDeclaration>) ->
-                acc.Add($"{id}{e}", Typing(SingleTyping(ISimple($"{id}{e}", position), expression))))
-            postfix
+            (fun e (acc: ValueDecMap) ->
+                acc.Add((i, $"{id}{e}"), Typing(SingleTyping(ISimple($"{id}{e}", position), expression))))
+            postfixes
             s'
 
     | GenericValue(ISimple(id, pos), typingList, typeExpression) ->
-        // TODO: This part is obsolete\
+        // TODO: This part is obsolete
         failwith "Is it absolute?"
-        let postfix = buildTypePostfixStrings typeEnv valueEnv typingList
+        let postfixes = buildTypePostfixStrings typeEnv valueEnv typingList
 
-        let s' = s.Remove k
+        let s' = s.Remove key
 
         List.foldBack
-            (fun e (acc: Map<string, ValueDeclaration>) ->
-                acc.Add($"{id}{e}", Typing(SingleTyping(ISimple($"{id}{e}", pos), typeExpression))))
-            postfix
+            (fun e (acc: ValueDecMap) ->
+                acc.Add((i, $"{id}{e}"), Typing(SingleTyping(ISimple($"{id}{e}", pos), typeExpression))))
+            postfixes
             s'
     | _ -> s
 
@@ -237,8 +202,8 @@ let transitionRuleUnfold
     typeEnv
     valueEnv
     (rule: IrTransitionRules)
-    (namedRules: Map<string, IrTransitionRules>)
-    : IrTransitionRules * Map<string, IrTransitionRules> =
+    (namedRules: NamedRuleMap)
+    : IrTransitionRules * NamedRuleMap =
 
     (irTransitionRulesUnfold typeEnv valueEnv rule,
      Map.foldBack (fun k e a -> Map.add k (irTransitionRulesUnfold typeEnv valueEnv e) a) namedRules namedRules)

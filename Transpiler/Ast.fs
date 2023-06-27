@@ -1,7 +1,6 @@
 ﻿namespace Transpiler.Ast
 
 open FSharp.Text.Lexing
-open System
 
 type Pos<'a> =
     'a * Position
@@ -59,7 +58,7 @@ type ValueExpression =
     | VeList of ValueExpression list
     | VArray of ValueExpression list
 
-    override this.ToString() =
+    (*override this.ToString() =
         "This is the way"
         (*match this with
         | ValueLiteral(valueLiteral, _) -> $"ValueLiteral({valueLiteral.ToString()})"
@@ -69,7 +68,7 @@ type ValueExpression =
         | Quantified foo -> $"Quantified({foo.ToString()})"
         | Infix foo -> $"Infix({foo.ToString()})"
         | VeList valueExpressions -> $"VeList({valueExpressions.ToString()})"
-        | VArray valueExpressions -> $"VArray({valueExpressions.ToString()})"*)
+        | VArray valueExpressions -> $"VArray({valueExpressions.ToString()})"*)*)
 
 and Accessor =
     | ASimple of Pos<Id>
@@ -80,10 +79,10 @@ and Identifier =
     | ISimple of Pos<Id>
     | IGeneric of (Pos<Id> * Typing list)
     
-    override this.ToString() =
+    (*override this.ToString() =
         match this with
         | ISimple (s, _) -> $"ISimple({s})"
-        | IGeneric((s, _), o) -> $"IGeneric({(s, o)})" 
+        | IGeneric((s, _), o) -> $"IGeneric({(s, o)})"*) 
 
 and Typing = SingleTyping of Identifier * TypeExpression
     
@@ -104,13 +103,13 @@ type TypeDefinition =
     | Concrete of TypeExpression // Abbreviation t = Nat
     | Union of Pos<Id> list
     
-    override this.ToString() =
+    (*override this.ToString() =
         match this with
         | Abstract -> "Abstract()"
         | Concrete typeExpression -> failwith "todo"
         | Union tuples ->
             let sep = ", "
-            $"Union ([{String.concat sep (List.map (fun (e, _) -> e.ToString()) tuples) }])"
+            $"Union ([{String.concat sep (List.map (fun (e, _) -> e.ToString()) tuples) }])"*)
 
 
 // AST Node
@@ -122,7 +121,7 @@ type ValueDeclaration =
     | GenericValue of (Identifier * Typing list * TypeExpression)
     | Typing of Typing
     
-    override this.ToString() =
+    (*override this.ToString() =
         match this with
         | ExplicitValue(identifier, typeExpression, valueExpression) ->
             $"ExplicitValue({identifier}, {typeExpression}, {valueExpression}"
@@ -131,7 +130,7 @@ type ValueDeclaration =
         | ImplicitFunction -> "ImplicitFunction"
         | GenericValue(identifier, typings, typeExpression) ->
             $"GenericValue({identifier}, {typings}, {typeExpression})"
-        | Typing typing -> $"Typing({typing})"
+        | Typing typing -> $"Typing({typing})"*)
 
 
 type TransitionSystem =
@@ -145,14 +144,14 @@ type Declaration =
     | AxiomDeclaration of ValueExpression list
     | TransitionSystemDeclaration of (Pos<Id> * TransitionSystem list)
     
-    override this.ToString() =
+    (*override this.ToString() =
         match this with
         | Value valueDeclarations -> $"Value({valueDeclarations.ToString()})"
         | TypeDeclaration tuples ->
             $"TypeDeclaration({List.map (fun ((i, _), e) -> (i, e)) tuples})"
         | AxiomDeclaration valueExpressions ->
             valueExpressions.ToString()
-        | TransitionSystemDeclaration((s, _), transitionSystems) -> $"TransitionSystemDeclaration({s}, {transitionSystems.ToString()})"
+        | TransitionSystemDeclaration((s, _), transitionSystems) -> $"TransitionSystemDeclaration({s}, {transitionSystems.ToString()})"*)
 
 type Class = Declaration list
 

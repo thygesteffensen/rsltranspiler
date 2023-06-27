@@ -2,13 +2,14 @@
 
 open Transpiler.Intermediate
 
-let rec tr (ir: IrTransitionRules) (namedRules: Map<string, IrTransitionRules>) : IrTransitionRules =
+let rec tr (ir: IrTransitionRules) (namedRules: NamedRuleMap) : IrTransitionRules =
     match ir with
     | Node(lhs, choice, rhs) -> Node(tr lhs namedRules, choice, tr rhs namedRules)
     | Leaf irTransitionRule ->
         match irTransitionRule with
         | Name s ->
-            match Map.tryFind s namedRules with
+            match Map.tryPick (fun (_i, k) e -> if k = s then Some e else None) namedRules with
+            // match Map.tryFind s namedRules with
             | None -> failwith $"Named rule {s} is not defined"
             | Some value -> value
         | _ -> Leaf irTransitionRule

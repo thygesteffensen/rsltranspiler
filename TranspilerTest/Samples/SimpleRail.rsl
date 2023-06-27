@@ -43,3 +43,4 @@ scheme SimpleRail =
                             occupied'[position[t] - 1] = true))
             end
     end
+    

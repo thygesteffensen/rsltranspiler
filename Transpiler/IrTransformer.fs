@@ -126,7 +126,7 @@ let convertIrTransitionSystemToAst (irTransitionSystem: IrTransitionSystem) : De
         match irTransitionSystem.Variable with
         | None -> None
         | Some value ->
-            let folder (_k: string) (e: ValueDeclaration) (a: ValueDeclaration list) = e :: a
+            let folder ((_i, _k): int * string) (e: ValueDeclaration) (a: ValueDeclaration list) = e :: a
             Some(Variable(Map.foldBack folder value []))
 
     let initConstraintDeclaration =
@@ -190,7 +190,7 @@ let convertIrTransitionSystemToAst (irTransitionSystem: IrTransitionSystem) : De
             Some(
                 TransitionRule(
                     irTransitionRulesToAst irTransitionRules,
-                    Map.foldBack (fun k e a -> ((k, dummyPos), (irTransitionRulesToAst e)) :: a) irTransitionRulesMap []
+                    Map.foldBack (fun (_i, k) e a -> ((k, dummyPos), (irTransitionRulesToAst e)) :: a) irTransitionRulesMap []
                 )
             )
 
