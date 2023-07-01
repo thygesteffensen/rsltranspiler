@@ -2,13 +2,20 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
+        <AssemblyName>rslts</AssemblyName>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.CommandLine.DragonFruit" Version="0.4.0-alpha.22272.1" />
+      <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+      <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Transpiler\Transpiler.fsproj" />
     </ItemGroup>
 
 </Project>

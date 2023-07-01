@@ -1,30 +1,25 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using System.CommandLine;
+﻿using System.CommandLine;
 
 namespace CLI;
 
 internal class Program
 {
-    static void Main(string[] args)
+    public static readonly Option<bool> DebugOption = new(
+        new[] {"--debug", "-d"},
+        getDefaultValue: () => false,
+        description: "Enable debug mode");
+
+    private static async Task<int> Main(string[] args)
     {
-        var rootCommand = new RootCommand("Let's go!");
-        
-        rootCommand.SetHandler(() =>
-        {
-            Console.WriteLine("Hello from root");
-        });
-        
-        var sub1Command = new Command("sub1", "First-level subcommand");
-        rootCommand.Add(sub1Command);
-        
-        sub1Command.SetHandler(() =>
-        {
-            Console.WriteLine("Let's go - Hello world!");
-        });
-        
-        
-        var sub1aCommand = new Command("sub1a", "Second level subcommand");
-        rootCommand.Add(sub1aCommand);
+        var rootCommand =
+            new RootCommand(
+                "`rslts` is the RAISE Specification Language tool-set. This can be used to unfold specification and render their AST");
+        rootCommand.AddOption(DebugOption);
+
+        rootCommand.AddUnfoldCommand();
+        rootCommand.AddAstCommand();
+
+
+        return await rootCommand.InvokeAsync(args);
     }
 }

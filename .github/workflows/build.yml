@@ -1,0 +1,24 @@
+name: build
+
+run-name: Build
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        version: [ ubuntu-latest, windows-latest, ubuntu-latest ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+      - run: dotnet build
+      - run: dotnet publish CLI/CLI.csproj --self-contained --output publish
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Executables for {{ matrix.os }}
+          path: publish/rslts*
