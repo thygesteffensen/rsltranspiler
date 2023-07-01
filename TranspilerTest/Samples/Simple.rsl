@@ -1,0 +1,11 @@
+scheme Simple = 
+    class
+        type
+            T == t1
+        value
+            v [ t : T ] : Nat
+        axiom
+            v[t1] = 2,
+            v[t1] = 3,
+            v[t1] = 1
+    end

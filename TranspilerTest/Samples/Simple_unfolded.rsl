@@ -1,0 +1,9 @@
+scheme Simple_unfolded = 
+class
+type
+T == t1
+
+value
+v_t1 : Nat = 2
+
+end

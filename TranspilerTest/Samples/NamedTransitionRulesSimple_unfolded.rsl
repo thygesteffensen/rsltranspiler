@@ -1,4 +1,4 @@
-scheme NamedTransitionRules_unfolded = 
+scheme NamedTransitionRulesSimple_unfolded = 
 class
 type
 Pos == p1 | p2
@@ -18,15 +18,15 @@ v2_p2 = 2
 transition_rules
   true = true
   ==>
-  v2_p1' = v2_p1 + 1
+  v2_p1' = 1
 [=]
   (false = false
   ==>
-  v2_p1' = v2_p1 + 1
+  v2_p1' = 1
 [=]
   false = false
   ==>
-  v2_p2' = v2_p2 + 1)
+  v2_p2' = 1)
 [=]
   true = false
   ==>

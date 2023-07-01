@@ -5,6 +5,7 @@ open Transpiler.Ast
 open Transpiler.Intermediate
 open Transpiler.RuleCollection.Helpers
 open Transpiler.Auxiliary
+open Transpiler.Helpers.Helpers
 
 
 
@@ -16,31 +17,24 @@ open Transpiler.Auxiliary
 /// <param name="s"></param>
 /// <param name="key"></param>
 /// <param name="v"></param>
-let mapFolder typeEnv valueEnv (s: ValueDecMap) (i, k as key) v =
+let mapFolder typeEnv valueEnv (s: ValueDecMap) (i, _k as key) v =
     match v with
     | Typing(SingleTyping(IGeneric((id, position), typings), expression)) ->
-        let postfixes = buildTypePostfixStrings typeEnv valueEnv typings
-        
         let s' = s.Remove key
 
-        List.foldBack
+        iterateTypings
+            typeEnv
+            valueEnv
+            id
+            typings
             (fun e (acc: ValueDecMap) ->
-                acc.Add((i, $"{id}{e}"), Typing(SingleTyping(ISimple($"{id}{e}", position), expression))))
-            postfixes
+                acc.Add((i, e), Typing(SingleTyping(ISimple(e, position), expression))))
             s'
 
-    | GenericValue(ISimple(id, pos), typingList, typeExpression) ->
+
+    | GenericValue(ISimple _, _, _) ->
         // TODO: This part is obsolete
         failwith "Is it absolute?"
-        let postfixes = buildTypePostfixStrings typeEnv valueEnv typingList
-
-        let s' = s.Remove key
-
-        List.foldBack
-            (fun e (acc: ValueDecMap) ->
-                acc.Add((i, $"{id}{e}"), Typing(SingleTyping(ISimple($"{id}{e}", pos), typeExpression))))
-            postfixes
-            s'
     | _ -> s
 
 
@@ -114,7 +108,7 @@ and instantiateTypings
                 | TName s -> s
                 | _ -> failwith "todo"
 
-            match Map.find (fst t) typeEnv with
+            match fst (Map.find (fst t) typeEnv) with
             | Abstract -> failwith "todo"
             | Concrete _ -> failwith "todo"
             | Union l ->
@@ -179,11 +173,11 @@ and instantiateTypings1
                 | TName s -> s
                 | _ -> failwith "todo"
 
-            match Map.find (fst t) typeEnv with
+            match fst (Map.find (fst t) typeEnv) with
             | Abstract -> failwith "todo"
             | Concrete _ -> failwith "todo"
             | Union [] -> failwith "todo"
-            | Union ((l, _)::ls) ->
+            | Union((l, _) :: ls) ->
                 List.foldBack
                     (fun (e, _) a ->
                         Node(a, NonDeterministic, instantiateTypings1 typeEnv valueEnv (Map.add s e instances) ts rule))
@@ -235,7 +229,6 @@ let transitionSystemFolder
             match value.InitConstraint with
             | None -> None
             | Some value ->
-                None
                 List.foldBack (fun e a -> irAxiomDecUnfold typeEnv valueEnv Map.empty e a) value []
                 |> Some
 

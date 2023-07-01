@@ -1,0 +1,26 @@
+scheme NamedTransitionRules_unfolded_unfolded =
+	class
+		type
+			Pos == p1 | p2
+		transition_system [TS]
+			variable
+				v1 : Nat,
+				v2_p1 : Nat,
+				v2_p2 : Nat,
+				v3 : Nat := 3
+			init_constraint
+				v1 = 1 /\
+				v3 = 3 /\
+				v2_p1 = 2 /\
+				v2_p2 = 2
+			transition_rules
+				true = true ==> v2_p1' = v2_p1 + 1
+				 [=] 
+				false = false ==> v2_p1' = v2_p1 + 1
+				 [=] 
+				false = false ==> v2_p2' = v2_p2 + 1
+				 [=] 
+				true = false ==> v1' = v3
+		end
+
+	end
