@@ -35,6 +35,8 @@ let writeTypeExpression (stream: StreamWriter) _depth typeExpression =
     | Set _ -> failwith "todo"
     | List _ -> failwith "todo"
     | Map _ -> failwith "todo"
+    | TArray _ -> failwith "todo"
+    | Sub _ -> failwith "todo"
 
 let writeTyping (stream: StreamWriter) depth (typing: Typing) =
     match typing with
@@ -88,7 +90,9 @@ let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
 
         stream.Write ")"
     | Infix(lhs, infixOp, rhs) ->
+        stream.Write(" ( ")
         writeValueExpression stream depth lhs
+        stream.Write(" ) ")
 
         match infixOp with
         | Equal -> stream.Write " = "
@@ -111,6 +115,7 @@ let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
         writeValueExpression stream depth rhs
     | VeList valueExpressions ->
         listDelimiterAction (fun () -> stream.Write ", ") valueExpressions (writeValueExpression stream depth)
+    | VArray valueExpressions -> failwith "todo"
 
 and writeAccessor (stream: StreamWriter) depth (accessor: Accessor) (prime: Boolean) =
     match accessor with
@@ -261,3 +266,12 @@ let write (((specification, _), cls): Scheme) location =
 
     streamWriter.Flush |> ignore
     streamWriter.Close |> ignore
+
+let writeAst ast location =
+    use streamWriter = new StreamWriter(location, false)
+    
+    streamWriter.Write $"{ast}"
+    
+    streamWriter.Flush |> ignore
+    streamWriter.Close |> ignore
+    

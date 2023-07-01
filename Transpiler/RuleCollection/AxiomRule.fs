@@ -4,25 +4,10 @@
 module Transpiler.RuleCollection.AxiomRule
 
 open Transpiler.Ast
+open Transpiler.Intermediate
 open Transpiler.RuleCollection.Helpers
+open Transpiler.Helpers.Helpers
 
-/// <summary>
-/// Iterate typings to create unfolded identifier and for each instance the function f is applied yielding 'a 
-/// </summary>
-/// <param name="typeEnv"></param>
-/// <param name="valueEnv"></param>
-/// <param name="instances"></param>
-/// <param name="typings"></param>
-/// <param name="f"></param>
-/// <param name="a"></param>
-let iterateTypings typeEnv valueEnv (typings: Typing list) (f: string -> 'a -> 'a) (a: 'a) : 'a =
-    List.foldBack (fun e a ->
-        match e with
-        | SingleTyping(_, TName (n, _pos)) -> 
-        ) typings []
-    match typings with
-    | [] -> a
-    | SingleTyping(identifier, typeExpression)::ts -> f "" a
 
 let _unfoldAxioms typeEnv valueEnv valueDeclarations axioms =
         
@@ -37,19 +22,11 @@ let _unfoldAxioms typeEnv valueEnv valueDeclarations axioms =
             (fun (i, _k) e a ->
                 match e with
                 | Typing(SingleTyping(IGeneric((s, _pos), typings), _)) ->
-                    iterateTypings typeEnv valueEnv typings (fun e a ->
+                    iterateTypings typeEnv valueEnv s typings (fun e a ->
                         match Map.tryFind (i, e) valueDeclarationsAxiomsUnfolded with
                             | None -> e :: a
                             | Some _ -> a
                             ) []
-                    (*List.foldBack
-                        (fun e a ->
-                            let key = $"{s}{e}"
-                            match Map.tryFind (i, key) valueDeclarationsAxiomsUnfolded with
-                            | None -> key :: a
-                            | Some _ -> a)
-                        (buildTypePostfixStrings typeEnv valueEnv typings)
-                        a*)
 
                 | _ -> a // Only target non assigned generic variables
             )

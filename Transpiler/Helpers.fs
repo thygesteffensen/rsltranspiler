@@ -159,9 +159,9 @@ let buildSymbolTable (_AST: Class) : Map<string, TypeDefinition * string list> =
             if not (s0 = s1 && s1 = s) then
                 failwith ""
                 
-            env.Add((fst id), (typeDecl, (List.map (fun e -> $"{id}_{e}") [ 0..upperbound ])))
+            env.Add((fst id), (typeDecl, (List.map (fun e -> $"_{e}") [ 0..(upperbound-1) ])))
         | id, (Union tuples as typeDecl) ->
-            env.Add((fst id), (typeDecl, List.foldBack (fun (e, _pos) a -> $"{id}_{e}" :: a) tuples []))
+            env.Add((fst id), (typeDecl, List.foldBack (fun (e, _pos) a -> $"_{e}" :: a) tuples []))
         | id, typeDecl -> env.Add((fst id), (typeDecl, []))
 
     List.fold unfoldTypeEnvironments [] _AST |> List.fold buildType Map.empty
@@ -196,3 +196,40 @@ let buildValueTable (_AST: Class) =
 
     List.fold unfoldValueEnvironments [] _AST
     |> List.fold unfoldValueValues Map.empty
+
+/// <summary>
+/// Iterate typings to create unfolded identifier and for each instance the function f is applied yielding 'a 
+/// </summary>
+/// <param name="typeEnv"></param>
+/// <param name="valueEnv"></param>
+/// <param name="id"></param>
+/// <param name="typings"></param>
+/// <param name="f">Function should be called for each final instance of an accessors</param>
+/// <param name="acc"></param>
+let rec iterateTypings (typeEnv: Map<string, TypeDefinition * string list>) valueEnv id (typings: Typing list) (f: string -> 'a -> 'a) (acc: 'a) : 'a =
+    match typings with
+    | [] -> f id acc
+    | SingleTyping(ISimple(identifier, _pos), TName(s, _pos1))::ts ->
+        match Map.tryFind s typeEnv with
+        | None -> failwith "No"
+        | Some (_, instances) ->
+            List.foldBack (fun e a ->
+                iterateTypings typeEnv valueEnv $"{id}{e}" ts f a)
+                instances
+                acc
+    | _ -> failwith "Nono"
+    
+/// <summary>
+/// toString for value literal
+/// </summary>
+/// <param name="valueLiteral"></param>
+let literalToString valueLiteral =
+    match valueLiteral with
+    | VUnit _ -> "()"
+    | VBool b -> string b
+    | VInt i -> string i
+    | VReal i -> string i
+    | VChar c -> string c
+    | VNat i -> string i
+    | VText s -> s
+

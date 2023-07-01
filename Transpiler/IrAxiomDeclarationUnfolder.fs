@@ -1,21 +1,9 @@
 ﻿module Transpiler.RuleCollection.Helpers
 
 open Transpiler.Ast
+open Transpiler.Helpers.Helpers
 open Transpiler.Intermediate
 
-/// <summary>
-/// toString for value literal
-/// </summary>
-/// <param name="valueLiteral"></param>
-let literalToString valueLiteral =
-    match valueLiteral with
-    | VUnit unit -> failwith "todo"
-    | VBool b -> failwith "todo"
-    | VInt i -> string i
-    | VReal i -> string i
-    | VChar c -> string c
-    | VNat i -> string i
-    | VText s -> s
 
 /// <summary>
 /// Convert a value expression to a string is possible
@@ -31,12 +19,13 @@ let valueExpressionToString (ve: ValueExpression) (instances: Map<string, string
             match Map.tryFind (fst s) instances with
             | None -> fst s // TODO: Should the default just be the string assuming the type checker handles this?
             | Some value -> value
-        | AGeneric(s, valueExpressions) -> failwith "todo"
-    | ValueExpression.Quantified foo -> failwith "todo"
-    | VPName accessor -> failwith "todo"
-    | Rule tuple -> failwith "todo"
-    | Infix foo -> failwith "todo"
-    | VeList valueExpressions -> failwith "todo"
+        | AGeneric _ -> failwith "todo"
+    | ValueExpression.Quantified _ -> failwith "todo"
+    | VPName _ -> failwith "todo"
+    | Rule _ -> failwith "todo"
+    | Infix _ -> failwith "todo"
+    | VeList _ -> failwith "todo"
+    | VArray _ -> failwith "todo"
 
 /// <summary>
 /// We allow unfolding value expression until the
@@ -86,7 +75,7 @@ and instantiateTypings typeEnv valueEnv map (instances: Map<string, string>) val
         // When we get here, all typings for this quantified expression is instantiated
         // and we are ready for continuing unfolded the quantified inner expression.
         axiomFolder typeEnv valueEnv map instances valueExpr // Inner for loop
-    | SingleTyping(s, typeExpr) :: ts ->
+    | SingleTyping(s, typeExpr) as _ :: ts ->
         match s with
         | ISimple(id, _pos) ->
 
@@ -98,8 +87,10 @@ and instantiateTypings typeEnv valueEnv map (instances: Map<string, string>) val
                 | Set _ -> failwith "todo"
                 | List _ -> failwith "todo"
                 | Map _ -> failwith "todo"
+                | TArray _ -> failwith "todo"
+                | Sub _ -> failwith "todo"
 
-            match Map.find (fst t) typeEnv with
+            match fst (Map.find (fst t) typeEnv) with
             | Abstract -> failwith "todo"
             | Concrete typeExpression ->
                 match typeExpression with
@@ -117,7 +108,7 @@ and instantiateTypings typeEnv valueEnv map (instances: Map<string, string>) val
 
                     List.foldBack
                         (fun v m -> instantiateTypings typeEnv valueEnv m (Map.add id v instances) valueExpr ts)
-                        (List.map string [ 0..upperbound ])
+                        (List.map string [ 0..(upperbound-1) ])
                         map
 
                 | _ -> failwith "Not supported"
