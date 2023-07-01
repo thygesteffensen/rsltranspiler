@@ -12,6 +12,9 @@
         <Content Include="Samples\*.rsl">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Include="Samples\*.ps">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Compile Include="Common\*.fs" />
         <Compile Include="UnitTestType.fs" />
         <Compile Include="UnitTestValue.fs" />
@@ -19,6 +22,7 @@
         <Compile Include="UnitTestTransitionSystem.fs" />
         <Compile Include="Logic\*.fs" />
         <Compile Include="Parser\*.fs" />
+        <Compile Include="TestDrawer.fs" />
         <Compile Include="Program.fs" />
         <None Include="Playground.fsx" />
     </ItemGroup>
@@ -38,7 +42,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ClassLibrary1\ClassLibrary1.fsproj" />
       <ProjectReference Include="..\Transpiler\Transpiler.fsproj" />
+      <ProjectReference Include="..\AstDrawerLibrary\AstDrawerLibrary.fsproj" />
     </ItemGroup>
 
 </Project>
