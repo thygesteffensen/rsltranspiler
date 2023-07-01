@@ -20,5 +20,5 @@ jobs:
       - run: dotnet publish CLI/CLI.csproj --self-contained --output publish
       - uses: actions/upload-artifact@v3
         with:
-          name: Executables for {{ matrix.os }}
+          name: Executables for ${{ matrix.version }}
           path: publish/rslts*
