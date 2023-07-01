@@ -42,7 +42,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ClassLibrary1\ClassLibrary1.fsproj" />
+      <ProjectReference Include="..\FParsecSample\FParsecSample.fsproj" />
       <ProjectReference Include="..\Transpiler\Transpiler.fsproj" />
       <ProjectReference Include="..\AstDrawerLibrary\AstDrawerLibrary.fsproj" />
     </ItemGroup>
