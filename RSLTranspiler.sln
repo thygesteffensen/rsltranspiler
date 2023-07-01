@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLI", "CLI\CLI.csproj", "{E
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.fsproj", "{87EE260D-5C08-42B3-9733-A14F9DFB9E42}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AstDrawerLibrary", "AstDrawerLibrary\AstDrawerLibrary.fsproj", "{48ECE097-CC34-4527-9D3F-BA746828C1DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{87EE260D-5C08-42B3-9733-A14F9DFB9E42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87EE260D-5C08-42B3-9733-A14F9DFB9E42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87EE260D-5C08-42B3-9733-A14F9DFB9E42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48ECE097-CC34-4527-9D3F-BA746828C1DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48ECE097-CC34-4527-9D3F-BA746828C1DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48ECE097-CC34-4527-9D3F-BA746828C1DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48ECE097-CC34-4527-9D3F-BA746828C1DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
