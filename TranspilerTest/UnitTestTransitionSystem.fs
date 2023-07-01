@@ -5,14 +5,13 @@ open Transpiler
 open TranspilerTest.Common
 open TranspilerTest.Compare
 
-open Transpiler.Helpers.Helpers
-
 [<SetUp>]
 let setup () = ()
 
 let testInput: obj[] list =
     [
         [|"Samples/NamedTransitionRules.rsl"; "Samples/NamedTransitionRules_unfolded.rsl"|]
+        [|"Samples/NamedTransitionRulesSimple.rsl"; "Samples/NamedTransitionRulesSimple_unfolded.rsl"|]
     ]
 
 [<TestCaseSource(nameof testInput)>]

@@ -15,10 +15,48 @@ type TT =
     | File of System.String
     | Expected of Map<string, TypeDefinition>
 
+let emptyStringList: string list = []
+
 let input: obj[] list =
-    [ [| "Samples/TypeAbstract.rsl"; Map.empty.Add("T", Abstract) |]
-      [| "Samples/TypeConcrete.rsl"; Map.empty.Add("T", Concrete(TName ("Nat", pos 4 17 61 "TypeConcrete.rsl"))) |]
-      [| "Samples/TypeUnion.rsl"; Map.empty.Add("T", Union [ ("t1", pos 4 18 59 "TypeUnion.rsl"); ("t2", pos 4 23 64 "TypeUnion.rsl"); ("t3", pos 4 28 69 "TypeUnion.rsl") ]) |] ]
+    [ [| "Samples/TypeAbstract.rsl"
+         Map.empty.Add("T", (Abstract, emptyStringList)) |]
+      [| "Samples/TypeConcrete.rsl"
+         Map.empty.Add("T", (Concrete(TName("Nat", pos 4 17 61 "TypeConcrete.rsl")), emptyStringList)) |]
+      [| "Samples/TypeUnion.rsl"
+         Map.empty.Add(
+             "T",
+             (Union
+                 [ ("t1", pos 4 18 59 "TypeUnion.rsl")
+                   ("t2", pos 4 23 64 "TypeUnion.rsl")
+                   ("t3", pos 4 28 69 "TypeUnion.rsl") ],
+              [ "_t1"; "_t2"; "_t3" ])
+         ) |]
+      [| "Samples/TypeSubType.rsl"
+         Map.empty.Add(
+             "ArrayIndex",
+             (Concrete(
+                 Sub(
+                     [ SingleTyping(
+                           ISimple("i", pos 4 29 72 "TypeSubType.rsl"),
+                           TName("Int", pos 4 33 76 "TypeSubType.rsl")
+                       ) ],
+                     Infix(
+                         Infix(
+                             VName(ASimple("i", pos 4 40 83 "TypeSubType.rsl")),
+                             GreaterThanOrEqual,
+                             ValueLiteral(VInt 0, pos 4 45 88 "TypeSubType.rsl")
+                         ),
+                         LogicalAnd,
+                         Infix(
+                             VName(ASimple("i", pos 4 50 93 "TypeSubType.rsl")),
+                             LessThan,
+                             ValueLiteral(VInt 5, pos 4 54 97 "TypeSubType.rsl")
+                         )
+                     )
+                 )
+              ),
+              [ "_0"; "_1"; "_2"; "_3"; "_4" ])
+         ) |] ]
 
 [<TestCaseSource(nameof input)>]
 let buildSymbolTableTester source expected =
@@ -27,8 +65,9 @@ let buildSymbolTableTester source expected =
         | Some(_, cls) -> Some(Helpers.buildSymbolTable cls)
         | None -> None
 
+
     match actual with
-    | Some t1 -> Assert.AreEqual(expected, t1)
+    | Some t1 -> Assert.That(t1, Is.EquivalentTo(expected))
     | None -> Assert.Fail "Should succeed"
 
 let input2: obj[] list =
@@ -46,12 +85,11 @@ let unfoldSpecification source expectedSource =
         match testLexerAndParserFromFile source with
         | Some(scheme) -> Some(Transpiler.transpile scheme)
         | None -> None
-        
+
     match (expected, actual) with
-    | Some e, Some a ->
-        compareScheme(e, a)
-        // Assert.AreEqual(expected, actual)
-    | None, None -> Assert.Fail("Both none") 
+    | Some e, Some a -> compareScheme (e, a)
+    // Assert.AreEqual(expected, actual)
+    | None, None -> Assert.Fail("Both none")
     | None, _ -> Assert.Fail("Expected none")
     | _, None -> Assert.Fail("Actual none")
 
@@ -60,30 +98,6 @@ let unfoldSpecification source expectedSource =
 let test () =
     testLexerAndParserFromFile "Samples/AxiomGeneric_unfolded.rsl" |> ignore
     ()
-
-let postfixSource: obj[] list =
-    [ [| Map.empty
-             .Add("A", Union([ ("a1", pos 1 2 3 ""); ("a2", pos 1 2 3 ""); ("a3", pos 1 2 3 "") ]))
-             .Add("B", Union([ ("b1", pos 1 2 3 ""); ("b2", pos 1 2 3 ""); ("b3", pos 1 2 3 "") ]))
-         [ SingleTyping(ISimple("t", pos 1 2 3 ""), TName ("A", pos 1 2 3 "")); SingleTyping(ISimple("y", pos 1 2 3 ""), TName ("B", pos 1 2 3 "")) ]
-         [ "_a1_b1"
-           "_a2_b1"
-           "_a3_b1"
-           "_a1_b2"
-           "_a2_b2"
-           "_a3_b2"
-           "_a1_b3"
-           "_a2_b3"
-           "_a3_b3" ] |] ]
-
-[<TestCaseSource(nameof postfixSource)>]
-let rec buildTypePostfixStringsTest typeEnv typingList expected =
-    let valueEnv = Map.empty
-    
-    let prefixes = Auxiliary.buildTypePostfixStrings typeEnv valueEnv typingList
-
-    List.iter (fun (e, a) -> Assert.AreEqual(e, a)) (List.zip expected prefixes)
-
 
 let input3: obj[] list = [ [| "Samples/ValueGeneric.rsl" |] ]
 
