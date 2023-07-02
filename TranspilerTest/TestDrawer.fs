@@ -5,6 +5,7 @@ open NUnit.Framework
 open FSharp.Text.Lexing
 open AstDrawerLibrary.Library
 open Transpiler
+open Transpiler.Reader
 open Transpiler.AstDrawer
 
 open TranspilerTest.Common

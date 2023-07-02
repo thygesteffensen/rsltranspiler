@@ -3,7 +3,7 @@ module TranspilerTest.Logic.TestAxiomUnfolding
 open System
 open NUnit.Framework
 open Transpiler
-open TranspilerTest.Common
+open Transpiler.Reader
 
 let input1: obj[] list =
     [ [| "Samples/AxiomMissing.rsl"; "The following unfolded generics are missing: A_t1, A_t3" |] ]

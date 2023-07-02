@@ -2,6 +2,7 @@ module TranspilerTest.Value
 
 open NUnit.Framework
 open Transpiler.Ast
+open Transpiler.Reader
 open TranspilerTest.Common
 
 let f1 = "ValueNat.rsl"

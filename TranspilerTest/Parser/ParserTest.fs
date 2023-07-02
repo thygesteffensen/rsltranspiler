@@ -2,6 +2,7 @@ module TranspilerTest.Parser.ParserTest
 
 open NUnit.Framework
 open Transpiler.Ast
+open Transpiler.Reader
 open TranspilerTest.Common
 
 

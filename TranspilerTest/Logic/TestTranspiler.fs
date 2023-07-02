@@ -4,6 +4,7 @@ open NUnit.Framework
 open Transpiler
 open Transpiler.Helpers
 open Transpiler.Ast
+open Transpiler.Reader
 open Transpiler.Writer
 open TranspilerTest.Common
 open TranspilerTest.Compare

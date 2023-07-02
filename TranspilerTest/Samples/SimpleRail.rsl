@@ -24,23 +24,27 @@ scheme SimpleRail =
                 occupied[4] = true
             
             transition_rules
-                MOVE_LEFT [=] MOVE_RIGHT
+                MOVE_RIGHT
 
                 where
-                [ MOVE_RIGHT ] = -- Unfolds to 2 * 3 * 3 rules...
+                [ MOVE_RIGHT ] =
                     (([=] t : TrainId, s1 : SegmentId, s2 : SegmentId :- 
-                        position[t] < max /\ 
-                        position[t] = s1 /\ 
-                        (s1 + 1) = s2 /\ ~occupied[s2] ==> 
+                        position[t] < (max - 1) /\ 
+                        position[t] = s1 /\
+                        (s1 + 1) = s2 /\
+                        ~occupied[s2] ==> 
                             position'[t] = position[t] + 1,
                             occupied'[s1] = false,
                             occupied'[s2] = true)),
-                [ MOVE_LEFT ] = -- Unfolds two to rules
-                    (([=] t : TrainId :- 
-                        position[t] < max /\ ~occupied[position[t] - 1] ==> 
+
+                [ MOVE_LEFT ] =
+                    (([=] t : TrainId, s1 : SegmentId, s2 : SegmentId :- 
+                        position[t] > 0 /\ 
+                        position[t] = s1 /\
+                        (s1 - 1) = s2 /\
+                        ~occupied[s2] ==> 
                             position'[t] = position[t] - 1,
-                            occupied'[position[t]] = false,
-                            occupied'[position[t] - 1] = true))
+                            occupied'[s1] = false,
+                            occupied'[s2] = true))
             end
     end
-    

@@ -2,7 +2,7 @@ module TranspilerTest.UnitTestTransitionSystem
 
 open NUnit.Framework
 open Transpiler
-open TranspilerTest.Common
+open Transpiler.Reader
 open TranspilerTest.Compare
 
 [<SetUp>]

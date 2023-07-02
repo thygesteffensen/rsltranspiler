@@ -4,7 +4,7 @@ open System.IO
 open NUnit.Framework
 open Transpiler
 open Transpiler.Ast
-open TranspilerTest.Common
+open Transpiler.Reader
 open TranspilerTest.Compare
 
 open Transpiler.Helpers.Helpers
