@@ -26,6 +26,7 @@ let valueExpressionToString (ve: ValueExpression) (instances: Map<string, string
     | Infix _ -> failwith "todo"
     | VeList _ -> failwith "todo"
     | VArray _ -> failwith "todo"
+    | Negation _ -> failwith "todo"
 
 /// <summary>
 /// We allow unfolding value expression until the

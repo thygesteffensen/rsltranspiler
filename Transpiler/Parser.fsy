@@ -12,7 +12,7 @@ let parse_error_rich = Some error_handler
 %token <char * FSharp.Text.Lexing.Position> CHAR
 %token<FSharp.Text.Lexing.Position> TRUE 
 %token<FSharp.Text.Lexing.Position> FALSE 
-%token<FSharp.Text.Lexing.Position> EQ LT LE GT GE MI PL GU IM LAND LOR
+%token<FSharp.Text.Lexing.Position> EQ LT LE GT GE MI PL GU IM LAND LOR NEG
 %token<FSharp.Text.Lexing.Position> DETERMINISTIC NONDETERMINISTIC IS
 %token<FSharp.Text.Lexing.Position> SCHEME CLASS TYPE VALUE AXIOM END ALL EXISTS EXACTLY_ONE TS TR WHERE VARIABLE INIT_CONSTRAINT ARRAY OF
 %token<FSharp.Text.Lexing.Position> DOT COMMA COLON BAR LBRACKET RBRACKET QUOTE LPAREN RPAREN SLASH BSLASH PRIME LCURLY RCURLY
@@ -109,11 +109,12 @@ value_expression:
     | LPAREN value_expression RPAREN                                    { $2 }
     | axiom_infix_expr                                                  { $1 }
     | infix_expr                                                        { $1 }
-    | LCURLY DOT value_expressions DOT RCURLY                           { VArray (List.rev $3) }
+    | LCURLY DOT value_expressions DOT RCURLY                           { VArray(List.rev $3) }
+    | NEG value_expression                                              { Negation($2, $1) }
     
 accessor:
-    | TEXT                                                              { VName (ASimple $1) }
-    | TEXT PRIME                                                        { VPName (ASimple $1) }
+    | TEXT                                                              { VName(ASimple $1) }
+    | TEXT PRIME                                                        { VPName(ASimple $1) }
     | TEXT LBRACKET value_expressions RBRACKET                          { VName(AGeneric($1, List.rev $3)) }
     | TEXT PRIME LBRACKET value_expressions RBRACKET                    { VPName(AGeneric($1, List.rev $4)) }
 
@@ -124,6 +125,7 @@ infix_expr:
     | value_expression GE value_expression                              { Infix($1, GreaterThanOrEqual, $3) } 
     | value_expression EQ value_expression                              { Infix($1, Equal, $3) }
     | value_expression PL value_expression                              { Infix($1, Plus, $3) }
+    | value_expression MI value_expression                              { Infix($1, Minus, $3) }
     
 axiom_infix_expr:
     | value_expression infix_conn value_expression                      { Infix($1, $2, $3) }

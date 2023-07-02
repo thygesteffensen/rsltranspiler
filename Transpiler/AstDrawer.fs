@@ -6,9 +6,9 @@ open Transpiler.Helpers.Helpers
 
 let typeDeclarationToNode (typeDeclaration: Pos<Id> * TypeDefinition) (acc: Tree<string> list) : Tree<string> list =
     match typeDeclaration with
-    | (s, position), Abstract -> Node($"{s}", [ Node("Abstract", []) ]) :: acc
-    | (s, position), Concrete typeExpression -> Node($"{s}", [ Node("Concrete", [ Node("<type_expr>", []) ]) ]) :: acc
-    | (s, position), Union tuples ->
+    | (s, _pos), Abstract -> Node($"{s}", [ Node("Abstract", []) ]) :: acc
+    | (s, _pos), Concrete _ -> Node($"{s}", [ Node("Concrete", [ Node("<type_expr>", []) ]) ]) :: acc
+    | (s, _pos), Union tuples ->
         Node($"{s}", [ Node("Union", List.foldBack (fun (i, _pos) a -> Node(i, []) :: a) tuples []) ])
         :: acc
 
@@ -17,6 +17,7 @@ let infixOpToNode (infixOp: InfixOp) =
     match infixOp with
     | Equal -> Node("Equal", [])
     | Plus -> Node("Plus", [])
+    | Minus -> Node("Minus", [])
     | Guard -> Node("Guard", [])
     | Deterministic -> Node("[>]", [])
     | NonDeterministic -> Node("[=]", [])
@@ -30,11 +31,11 @@ let infixOpToNode (infixOp: InfixOp) =
 
 let rec valueExpressionToNode (valueExpression: ValueExpression) (acc: Tree<string> list) : Tree<string> list =
     match valueExpression with
-    | ValueLiteral(valueLiteral, position) -> Node("Literal", [ Node(literalToString valueLiteral, []) ]) :: acc
+    | ValueLiteral(valueLiteral, _pos) -> Node("Literal", [ Node(literalToString valueLiteral, []) ]) :: acc
     | VName accessor -> Node("VName", [ accessorToString accessor ]) :: acc
     | VPName accessor -> Node("VPName", [ accessorToString accessor ]) :: acc
     | Rule(id, _pos) -> Node("Rule", [ Node(id, []) ]) :: acc
-    | Quantified((quantifier, position), typings, valueExpression) ->
+    | Quantified((quantifier, _pos), _, valueExpression) ->
         Node($"Quantified {quantifier}", ([] |> valueExpressionToNode valueExpression))
         :: acc
     | Infix(lhs, infixOp, rhs) ->
@@ -46,6 +47,7 @@ let rec valueExpressionToNode (valueExpression: ValueExpression) (acc: Tree<stri
         :: acc // TODO: Might not be in correct order ;)
     | VeList valueExpressions -> Node("VeList", List.foldBack valueExpressionToNode valueExpressions []) :: acc
     | VArray valueExpressions -> Node("VArray", List.foldBack valueExpressionToNode valueExpressions []) :: acc
+    | Negation(valueExpression, _pos) -> Node("Negation", valueExpressionToNode valueExpression []) :: acc
 
 and accessorToString (accessor: Accessor) : Tree<string> =
     match accessor with

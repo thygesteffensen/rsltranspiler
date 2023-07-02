@@ -97,6 +97,7 @@ let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
         match infixOp with
         | Equal -> stream.Write " = "
         | Plus -> stream.Write " + "
+        | Minus -> stream.Write " - "
         | Guard -> stream.Write " ==> "
         | Deterministic -> stream.Write " [>] "
         | NonDeterministic ->
@@ -115,7 +116,11 @@ let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
         writeValueExpression stream depth rhs
     | VeList valueExpressions ->
         listDelimiterAction (fun () -> stream.Write ", ") valueExpressions (writeValueExpression stream depth)
-    | VArray valueExpressions -> failwith "todo"
+    | VArray _ -> failwith "todo"
+    | Negation(valueExpression, _pos) ->
+        stream.Write "~("
+        writeValueExpression stream depth valueExpression
+        stream.Write ")"
 
 and writeAccessor (stream: StreamWriter) depth (accessor: Accessor) (prime: Boolean) =
     match accessor with
