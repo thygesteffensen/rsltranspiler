@@ -37,6 +37,7 @@ type Quantifier =
 type InfixOp =
     | Equal
     | Plus
+    | Minus
     | Guard
     | Deterministic
     | NonDeterministic
@@ -57,35 +58,17 @@ type ValueExpression =
     | Infix of (ValueExpression * InfixOp * ValueExpression)
     | VeList of ValueExpression list
     | VArray of ValueExpression list
-
-    (*override this.ToString() =
-        "This is the way"
-        (*match this with
-        | ValueLiteral(valueLiteral, _) -> $"ValueLiteral({valueLiteral.ToString()})"
-        | VName accessor -> $"VName({accessor.ToString()})"
-        | VPName accessor -> $"VPName({accessor.ToString()})"
-        | Rule tuple -> $"Rule({tuple.ToString()})"
-        | Quantified foo -> $"Quantified({foo.ToString()})"
-        | Infix foo -> $"Infix({foo.ToString()})"
-        | VeList valueExpressions -> $"VeList({valueExpressions.ToString()})"
-        | VArray valueExpressions -> $"VArray({valueExpressions.ToString()})"*)*)
+    | Negation of Pos<ValueExpression>
 
 and Accessor =
     | ASimple of Pos<Id>
     | AGeneric of (Pos<Id> * ValueExpression list)
 
-
 and Identifier =
     | ISimple of Pos<Id>
-    | IGeneric of (Pos<Id> * Typing list)
-    
-    (*override this.ToString() =
-        match this with
-        | ISimple (s, _) -> $"ISimple({s})"
-        | IGeneric((s, _), o) -> $"IGeneric({(s, o)})"*) 
+    | IGeneric of (Pos<Id> * Typing list) 
 
 and Typing = SingleTyping of Identifier * TypeExpression
-    
 
 and TypeExpression =
     | Literal of TypeLiteral
@@ -102,15 +85,6 @@ type TypeDefinition =
     | Abstract // Sort
     | Concrete of TypeExpression // Abbreviation t = Nat
     | Union of Pos<Id> list
-    
-    (*override this.ToString() =
-        match this with
-        | Abstract -> "Abstract()"
-        | Concrete typeExpression -> failwith "todo"
-        | Union tuples ->
-            let sep = ", "
-            $"Union ([{String.concat sep (List.map (fun (e, _) -> e.ToString()) tuples) }])"*)
-
 
 // AST Node
 type ValueDeclaration =
@@ -120,18 +94,6 @@ type ValueDeclaration =
     | ImplicitFunction
     | GenericValue of (Identifier * Typing list * TypeExpression)
     | Typing of Typing
-    
-    (*override this.ToString() =
-        match this with
-        | ExplicitValue(identifier, typeExpression, valueExpression) ->
-            $"ExplicitValue({identifier}, {typeExpression}, {valueExpression}"
-        | ImplicitValue -> "ImplicitValue"
-        | ExplicitFunction -> "ExplicitFunction"
-        | ImplicitFunction -> "ImplicitFunction"
-        | GenericValue(identifier, typings, typeExpression) ->
-            $"GenericValue({identifier}, {typings}, {typeExpression})"
-        | Typing typing -> $"Typing({typing})"*)
-
 
 type TransitionSystem =
     | Variable of ValueDeclaration list
@@ -143,17 +105,7 @@ type Declaration =
     | TypeDeclaration of (Pos<Id> * TypeDefinition) list
     | AxiomDeclaration of ValueExpression list
     | TransitionSystemDeclaration of (Pos<Id> * TransitionSystem list)
-    
-    (*override this.ToString() =
-        match this with
-        | Value valueDeclarations -> $"Value({valueDeclarations.ToString()})"
-        | TypeDeclaration tuples ->
-            $"TypeDeclaration({List.map (fun ((i, _), e) -> (i, e)) tuples})"
-        | AxiomDeclaration valueExpressions ->
-            valueExpressions.ToString()
-        | TransitionSystemDeclaration((s, _), transitionSystems) -> $"TransitionSystemDeclaration({s}, {transitionSystems.ToString()})"*)
 
 type Class = Declaration list
 
 type Scheme = Pos<Id> * Class
-
