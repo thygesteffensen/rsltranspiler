@@ -11,18 +11,24 @@ internal static class AstCommand
         {
             Description = "The file to process"
         };
+        var opt = new Option<bool>(
+            new[] {"--ascii", "-a"},
+            description: "Output the ASCII representation of the AST"
+        );
         var unfoldCommand = new Command("ast")
         {
-            Description = $"Parse input specification (<{arg.Name}>). and output rendered AST. (This command uses locally installed GhostScript tool `gs`)"
+            Description =
+                $"Parse input specification (<{arg.Name}>). and output rendered AST. (This command uses locally installed GhostScript tool `gs`)"
         };
 
-        unfoldCommand.SetHandler(UnfoldSpecification, Program.DebugOption, arg);
+        unfoldCommand.SetHandler(UnfoldSpecification, Program.DebugOption, arg, opt);
         unfoldCommand.AddArgument(arg);
+        unfoldCommand.AddOption(opt);
 
         rootCommand.AddCommand(unfoldCommand);
     }
 
-    private static void UnfoldSpecification(bool debug, FileInfo? file)
+    private static void UnfoldSpecification(bool debug, FileInfo? file, bool ascii)
     {
         if (file == null || !file.Exists)
         {
@@ -42,6 +48,16 @@ internal static class AstCommand
         {
             // astOption.Value throws NUllReferenceException if astOption is None.
             var (schemeName, declarations) = astOption.Value;
+
+            if (ascii)
+            {
+                if (debug)
+                    Console.WriteLine($"Writing ASCII representation to {specificationName}.ast");
+
+                using var sw = new StreamWriter($"{specificationName}.ast");
+                sw.Write(Transpiler.Reader.astToString(schemeName, declarations));
+            }
+
             Transpiler.AstDrawer.schemeToTree(schemeName, declarations, $"{specificationName}.ps");
 
             var process = new Process

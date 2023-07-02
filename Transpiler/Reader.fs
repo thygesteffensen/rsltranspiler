@@ -1,6 +1,7 @@
 ﻿module Transpiler.Reader
 
 open FSharp.Text.Lexing
+open Transpiler.Ast
 
 /// <summary>
 /// Reads input from <c>fileName</c>, tokenizing and parsing it using the
@@ -16,3 +17,7 @@ let testLexerAndParserFromFile (filename: string) =
     Lexer.setFilename path
 
     Parser.start Lexer.read lexbuf
+    
+    
+let astToString (scheme: Scheme) : string =
+    sprintf "%A" scheme
