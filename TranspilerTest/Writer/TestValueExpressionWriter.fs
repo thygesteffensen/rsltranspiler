@@ -23,7 +23,7 @@ let input: obj[] list =
                  Infix(VName(ASimple("min", dummyPos)), Minus, ValueLiteral(VInt 1, dummyPos))
              )
          )
-         "((2 > (max - 1)) /\\ (4 < (min - 1)))" |] ]
+         "(2 > (max - 1)) /\\ (4 < (min - 1))" |] ]
 
 [<TestCaseSource(nameof input)>]
 let testValueExpressionWriter input (expected: string) =

@@ -72,7 +72,7 @@ and writeTyping (stream: StreamWriter) depth (typing: Typing) =
             stream.Write(id + " : ")
             writeTypeExpression stream depth typeExpression
 
-and writeValueExpression (stream: StreamWriter) depth valueExpression =
+and writeValueExpression1 (stream: StreamWriter) depth (inner: bool) valueExpression =
     match valueExpression with
     | ValueLiteral(literal, _) -> stream.Write(getValueLiteralString literal)
     | VName accessor -> writeAccessor stream depth accessor false
@@ -91,12 +91,12 @@ and writeValueExpression (stream: StreamWriter) depth valueExpression =
         listDelimiterAction (fun () -> stream.Write ", ") typings (writeTyping stream depth)
         stream.Write " :- "
 
-        writeValueExpression stream depth valueExpression
+        writeValueExpression1 stream depth true valueExpression
 
         stream.Write ")"
     | Infix(lhs, infixOp, rhs) ->
-        stream.Write("(")
-        writeValueExpression stream depth lhs
+        if (not (infixOp.Equals(NonDeterministic))) && inner then stream.Write("(")
+        writeValueExpression1 stream depth true lhs
 
         match infixOp with
         | Equal -> stream.Write " = "
@@ -117,15 +117,18 @@ and writeValueExpression (stream: StreamWriter) depth valueExpression =
         | LogicalAnd -> stream.Write " /\ "
         | LogicalOr -> stream.Write " \/ "
 
-        writeValueExpression stream depth rhs
-        stream.Write(")")
+        writeValueExpression1 stream depth true rhs
+        if (not (infixOp.Equals(NonDeterministic))) && inner then stream.Write(")")
     | VeList valueExpressions ->
-        listDelimiterAction (fun () -> stream.Write ", ") valueExpressions (writeValueExpression stream depth)
+        listDelimiterAction (fun () -> stream.Write ", ") valueExpressions (writeValueExpression1 stream depth true)
     | VArray _ -> failwith "todo"
     | LogicalNegation(valueExpression, _pos) ->
         stream.Write "~("
-        writeValueExpression stream depth valueExpression
+        writeValueExpression1 stream depth true valueExpression
         stream.Write ")"
+    
+and writeValueExpression (stream: StreamWriter) depth valueExpression  =
+    writeValueExpression1 stream depth false valueExpression
 
 and writeAccessor (stream: StreamWriter) depth (accessor: Accessor) (prime: Boolean) =
     match accessor with
