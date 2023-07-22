@@ -90,9 +90,8 @@ let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
 
         stream.Write ")"
     | Infix(lhs, infixOp, rhs) ->
-        stream.Write(" ( ")
+        stream.Write("(")
         writeValueExpression stream depth lhs
-        stream.Write(" ) ")
 
         match infixOp with
         | Equal -> stream.Write " = "
@@ -114,6 +113,7 @@ let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
         | LogicalOr -> stream.Write " \/ "
 
         writeValueExpression stream depth rhs
+        stream.Write(")")
     | VeList valueExpressions ->
         listDelimiterAction (fun () -> stream.Write ", ") valueExpressions (writeValueExpression stream depth)
     | VArray _ -> failwith "todo"
