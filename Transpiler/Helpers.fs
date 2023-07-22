@@ -131,11 +131,57 @@ let rec convertToAst (intermediate: Intermediate) =
 
     typeDec :: valueDec :: axiomDec :: [ trDec ] |> List.choose id
 
+let findValue (valueTypeEnv : Map<string, ValueLiteral>) (valueExpr: ValueExpression) : ValueLiteral =
+    match valueExpr with
+    | ValueLiteral (valueLiteral, _) -> valueLiteral 
+    | VName(ASimple(s, _pos)) ->
+        match Map.tryFind s valueTypeEnv with
+        | None -> failwith $"Cannot compute value of {s}"
+        | Some value -> value
+    | VName _ -> failwith "todo"
+    | VPName _ -> failwith "todo"
+    | Rule _ -> failwith "todo"
+    | ValueExpression.Quantified _ -> failwith "todo"
+    | Infix _ -> failwith "todo"
+    | VeList _ -> failwith "todo"
+    | VArray _ -> failwith "todo"
+    | LogicalNegation _ -> failwith "todo"
+
+let buildValueEnvironment (cls: Class) : Map<string, ValueLiteral> =
+    let getAxioms (decl: Declaration) acc =
+        match decl with
+        | AxiomDeclaration valueExpressions -> valueExpressions @ acc
+        | _ -> acc
+        
+    let extractValue1 (valueMap : Map<string, ValueLiteral>) (valueExpr: ValueExpression) : ValueLiteral =
+        match valueExpr with
+        | ValueLiteral(valueLiteral, _pos) -> valueLiteral
+        | VName _ -> findValue valueMap valueExpr
+        | VPName _ -> failwith "todo"
+        | Rule _ -> failwith "todo"
+        | ValueExpression.Quantified _ -> failwith "todo"
+        | Infix _ -> failwith "todo"
+        | VeList _ -> failwith "todo"
+        | VArray _ -> failwith "todo"
+        | LogicalNegation _ -> failwith "todo"
+        
+    let extractValue (valueExpr: ValueExpression) (acc: Map<string, ValueLiteral>) : Map<string, ValueLiteral> =
+        match valueExpr with
+        | Infix(VName (ASimple(name, _pos)), Equal, valueExpr) ->
+            Map.add name (extractValue1 acc valueExpr) acc
+        | _ -> acc
+    
+    let axioms = List.foldBack getAxioms cls []
+    
+    List.foldBack extractValue axioms Map.empty
+
+
 /// <summary>
 /// Build symbol table for given Abstract Syntax Tree and extract type definition type set if Union or sub type
 /// </summary>
 /// <param name="_AST"></param>
-let buildSymbolTable (_AST: Class) : Map<string, TypeDefinition * string list> =
+/// <param name="valueMap"></param>
+let buildSymbolTable (_AST: Class) (valueMap: Map<string, ValueLiteral>) : Map<string, TypeDefinition * string list> =
 
     let unfoldTypeEnvironments acc dec =
         match dec with
@@ -148,20 +194,33 @@ let buildSymbolTable (_AST: Class) : Map<string, TypeDefinition * string list> =
         function
         | id,
           ((Concrete(Sub([ SingleTyping(ISimple(s0, _), typeExpression) ],
-                         Infix(Infix(VName(ASimple(s, _)), GreaterThanOrEqual, ValueLiteral(VInt 0, _)),
+                         Infix(Infix(VName(ASimple(s, _)), GreaterThanOrEqual, lowerBound),
                                LogicalAnd,
-                               Infix(VName(ASimple(s1, _)), LessThan, ValueLiteral(VInt upperbound, _)))))) as typeDecl) ->
+                               Infix(VName(ASimple(s1, _)), LessThan, upperBound))))) as typeDecl) ->
             match typeExpression with
-                | TName("Nat", _) -> ()
-                | TName("Int", _) -> ()
-                | _ -> failwith ""
+            | TName("Nat", _) -> ()
+            | TName("Int", _) -> ()
+            | _ -> failwith ""
 
             if not (s0 = s1 && s1 = s) then
                 failwith ""
+            let lowerBoundValue =
+                match findValue valueMap lowerBound with
+                | VInt i
+                | VNat i -> i
+                | _ -> failwith "Not allowed as bound"
                 
-            env.Add((fst id), (typeDecl, (List.map (fun e -> $"_{e}") [ 0..(upperbound-1) ])))
+            let upperBoundValue =
+                match findValue valueMap upperBound with
+                | VInt i
+                | VNat i -> i
+                | _ -> failwith "Not allowed as bound"
+
+            let ls = (List.map (fun e -> string e) [ lowerBoundValue..(upperBoundValue-1) ])
+            env.Add((fst id), (typeDecl, ls))
         | id, (Union tuples as typeDecl) ->
-            env.Add((fst id), (typeDecl, List.foldBack (fun (e, _pos) a -> $"_{e}" :: a) tuples []))
+            let ls = List.foldBack (fun (e, _pos) a -> (string e) :: a) tuples []
+            env.Add((fst id), (typeDecl, ls))
         | id, typeDecl -> env.Add((fst id), (typeDecl, []))
 
     List.fold unfoldTypeEnvironments [] _AST |> List.fold buildType Map.empty
@@ -170,7 +229,7 @@ let buildSymbolTable (_AST: Class) : Map<string, TypeDefinition * string list> =
 /// Build a lookup table for looking up the value type.
 /// </summary>
 /// <param name="_AST"></param>
-let buildValueTable (_AST: Class) =
+let buildValueTypeTable (_AST: Class) =
 
     let unfoldValueEnvironments acc =
         function
@@ -198,10 +257,9 @@ let buildValueTable (_AST: Class) =
     |> List.fold unfoldValueValues Map.empty
 
 /// <summary>
-/// Iterate typings to create unfolded identifier and for each instance the function f is applied yielding 'a 
+/// Iterate typings to create unfolded identifier and for each instance the function f is applied yielding 'a
 /// </summary>
 /// <param name="typeEnv"></param>
-/// <param name="valueEnv"></param>
 /// <param name="id"></param>
 /// <param name="typings"></param>
 /// <param name="f">Function should be called for each final instance of an accessors</param>

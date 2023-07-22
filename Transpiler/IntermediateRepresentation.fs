@@ -33,7 +33,7 @@ type IrTransitionSystem =
 
 [<Struct>]
 type Intermediate =
-    { Type: Option<Declaration>
+    { Type: Option<(Pos<Id> * TypeDefinition) list>
       Value: Option<ValueDecMap>
       Axiom: Option<IrAxiomDeclaration list>
       TransitionSystem: Option<IrTransitionSystem> }

@@ -34,9 +34,9 @@ let idM =
 /// <summary>
 /// Folder for TransitionSystem lists to convert TransitionSystem to IrTransitionSystem
 /// </summary>
-/// <param name="tr"></param>
-/// <param name="acc"></param>
-let transitionSystemFolder (i: int, tr: TransitionSystem) (acc: IrTransitionSystem) : IrTransitionSystem =
+/// <param name="tr">Transition System</param>
+/// <param name="acc">Accumulator</param>
+let transitionSystemFolder (tr: TransitionSystem) (acc: IrTransitionSystem) : IrTransitionSystem =
     match tr with
     | Variable valueDeclarations ->
         let name (id: Identifier) : string =
@@ -44,7 +44,7 @@ let transitionSystemFolder (i: int, tr: TransitionSystem) (acc: IrTransitionSyst
             | ISimple(id, _) -> id
             | IGeneric((id, _), _) -> id
 
-        let folder (valueDec: ValueDeclaration) (acc: IrTransitionSystem) =
+        let folder ((i, valueDec): int * ValueDeclaration) (acc: IrTransitionSystem) =
             match valueDec with
             | ImplicitValue -> failwith "todo"
             | ExplicitFunction -> failwith "todo"
@@ -55,7 +55,7 @@ let transitionSystemFolder (i: int, tr: TransitionSystem) (acc: IrTransitionSyst
                 { acc with
                     Variable = Some((idM acc.Variable).Add((i, name id), valueDec)) }
 
-        List.foldBack folder valueDeclarations acc
+        List.foldBack folder (List.indexed valueDeclarations) acc
     | InitConstraint valueExpression ->
         
         let rec InitConstraintWalker (valueExpr: ValueExpression) (acc: IrAxiomDeclaration list) : IrAxiomDeclaration list =
@@ -106,8 +106,8 @@ let transitionSystemFolder (i: int, tr: TransitionSystem) (acc: IrTransitionSyst
 /// <summary>
 /// Convert Transition System from AST to Intermediate Representation
 /// </summary>
-/// <param name="id"></param>
-/// <param name="trs"></param>
+/// <param name="id">Transition System name</param>
+/// <param name="trs">List of transition systems</param>
 let convertAstTransitionSystemToIr (id: Pos<Id>) (trs: TransitionSystem list) : IrTransitionSystem =
     let initial =
         { Name = fst id
@@ -115,7 +115,7 @@ let convertAstTransitionSystemToIr (id: Pos<Id>) (trs: TransitionSystem list) : 
           InitConstraint = None
           TransitionRule = None }
 
-    List.foldBack transitionSystemFolder (List.indexed trs) initial
+    List.foldBack transitionSystemFolder trs initial
 
 /// <summary>
 /// Convert Transition System from Intermediate Representation to AST
