@@ -7,7 +7,6 @@
 
     <ItemGroup>
         <Compile Include="Ast.fs" />
-        <Compile Include="Overridding.fs" />
         <Compile Include="IntermediateRepresentation.fs" />
         <Compile Include="Auxiliary.fs" />
         <Compile Include="IrTransformer.fs" />
