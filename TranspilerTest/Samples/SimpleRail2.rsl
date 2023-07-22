@@ -1,0 +1,55 @@
+scheme SimpleRail =
+    class
+        type 
+            TrainId == t1 | t2,
+            SegmentId = {| n : Int :- n >= 0 /\ n < max |}
+        value
+            max : Int
+        axiom
+            max = 5
+        
+        transition_system
+            [TS]
+            variable
+                position [ t : TrainId ] : SegmentId,
+                occupied [ s : SegmentId ] : Bool
+
+            init_constraint
+                position[t1] = 1 /\
+                position[t2] = 4 /\
+                occupied[0] = false /\
+                occupied[1] = true /\
+                occupied[2] = false /\
+                occupied[3] = false /\
+                occupied[4] = true
+            
+            transition_rules
+                MOVE_RIGHT
+
+                where
+                [ MOVE_RIGHT ] =
+                    (([=] t : TrainId, s1 : SegmentId, s2 : SegmentId :- 
+                        position[t] < (max - 1) /\ 
+                        position[t] = s1 /\
+                        (s1 + 1) = s2 /\
+                        ~occupied[s2] ==> 
+                            position'[t] = position[t] + 1,
+                            occupied'[s1] = false,
+                            occupied'[s2] = true)),
+
+                [ MOVE_LEFT ] =
+                    (([=] t : TrainId, s1 : SegmentId, s2 : SegmentId :- 
+                        position[t] > 0 /\ 
+                        position[t] = s1 /\
+                        (s1 - 1) = s2 /\
+                        ~occupied[s2] ==> 
+                            position'[t] = position[t] - 1,
+                            occupied'[s1] = false,
+                            occupied'[s2] = true))
+            end
+
+    ltl_assertion
+        [one_train_per_section] TS |- G(all t1: TrainId, t2: TrainId :- t1 ~= t2 => position[t1] ~= position[t2]),
+        [occupied_correct] TS |- G(all t: TrainId, s: SegmentId :- position[t] = s => occupied[s])
+        
+    end

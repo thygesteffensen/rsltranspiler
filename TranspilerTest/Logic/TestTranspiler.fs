@@ -30,7 +30,7 @@ let input: obj[] list =
                  [ ("t1", pos 4 18 59 "TypeUnion.rsl")
                    ("t2", pos 4 23 64 "TypeUnion.rsl")
                    ("t3", pos 4 28 69 "TypeUnion.rsl") ],
-              [ "_t1"; "_t2"; "_t3" ])
+              [ "t1"; "t2"; "t3" ])
          ) |]
       [| "Samples/TypeSubType.rsl"
          Map.empty.Add(
@@ -56,14 +56,15 @@ let input: obj[] list =
                      )
                  )
               ),
-              [ "_0"; "_1"; "_2"; "_3"; "_4" ])
+              [ "0"; "1"; "2"; "3"; "4" ])
          ) |] ]
 
 [<TestCaseSource(nameof input)>]
-let buildSymbolTableTester source expected =
+let buildSymbolTableTester source expected =    
     let actual =
         match testLexerAndParserFromFile source with
-        | Some(_, cls) -> Some(Helpers.buildSymbolTable cls)
+        | Some(_, cls) ->
+            Some(Helpers.buildValueEnvironment cls |> Helpers.buildSymbolTable cls)
         | None -> None
 
 
@@ -71,11 +72,34 @@ let buildSymbolTableTester source expected =
     | Some t1 -> Assert.That(t1, Is.EquivalentTo(expected))
     | None -> Assert.Fail "Should succeed"
 
+
+let inputValue: obj[] list =
+    [
+        [| "Samples/AxiomSimple.rsl"; [("A", VText "a")] |> Map.ofList  |]
+        [| "Samples/AxiomSimple2.rsl"; [("A", VInt 2)] |> Map.ofList  |]
+        [| "Samples/AxiomGeneric.rsl"; Map.empty  |]
+    ]
+
+[<TestCaseSource(nameof inputValue)>]
+let buildValueTableTester source expected =    
+    let actual =
+        match testLexerAndParserFromFile source with
+        | Some(_, cls) ->
+            Some(Helpers.buildValueEnvironment cls)
+        | None -> None
+
+
+    match actual with
+    | Some t1 -> Assert.That(t1, Is.EquivalentTo(expected))
+    | None -> Assert.Fail "Should succeed"
+
+
 let input2: obj[] list =
     [ [| "Samples/ValueGeneric.rsl"; "Samples/ValueGeneric_unfolded.rsl" |]
       [| "Samples/ValueGeneric2.rsl"; "Samples/ValueGeneric2_unfolded.rsl" |]
       [| "Samples/ValueGeneric3.rsl"; "Samples/ValueGeneric3_unfolded.rsl" |]
-      [| "Samples/AxiomGeneric.rsl"; "Samples/AxiomGeneric_unfolded.rsl" |] ]
+      [| "Samples/AxiomGeneric.rsl"; "Samples/AxiomGeneric_unfolded.rsl" |]
+      [| "Samples/SimpleRail.rsl"; "Samples/SimpleRail_unfolded.rsl" |] ]
 
 [<TestCaseSource(nameof input2)>]
 let unfoldSpecification source expectedSource =
