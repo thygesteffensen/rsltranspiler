@@ -1,0 +1,7 @@
+scheme AxiomSimple =
+    class
+        value
+            A: Nat
+        axiom
+            A = 2
+    end

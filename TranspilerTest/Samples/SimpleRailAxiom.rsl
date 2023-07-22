@@ -1,0 +1,22 @@
+scheme SimpleRailAxiom =
+    class
+        type 
+            SegmentId = {| n : Int :- n >= 0 /\ n < max2 |}
+        value
+            max1 : Int,
+            max2 : Int
+        axiom
+            max1 = 4,
+            max2 = max1 + 1
+        transition_system
+            [TS]
+            variable
+                position [ s : SegmentId ] : Nat
+
+            init_constraint
+                (all s : SegmentId :- position[1] = 2)
+            
+            transition_rules
+                true = true ==> position'[2] = 1
+            end
+    end

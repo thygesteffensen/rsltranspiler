@@ -1,0 +1,16 @@
+scheme SimpleRailAxiom =
+    class
+        type 
+            TrainId == t1 | t2,
+            SegmentId = {| n : Int :- n >= 0 /\ n < max1 |}
+        value
+            position [ s : SegmentId ] : Nat,
+            max1 : Int,
+            max2 : Int
+        axiom
+            max1 = 5,
+            max2 = max1 + 1,
+            (all s : SegmentId :- position[s] = 1)
+
+        
+    end

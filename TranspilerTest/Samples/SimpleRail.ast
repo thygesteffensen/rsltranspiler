@@ -1,0 +1,691 @@
+(("SimpleRail", { pos_fname = "SimpleRail.rsl"
+                  pos_lnum = 1
+                  pos_orig_lnum = 1
+                  pos_bol = 7
+                  pos_cnum = 8 }),
+ [TypeDeclaration
+    [(("TrainId", { pos_fname = "SimpleRail.rsl"
+                    pos_lnum = 4
+                    pos_orig_lnum = 4
+                    pos_bol = 56
+                    pos_cnum = 13 }),
+      Union [("t1", { pos_fname = "SimpleRail.rsl"
+                      pos_lnum = 4
+                      pos_orig_lnum = 4
+                      pos_bol = 67
+                      pos_cnum = 24 }); ("t2", { pos_fname = "SimpleRail.rsl"
+                                                 pos_lnum = 4
+                                                 pos_orig_lnum = 4
+                                                 pos_bol = 72
+                                                 pos_cnum = 29 })]);
+     (("SegmentId", { pos_fname = "SimpleRail.rsl"
+                      pos_lnum = 5
+                      pos_orig_lnum = 5
+                      pos_bol = 88
+                      pos_cnum = 13 }),
+      Concrete
+        (Sub
+           ([SingleTyping
+               (ISimple ("n", { pos_fname = "SimpleRail.rsl"
+                                pos_lnum = 5
+                                pos_orig_lnum = 5
+                                pos_bol = 103
+                                pos_cnum = 28 }),
+                TName ("Int", { pos_fname = "SimpleRail.rsl"
+                                pos_lnum = 5
+                                pos_orig_lnum = 5
+                                pos_bol = 107
+                                pos_cnum = 32 }))],
+            Infix
+              (Infix
+                 (VName (ASimple ("n", { pos_fname = "SimpleRail.rsl"
+                                         pos_lnum = 5
+                                         pos_orig_lnum = 5
+                                         pos_bol = 114
+                                         pos_cnum = 39 })), GreaterThanOrEqual,
+                  ValueLiteral (VInt 0, { pos_fname = "SimpleRail.rsl"
+                                          pos_lnum = 5
+                                          pos_orig_lnum = 5
+                                          pos_bol = 119
+                                          pos_cnum = 44 })), LogicalAnd,
+               Infix
+                 (VName (ASimple ("n", { pos_fname = "SimpleRail.rsl"
+                                         pos_lnum = 5
+                                         pos_orig_lnum = 5
+                                         pos_bol = 124
+                                         pos_cnum = 49 })), LessThan,
+                  VName (ASimple ("max", { pos_fname = "SimpleRail.rsl"
+                                           pos_lnum = 5
+                                           pos_orig_lnum = 5
+                                           pos_bol = 128
+                                           pos_cnum = 53 })))))))];
+  Value
+    [Typing
+       (SingleTyping
+          (ISimple ("max", { pos_fname = "SimpleRail.rsl"
+                             pos_lnum = 7
+                             pos_orig_lnum = 7
+                             pos_bol = 161
+                             pos_cnum = 13 }),
+           TName ("Int", { pos_fname = "SimpleRail.rsl"
+                           pos_lnum = 7
+                           pos_orig_lnum = 7
+                           pos_bol = 167
+                           pos_cnum = 19 })))];
+  AxiomDeclaration
+    [Infix
+       (VName (ASimple ("max", { pos_fname = "SimpleRail.rsl"
+                                 pos_lnum = 9
+                                 pos_orig_lnum = 9
+                                 pos_bol = 197
+                                 pos_cnum = 13 })), Equal,
+        ValueLiteral (VInt 5, { pos_fname = "SimpleRail.rsl"
+                                pos_lnum = 9
+                                pos_orig_lnum = 9
+                                pos_bol = 203
+                                pos_cnum = 19 }))];
+  TransitionSystemDeclaration
+    (("TS", { pos_fname = "SimpleRail.rsl"
+              pos_lnum = 12
+              pos_orig_lnum = 12
+              pos_bol = 253
+              pos_cnum = 14 }),
+     [Variable
+        [Typing
+           (SingleTyping
+              (IGeneric
+                 (("position", { pos_fname = "SimpleRail.rsl"
+                                 pos_lnum = 14
+                                 pos_orig_lnum = 14
+                                 pos_bol = 294
+                                 pos_cnum = 17 }),
+                  [SingleTyping
+                     (ISimple ("t", { pos_fname = "SimpleRail.rsl"
+                                      pos_lnum = 14
+                                      pos_orig_lnum = 14
+                                      pos_bol = 305
+                                      pos_cnum = 28 }),
+                      TName ("TrainId", { pos_fname = "SimpleRail.rsl"
+                                          pos_lnum = 14
+                                          pos_orig_lnum = 14
+                                          pos_bol = 309
+                                          pos_cnum = 32 }))]),
+               TName ("SegmentId", { pos_fname = "SimpleRail.rsl"
+                                     pos_lnum = 14
+                                     pos_orig_lnum = 14
+                                     pos_bol = 321
+                                     pos_cnum = 44 })));
+         Typing
+           (SingleTyping
+              (IGeneric
+                 (("occupied", { pos_fname = "SimpleRail.rsl"
+                                 pos_lnum = 15
+                                 pos_orig_lnum = 15
+                                 pos_bol = 348
+                                 pos_cnum = 17 }),
+                  [SingleTyping
+                     (ISimple ("s", { pos_fname = "SimpleRail.rsl"
+                                      pos_lnum = 15
+                                      pos_orig_lnum = 15
+                                      pos_bol = 359
+                                      pos_cnum = 28 }),
+                      TName ("SegmentId", { pos_fname = "SimpleRail.rsl"
+                                            pos_lnum = 15
+                                            pos_orig_lnum = 15
+                                            pos_bol = 363
+                                            pos_cnum = 32 }))]),
+               TName ("Bool", { pos_fname = "SimpleRail.rsl"
+                                pos_lnum = 15
+                                pos_orig_lnum = 15
+                                pos_bol = 377
+                                pos_cnum = 46 })))];
+      InitConstraint
+        (Infix
+           (Infix
+              (VName
+                 (AGeneric
+                    (("position", { pos_fname = "SimpleRail.rsl"
+                                    pos_lnum = 18
+                                    pos_orig_lnum = 18
+                                    pos_bol = 427
+                                    pos_cnum = 17 }),
+                     [VName (ASimple ("t1", { pos_fname = "SimpleRail.rsl"
+                                              pos_lnum = 18
+                                              pos_orig_lnum = 18
+                                              pos_bol = 436
+                                              pos_cnum = 26 }))])), Equal,
+               ValueLiteral (VInt 1, { pos_fname = "SimpleRail.rsl"
+                                       pos_lnum = 18
+                                       pos_orig_lnum = 18
+                                       pos_bol = 442
+                                       pos_cnum = 32 })), LogicalAnd,
+            Infix
+              (Infix
+                 (VName
+                    (AGeneric
+                       (("position", { pos_fname = "SimpleRail.rsl"
+                                       pos_lnum = 19
+                                       pos_orig_lnum = 19
+                                       pos_bol = 463
+                                       pos_cnum = 17 }),
+                        [VName (ASimple ("t2", { pos_fname = "SimpleRail.rsl"
+                                                 pos_lnum = 19
+                                                 pos_orig_lnum = 19
+                                                 pos_bol = 472
+                                                 pos_cnum = 26 }))])), Equal,
+                  ValueLiteral (VInt 4, { pos_fname = "SimpleRail.rsl"
+                                          pos_lnum = 19
+                                          pos_orig_lnum = 19
+                                          pos_bol = 478
+                                          pos_cnum = 32 })), LogicalAnd,
+               Infix
+                 (Infix
+                    (VName
+                       (AGeneric
+                          (("occupied", { pos_fname = "SimpleRail.rsl"
+                                          pos_lnum = 20
+                                          pos_orig_lnum = 20
+                                          pos_bol = 499
+                                          pos_cnum = 17 }),
+                           [ValueLiteral (VInt 0, { pos_fname = "SimpleRail.rsl"
+                                                    pos_lnum = 20
+                                                    pos_orig_lnum = 20
+                                                    pos_bol = 508
+                                                    pos_cnum = 26 })])), Equal,
+                     ValueLiteral (VBool false, { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 20
+                                                  pos_orig_lnum = 20
+                                                  pos_bol = 513
+                                                  pos_cnum = 31 })), LogicalAnd,
+                  Infix
+                    (Infix
+                       (VName
+                          (AGeneric
+                             (("occupied", { pos_fname = "SimpleRail.rsl"
+                                             pos_lnum = 21
+                                             pos_orig_lnum = 21
+                                             pos_bol = 538
+                                             pos_cnum = 17 }),
+                              [ValueLiteral
+                                 (VInt 1, { pos_fname = "SimpleRail.rsl"
+                                            pos_lnum = 21
+                                            pos_orig_lnum = 21
+                                            pos_bol = 547
+                                            pos_cnum = 26 })])), Equal,
+                        ValueLiteral (VBool true, { pos_fname = "SimpleRail.rsl"
+                                                    pos_lnum = 21
+                                                    pos_orig_lnum = 21
+                                                    pos_bol = 552
+                                                    pos_cnum = 31 })),
+                     LogicalAnd,
+                     Infix
+                       (Infix
+                          (VName
+                             (AGeneric
+                                (("occupied", { pos_fname = "SimpleRail.rsl"
+                                                pos_lnum = 22
+                                                pos_orig_lnum = 22
+                                                pos_bol = 576
+                                                pos_cnum = 17 }),
+                                 [ValueLiteral
+                                    (VInt 2, { pos_fname = "SimpleRail.rsl"
+                                               pos_lnum = 22
+                                               pos_orig_lnum = 22
+                                               pos_bol = 585
+                                               pos_cnum = 26 })])), Equal,
+                           ValueLiteral
+                             (VBool false, { pos_fname = "SimpleRail.rsl"
+                                             pos_lnum = 22
+                                             pos_orig_lnum = 22
+                                             pos_bol = 590
+                                             pos_cnum = 31 })), LogicalAnd,
+                        Infix
+                          (Infix
+                             (VName
+                                (AGeneric
+                                   (("occupied", { pos_fname = "SimpleRail.rsl"
+                                                   pos_lnum = 23
+                                                   pos_orig_lnum = 23
+                                                   pos_bol = 615
+                                                   pos_cnum = 17 }),
+                                    [ValueLiteral
+                                       (VInt 3, { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 23
+                                                  pos_orig_lnum = 23
+                                                  pos_bol = 624
+                                                  pos_cnum = 26 })])), Equal,
+                              ValueLiteral
+                                (VBool false, { pos_fname = "SimpleRail.rsl"
+                                                pos_lnum = 23
+                                                pos_orig_lnum = 23
+                                                pos_bol = 629
+                                                pos_cnum = 31 })), LogicalAnd,
+                           Infix
+                             (VName
+                                (AGeneric
+                                   (("occupied", { pos_fname = "SimpleRail.rsl"
+                                                   pos_lnum = 24
+                                                   pos_orig_lnum = 24
+                                                   pos_bol = 654
+                                                   pos_cnum = 17 }),
+                                    [ValueLiteral
+                                       (VInt 4, { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 24
+                                                  pos_orig_lnum = 24
+                                                  pos_bol = 663
+                                                  pos_cnum = 26 })])), Equal,
+                              ValueLiteral
+                                (VBool true, { pos_fname = "SimpleRail.rsl"
+                                               pos_lnum = 24
+                                               pos_orig_lnum = 24
+                                               pos_bol = 668
+                                               pos_cnum = 31 })))))))));
+      TransitionRule
+        (VName (ASimple ("MOVE_RIGHT", { pos_fname = "SimpleRail.rsl"
+                                         pos_lnum = 27
+                                         pos_orig_lnum = 27
+                                         pos_bol = 731
+                                         pos_cnum = 17 })),
+         [(("MOVE_RIGHT", { pos_fname = "SimpleRail.rsl"
+                            pos_lnum = 30
+                            pos_orig_lnum = 30
+                            pos_bol = 783
+                            pos_cnum = 19 }),
+           Quantified
+             ((NonDeterministic, { pos_fname = "SimpleRail.rsl"
+                                   pos_lnum = 31
+                                   pos_orig_lnum = 31
+                                   pos_bol = 820
+                                   pos_cnum = 23 }),
+              [SingleTyping
+                 (ISimple ("s1", { pos_fname = "SimpleRail.rsl"
+                                   pos_lnum = 31
+                                   pos_orig_lnum = 31
+                                   pos_bol = 837
+                                   pos_cnum = 40 }),
+                  TName ("SegmentId", { pos_fname = "SimpleRail.rsl"
+                                        pos_lnum = 31
+                                        pos_orig_lnum = 31
+                                        pos_bol = 842
+                                        pos_cnum = 45 }));
+               SingleTyping
+                 (ISimple ("t", { pos_fname = "SimpleRail.rsl"
+                                  pos_lnum = 31
+                                  pos_orig_lnum = 31
+                                  pos_bol = 824
+                                  pos_cnum = 27 }),
+                  TName ("TrainId", { pos_fname = "SimpleRail.rsl"
+                                      pos_lnum = 31
+                                      pos_orig_lnum = 31
+                                      pos_bol = 828
+                                      pos_cnum = 31 }));
+               SingleTyping
+                 (ISimple ("s2", { pos_fname = "SimpleRail.rsl"
+                                   pos_lnum = 31
+                                   pos_orig_lnum = 31
+                                   pos_bol = 853
+                                   pos_cnum = 56 }),
+                  TName ("SegmentId", { pos_fname = "SimpleRail.rsl"
+                                        pos_lnum = 31
+                                        pos_orig_lnum = 31
+                                        pos_bol = 858
+                                        pos_cnum = 61 }))],
+              Infix
+                (Infix
+                   (Infix
+                      (VName
+                         (AGeneric
+                            (("position", { pos_fname = "SimpleRail.rsl"
+                                            pos_lnum = 32
+                                            pos_orig_lnum = 32
+                                            pos_bol = 896
+                                            pos_cnum = 25 }),
+                             [VName
+                                (ASimple ("t", { pos_fname = "SimpleRail.rsl"
+                                                 pos_lnum = 32
+                                                 pos_orig_lnum = 32
+                                                 pos_bol = 905
+                                                 pos_cnum = 34 }))])), LessThan,
+                       Infix
+                         (VName (ASimple ("max", { pos_fname = "SimpleRail.rsl"
+                                                   pos_lnum = 32
+                                                   pos_orig_lnum = 32
+                                                   pos_bol = 911
+                                                   pos_cnum = 40 })), Minus,
+                          ValueLiteral (VInt 1, { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 32
+                                                  pos_orig_lnum = 32
+                                                  pos_bol = 917
+                                                  pos_cnum = 46 }))), LogicalAnd,
+                    Infix
+                      (Infix
+                         (VName
+                            (AGeneric
+                               (("position", { pos_fname = "SimpleRail.rsl"
+                                               pos_lnum = 33
+                                               pos_orig_lnum = 33
+                                               pos_bol = 948
+                                               pos_cnum = 25 }),
+                                [VName
+                                   (ASimple ("t", { pos_fname = "SimpleRail.rsl"
+                                                    pos_lnum = 33
+                                                    pos_orig_lnum = 33
+                                                    pos_bol = 957
+                                                    pos_cnum = 34 }))])), Equal,
+                          VName (ASimple ("s1", { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 33
+                                                  pos_orig_lnum = 33
+                                                  pos_bol = 962
+                                                  pos_cnum = 39 }))), LogicalAnd,
+                       Infix
+                         (Infix
+                            (Infix
+                               (VName
+                                  (ASimple ("s1", { pos_fname = "SimpleRail.rsl"
+                                                    pos_lnum = 34
+                                                    pos_orig_lnum = 34
+                                                    pos_bol = 993
+                                                    pos_cnum = 26 })), Plus,
+                                ValueLiteral
+                                  (VInt 1, { pos_fname = "SimpleRail.rsl"
+                                             pos_lnum = 34
+                                             pos_orig_lnum = 34
+                                             pos_bol = 998
+                                             pos_cnum = 31 })), Equal,
+                             VName
+                               (ASimple ("s2", { pos_fname = "SimpleRail.rsl"
+                                                 pos_lnum = 34
+                                                 pos_orig_lnum = 34
+                                                 pos_bol = 1003
+                                                 pos_cnum = 36 }))), LogicalAnd,
+                          Negation
+                            (VName
+                               (AGeneric
+                                  (("occupied", { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 35
+                                                  pos_orig_lnum = 35
+                                                  pos_bol = 1034
+                                                  pos_cnum = 26 }),
+                                   [VName
+                                      (ASimple
+                                         ("s2", { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 35
+                                                  pos_orig_lnum = 35
+                                                  pos_bol = 1043
+                                                  pos_cnum = 35 }))])),
+                             { pos_fname = "SimpleRail.rsl"
+                               pos_lnum = 35
+                               pos_orig_lnum = 35
+                               pos_bol = 1033
+                               pos_cnum = 25 })))), Guard,
+                 VeList
+                   [Infix
+                      (VPName
+                         (AGeneric
+                            (("position", { pos_fname = "SimpleRail.rsl"
+                                            pos_lnum = 36
+                                            pos_orig_lnum = 36
+                                            pos_bol = 1080
+                                            pos_cnum = 29 }),
+                             [VName
+                                (ASimple ("t", { pos_fname = "SimpleRail.rsl"
+                                                 pos_lnum = 36
+                                                 pos_orig_lnum = 36
+                                                 pos_bol = 1090
+                                                 pos_cnum = 39 }))])), Equal,
+                       Infix
+                         (VName
+                            (AGeneric
+                               (("position", { pos_fname = "SimpleRail.rsl"
+                                               pos_lnum = 36
+                                               pos_orig_lnum = 36
+                                               pos_bol = 1095
+                                               pos_cnum = 44 }),
+                                [VName
+                                   (ASimple ("t", { pos_fname = "SimpleRail.rsl"
+                                                    pos_lnum = 36
+                                                    pos_orig_lnum = 36
+                                                    pos_bol = 1104
+                                                    pos_cnum = 53 }))])), Plus,
+                          ValueLiteral (VInt 1, { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 36
+                                                  pos_orig_lnum = 36
+                                                  pos_bol = 1109
+                                                  pos_cnum = 58 })));
+                    Infix
+                      (VPName
+                         (AGeneric
+                            (("occupied", { pos_fname = "SimpleRail.rsl"
+                                            pos_lnum = 37
+                                            pos_orig_lnum = 37
+                                            pos_bol = 1140
+                                            pos_cnum = 29 }),
+                             [VName
+                                (ASimple ("s1", { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 37
+                                                  pos_orig_lnum = 37
+                                                  pos_bol = 1150
+                                                  pos_cnum = 39 }))])), Equal,
+                       ValueLiteral (VBool false, { pos_fname = "SimpleRail.rsl"
+                                                    pos_lnum = 37
+                                                    pos_orig_lnum = 37
+                                                    pos_bol = 1156
+                                                    pos_cnum = 45 }));
+                    Infix
+                      (VPName
+                         (AGeneric
+                            (("occupied", { pos_fname = "SimpleRail.rsl"
+                                            pos_lnum = 38
+                                            pos_orig_lnum = 38
+                                            pos_bol = 1191
+                                            pos_cnum = 29 }),
+                             [VName
+                                (ASimple ("s2", { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 38
+                                                  pos_orig_lnum = 38
+                                                  pos_bol = 1201
+                                                  pos_cnum = 39 }))])), Equal,
+                       ValueLiteral (VBool true, { pos_fname = "SimpleRail.rsl"
+                                                   pos_lnum = 38
+                                                   pos_orig_lnum = 38
+                                                   pos_bol = 1207
+                                                   pos_cnum = 45 }))])));
+          (("MOVE_LEFT", { pos_fname = "SimpleRail.rsl"
+                           pos_lnum = 40
+                           pos_orig_lnum = 40
+                           pos_bol = 1234
+                           pos_cnum = 19 }),
+           Quantified
+             ((NonDeterministic, { pos_fname = "SimpleRail.rsl"
+                                   pos_lnum = 41
+                                   pos_orig_lnum = 41
+                                   pos_bol = 1270
+                                   pos_cnum = 23 }),
+              [SingleTyping
+                 (ISimple ("s1", { pos_fname = "SimpleRail.rsl"
+                                   pos_lnum = 41
+                                   pos_orig_lnum = 41
+                                   pos_bol = 1287
+                                   pos_cnum = 40 }),
+                  TName ("SegmentId", { pos_fname = "SimpleRail.rsl"
+                                        pos_lnum = 41
+                                        pos_orig_lnum = 41
+                                        pos_bol = 1292
+                                        pos_cnum = 45 }));
+               SingleTyping
+                 (ISimple ("t", { pos_fname = "SimpleRail.rsl"
+                                  pos_lnum = 41
+                                  pos_orig_lnum = 41
+                                  pos_bol = 1274
+                                  pos_cnum = 27 }),
+                  TName ("TrainId", { pos_fname = "SimpleRail.rsl"
+                                      pos_lnum = 41
+                                      pos_orig_lnum = 41
+                                      pos_bol = 1278
+                                      pos_cnum = 31 }));
+               SingleTyping
+                 (ISimple ("s2", { pos_fname = "SimpleRail.rsl"
+                                   pos_lnum = 41
+                                   pos_orig_lnum = 41
+                                   pos_bol = 1303
+                                   pos_cnum = 56 }),
+                  TName ("SegmentId", { pos_fname = "SimpleRail.rsl"
+                                        pos_lnum = 41
+                                        pos_orig_lnum = 41
+                                        pos_bol = 1308
+                                        pos_cnum = 61 }))],
+              Infix
+                (Infix
+                   (Infix
+                      (VName
+                         (AGeneric
+                            (("position", { pos_fname = "SimpleRail.rsl"
+                                            pos_lnum = 42
+                                            pos_orig_lnum = 42
+                                            pos_bol = 1346
+                                            pos_cnum = 25 }),
+                             [VName
+                                (ASimple ("t", { pos_fname = "SimpleRail.rsl"
+                                                 pos_lnum = 42
+                                                 pos_orig_lnum = 42
+                                                 pos_bol = 1355
+                                                 pos_cnum = 34 }))])),
+                       GreaterThan,
+                       ValueLiteral (VInt 0, { pos_fname = "SimpleRail.rsl"
+                                               pos_lnum = 42
+                                               pos_orig_lnum = 42
+                                               pos_bol = 1360
+                                               pos_cnum = 39 })), LogicalAnd,
+                    Infix
+                      (Infix
+                         (VName
+                            (AGeneric
+                               (("position", { pos_fname = "SimpleRail.rsl"
+                                               pos_lnum = 43
+                                               pos_orig_lnum = 43
+                                               pos_bol = 1390
+                                               pos_cnum = 25 }),
+                                [VName
+                                   (ASimple ("t", { pos_fname = "SimpleRail.rsl"
+                                                    pos_lnum = 43
+                                                    pos_orig_lnum = 43
+                                                    pos_bol = 1399
+                                                    pos_cnum = 34 }))])), Equal,
+                          VName (ASimple ("s1", { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 43
+                                                  pos_orig_lnum = 43
+                                                  pos_bol = 1404
+                                                  pos_cnum = 39 }))), LogicalAnd,
+                       Infix
+                         (Infix
+                            (Infix
+                               (VName
+                                  (ASimple ("s1", { pos_fname = "SimpleRail.rsl"
+                                                    pos_lnum = 44
+                                                    pos_orig_lnum = 44
+                                                    pos_bol = 1435
+                                                    pos_cnum = 26 })), Minus,
+                                ValueLiteral
+                                  (VInt 1, { pos_fname = "SimpleRail.rsl"
+                                             pos_lnum = 44
+                                             pos_orig_lnum = 44
+                                             pos_bol = 1440
+                                             pos_cnum = 31 })), Equal,
+                             VName
+                               (ASimple ("s2", { pos_fname = "SimpleRail.rsl"
+                                                 pos_lnum = 44
+                                                 pos_orig_lnum = 44
+                                                 pos_bol = 1445
+                                                 pos_cnum = 36 }))), LogicalAnd,
+                          Negation
+                            (VName
+                               (AGeneric
+                                  (("occupied", { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 45
+                                                  pos_orig_lnum = 45
+                                                  pos_bol = 1476
+                                                  pos_cnum = 26 }),
+                                   [VName
+                                      (ASimple
+                                         ("s2", { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 45
+                                                  pos_orig_lnum = 45
+                                                  pos_bol = 1485
+                                                  pos_cnum = 35 }))])),
+                             { pos_fname = "SimpleRail.rsl"
+                               pos_lnum = 45
+                               pos_orig_lnum = 45
+                               pos_bol = 1475
+                               pos_cnum = 25 })))), Guard,
+                 VeList
+                   [Infix
+                      (VPName
+                         (AGeneric
+                            (("position", { pos_fname = "SimpleRail.rsl"
+                                            pos_lnum = 46
+                                            pos_orig_lnum = 46
+                                            pos_bol = 1522
+                                            pos_cnum = 29 }),
+                             [VName
+                                (ASimple ("t", { pos_fname = "SimpleRail.rsl"
+                                                 pos_lnum = 46
+                                                 pos_orig_lnum = 46
+                                                 pos_bol = 1532
+                                                 pos_cnum = 39 }))])), Equal,
+                       Infix
+                         (VName
+                            (AGeneric
+                               (("position", { pos_fname = "SimpleRail.rsl"
+                                               pos_lnum = 46
+                                               pos_orig_lnum = 46
+                                               pos_bol = 1537
+                                               pos_cnum = 44 }),
+                                [VName
+                                   (ASimple ("t", { pos_fname = "SimpleRail.rsl"
+                                                    pos_lnum = 46
+                                                    pos_orig_lnum = 46
+                                                    pos_bol = 1546
+                                                    pos_cnum = 53 }))])), Minus,
+                          ValueLiteral (VInt 1, { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 46
+                                                  pos_orig_lnum = 46
+                                                  pos_bol = 1551
+                                                  pos_cnum = 58 })));
+                    Infix
+                      (VPName
+                         (AGeneric
+                            (("occupied", { pos_fname = "SimpleRail.rsl"
+                                            pos_lnum = 47
+                                            pos_orig_lnum = 47
+                                            pos_bol = 1582
+                                            pos_cnum = 29 }),
+                             [VName
+                                (ASimple ("s1", { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 47
+                                                  pos_orig_lnum = 47
+                                                  pos_bol = 1592
+                                                  pos_cnum = 39 }))])), Equal,
+                       ValueLiteral (VBool false, { pos_fname = "SimpleRail.rsl"
+                                                    pos_lnum = 47
+                                                    pos_orig_lnum = 47
+                                                    pos_bol = 1598
+                                                    pos_cnum = 45 }));
+                    Infix
+                      (VPName
+                         (AGeneric
+                            (("occupied", { pos_fname = "SimpleRail.rsl"
+                                            pos_lnum = 48
+                                            pos_orig_lnum = 48
+                                            pos_bol = 1633
+                                            pos_cnum = 29 }),
+                             [VName
+                                (ASimple ("s2", { pos_fname = "SimpleRail.rsl"
+                                                  pos_lnum = 48
+                                                  pos_orig_lnum = 48
+                                                  pos_bol = 1643
+                                                  pos_cnum = 39 }))])), Equal,
+                       ValueLiteral (VBool true, { pos_fname = "SimpleRail.rsl"
+                                                   pos_lnum = 48
+                                                   pos_orig_lnum = 48
+                                                   pos_bol = 1649
+                                                   pos_cnum = 45 }))])))])])])

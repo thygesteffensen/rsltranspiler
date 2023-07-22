@@ -1,0 +1,32 @@
+scheme SimpleRailAxiom_unfolded = 
+class
+type
+SegmentId = {| n : Int :- n >= 0 /\
+  n < 5 |}
+
+value
+max1 : Int = 5,
+
+max2 : Int = max1 + 1
+
+transition_system
+[TS]
+variable
+position_0 : Nat,
+position_1 : Nat,
+position_2 : Nat,
+position_3 : Nat,
+position_4 : Nat
+init_constraint
+position_1 = 2 /\
+position_1 = 2 /\
+position_1 = 2 /\
+position_1 = 2 /\
+position_1 = 2
+transition_rules
+  true = true
+  ==>
+  position_2' = 1
+end
+
+end

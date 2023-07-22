@@ -1,0 +1,359 @@
+((NamedTransitionRulesSimple, { pos_fname = "NamedTransitionRulesSimple.rsl"
+  pos_lnum = 1
+  pos_orig_lnum = 1
+  pos_bol = 7
+  pos_cnum = 8 }), [TypeDeclaration
+  [(("Pos", { pos_fname = "NamedTransitionRulesSimple.rsl"
+              pos_lnum = 4
+              pos_orig_lnum = 4
+              pos_bol = 71
+              pos_cnum = 13 }),
+    Union
+      [("p1", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                pos_lnum = 4
+                pos_orig_lnum = 4
+                pos_bol = 78
+                pos_cnum = 20 });
+       ("p2", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                pos_lnum = 4
+                pos_orig_lnum = 4
+                pos_bol = 83
+                pos_cnum = 25 })])]; TransitionSystemDeclaration
+  (("TS", { pos_fname = "NamedTransitionRulesSimple.rsl"
+            pos_lnum = 5
+            pos_orig_lnum = 5
+            pos_bol = 114
+            pos_cnum = 29 }),
+   [Variable
+      [Typing
+         (SingleTyping
+            (ISimple ("v1", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                              pos_lnum = 7
+                              pos_orig_lnum = 7
+                              pos_bol = 156
+                              pos_cnum = 17 }),
+             TName ("Nat", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                             pos_lnum = 7
+                             pos_orig_lnum = 7
+                             pos_bol = 161
+                             pos_cnum = 22 })));
+       Typing
+         (SingleTyping
+            (IGeneric
+               (("v2", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                         pos_lnum = 8
+                         pos_orig_lnum = 8
+                         pos_bol = 182
+                         pos_cnum = 17 }),
+                [SingleTyping
+                   (ISimple ("t", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 8
+                                    pos_orig_lnum = 8
+                                    pos_bol = 187
+                                    pos_cnum = 22 }),
+                    TName ("Pos", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 8
+                                    pos_orig_lnum = 8
+                                    pos_bol = 191
+                                    pos_cnum = 26 }))]),
+             TName ("Nat", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                             pos_lnum = 8
+                             pos_orig_lnum = 8
+                             pos_bol = 199
+                             pos_cnum = 34 })));
+       ExplicitValue
+         (ISimple ("v3", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                           pos_lnum = 9
+                           pos_orig_lnum = 9
+                           pos_bol = 220
+                           pos_cnum = 17 }),
+          TName ("Nat", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                          pos_lnum = 9
+                          pos_orig_lnum = 9
+                          pos_bol = 225
+                          pos_cnum = 22 }),
+          ValueLiteral (VInt 3, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                  pos_lnum = 9
+                                  pos_orig_lnum = 9
+                                  pos_bol = 232
+                                  pos_cnum = 29 }))];
+    InitConstraint
+      (Infix
+         (Infix
+            (VName
+               (ASimple ("v1", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                 pos_lnum = 11
+                                 pos_orig_lnum = 11
+                                 pos_bol = 278
+                                 pos_cnum = 17 })), Equal,
+             ValueLiteral
+               (VInt 1, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                          pos_lnum = 11
+                          pos_orig_lnum = 11
+                          pos_bol = 283
+                          pos_cnum = 22 })), LogicalAnd,
+          Infix
+            (Infix
+               (VName
+                  (ASimple ("v3", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 12
+                                    pos_orig_lnum = 12
+                                    pos_bol = 304
+                                    pos_cnum = 17 })), Equal,
+                ValueLiteral
+                  (VInt 3, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                             pos_lnum = 12
+                             pos_orig_lnum = 12
+                             pos_bol = 309
+                             pos_cnum = 22 })), LogicalAnd,
+             Quantified
+               ((All, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                        pos_lnum = 13
+                        pos_orig_lnum = 13
+                        pos_bol = 331
+                        pos_cnum = 18 }),
+                [SingleTyping
+                   (ISimple ("t", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 13
+                                    pos_orig_lnum = 13
+                                    pos_bol = 335
+                                    pos_cnum = 22 }),
+                    TName ("Pos", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 13
+                                    pos_orig_lnum = 13
+                                    pos_bol = 339
+                                    pos_cnum = 26 }))],
+                Infix
+                  (VName
+                     (AGeneric
+                        (("v2", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                  pos_lnum = 13
+                                  pos_orig_lnum = 13
+                                  pos_bol = 346
+                                  pos_cnum = 33 }),
+                         [VName
+                            (ASimple
+                               ("t",
+                                { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                  pos_lnum = 13
+                                  pos_orig_lnum = 13
+                                  pos_bol = 349
+                                  pos_cnum = 36 }))])), Equal,
+                   ValueLiteral
+                     (VInt 2, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                pos_lnum = 13
+                                pos_orig_lnum = 13
+                                pos_bol = 354
+                                pos_cnum = 41 }))))));
+    TransitionRule
+      (Infix
+         (VName (ASimple ("TR1", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                   pos_lnum = 16
+                                   pos_orig_lnum = 16
+                                   pos_bol = 415
+                                   pos_cnum = 17 })), NonDeterministic,
+          Infix
+            (VName
+               (ASimple ("TR2", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                  pos_lnum = 16
+                                  pos_orig_lnum = 16
+                                  pos_bol = 423
+                                  pos_cnum = 25 })), NonDeterministic,
+             Infix
+               (Infix
+                  (ValueLiteral
+                     (VBool true, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 17
+                                    pos_orig_lnum = 17
+                                    pos_bol = 447
+                                    pos_cnum = 17 }), Equal,
+                   ValueLiteral
+                     (VBool false,
+                      { pos_fname = "NamedTransitionRulesSimple.rsl"
+                        pos_lnum = 17
+                        pos_orig_lnum = 17
+                        pos_bol = 454
+                        pos_cnum = 24 })), Guard,
+                VeList
+                  [Infix
+                     (VPName
+                        (ASimple
+                           ("v1", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 18
+                                    pos_orig_lnum = 18
+                                    pos_bol = 480
+                                    pos_cnum = 17 })), Equal,
+                      VName
+                        (ASimple
+                           ("v3", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 18
+                                    pos_orig_lnum = 18
+                                    pos_bol = 486
+                                    pos_cnum = 23 })))]))),
+       [(("TR1", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                   pos_lnum = 21
+                   pos_orig_lnum = 21
+                   pos_bol = 550
+                   pos_cnum = 22 }),
+         Infix
+           (Infix
+              (ValueLiteral
+                 (VBool true, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                pos_lnum = 22
+                                pos_orig_lnum = 22
+                                pos_bol = 583
+                                pos_cnum = 26 }), Equal,
+               ValueLiteral
+                 (VBool true, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                pos_lnum = 22
+                                pos_orig_lnum = 22
+                                pos_bol = 590
+                                pos_cnum = 33 })), Guard,
+            VeList
+              [Infix
+                 (VPName
+                    (AGeneric
+                       (("v2", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                 pos_lnum = 23
+                                 pos_orig_lnum = 23
+                                 pos_bol = 627
+                                 pos_cnum = 29 }),
+                        [VName
+                           (ASimple
+                              ("p1",
+                               { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                 pos_lnum = 23
+                                 pos_orig_lnum = 23
+                                 pos_bol = 631
+                                 pos_cnum = 33 }))])), Equal,
+                  ValueLiteral
+                    (VInt 1, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                               pos_lnum = 23
+                               pos_orig_lnum = 23
+                               pos_bol = 637
+                               pos_cnum = 39 }))]));
+        (("TR2", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                   pos_lnum = 24
+                   pos_orig_lnum = 24
+                   pos_bol = 662
+                   pos_cnum = 22 }),
+         Quantified
+           ((NonDeterministic, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                 pos_lnum = 25
+                                 pos_orig_lnum = 25
+                                 pos_bol = 695
+                                 pos_cnum = 27 }),
+            [SingleTyping
+               (ISimple ("t", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                pos_lnum = 25
+                                pos_orig_lnum = 25
+                                pos_bol = 699
+                                pos_cnum = 31 }),
+                TName ("Pos", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                pos_lnum = 25
+                                pos_orig_lnum = 25
+                                pos_bol = 703
+                                pos_cnum = 35 }))],
+            Infix
+              (Infix
+                 (ValueLiteral
+                    (VBool false, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 25
+                                    pos_orig_lnum = 25
+                                    pos_bol = 710
+                                    pos_cnum = 42 }), Equal,
+                  ValueLiteral
+                    (VBool false, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 25
+                                    pos_orig_lnum = 25
+                                    pos_bol = 718
+                                    pos_cnum = 50 })), Guard,
+               VeList
+                 [Infix
+                    (VPName
+                       (AGeneric
+                          (("v2", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 25
+                                    pos_orig_lnum = 25
+                                    pos_bol = 728
+                                    pos_cnum = 60 }),
+                           [VName
+                              (ASimple
+                                 ("t",
+                                  { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 25
+                                    pos_orig_lnum = 25
+                                    pos_bol = 732
+                                    pos_cnum = 64 }))])), Equal,
+                     ValueLiteral
+                       (VInt 1, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                  pos_lnum = 25
+                                  pos_orig_lnum = 25
+                                  pos_bol = 737
+                                  pos_cnum = 69 }))])));
+        (("TR", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                  pos_lnum = 26
+                  pos_orig_lnum = 26
+                  pos_bol = 764
+                  pos_cnum = 22 }),
+         Infix
+           (Infix
+              (ValueLiteral
+                 (VBool false, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                 pos_lnum = 27
+                                 pos_orig_lnum = 27
+                                 pos_bol = 795
+                                 pos_cnum = 26 }), Guard,
+               VeList
+                 [Infix
+                    (VPName
+                       (AGeneric
+                          (("v2", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 27
+                                    pos_orig_lnum = 27
+                                    pos_bol = 805
+                                    pos_cnum = 36 }),
+                           [VName
+                              (ASimple
+                                 ("p1",
+                                  { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 27
+                                    pos_orig_lnum = 27
+                                    pos_bol = 809
+                                    pos_cnum = 40 }))])), Equal,
+                     ValueLiteral
+                       (VInt 1, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                  pos_lnum = 27
+                                  pos_orig_lnum = 27
+                                  pos_bol = 815
+                                  pos_cnum = 46 }))]), NonDeterministic,
+            Infix
+              (ValueLiteral
+                 (VBool false, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                 pos_lnum = 27
+                                 pos_orig_lnum = 27
+                                 pos_bol = 821
+                                 pos_cnum = 52 }), Guard,
+               VeList
+                 [Infix
+                    (VPName
+                       (AGeneric
+                          (("v2", { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 27
+                                    pos_orig_lnum = 27
+                                    pos_bol = 831
+                                    pos_cnum = 62 }),
+                           [VName
+                              (ASimple
+                                 ("p1",
+                                  { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                    pos_lnum = 27
+                                    pos_orig_lnum = 27
+                                    pos_bol = 835
+                                    pos_cnum = 66 }))])), Equal,
+                     ValueLiteral
+                       (VInt 1, { pos_fname = "NamedTransitionRulesSimple.rsl"
+                                  pos_lnum = 27
+                                  pos_orig_lnum = 27
+                                  pos_bol = 841
+                                  pos_cnum = 72 }))])))])])])
