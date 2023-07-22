@@ -22,6 +22,7 @@
         <Compile Include="UnitTestTransitionSystem.fs" />
         <Compile Include="Logic\*.fs" />
         <Compile Include="Parser\*.fs" />
+        <Compile Include="Writer\*.fs" />
         <Compile Include="TestDrawer.fs" />
         <Compile Include="Program.fs" />
         <None Include="Playground.fsx" />
