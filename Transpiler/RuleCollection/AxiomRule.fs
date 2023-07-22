@@ -9,9 +9,9 @@ open Transpiler.RuleCollection.Helpers
 open Transpiler.Helpers.Helpers
 
 
-let _unfoldAxioms typeEnv valueEnv valueDeclarations axioms =
+let _unfoldAxioms typeEnv valueTypeEnv valueDeclarations axioms =
         
-    let valueDeclarationsAxiomsUnfolded = List.foldBack (fun e a -> axiomFolder typeEnv valueEnv a Map.empty e) axioms valueDeclarations
+    let valueDeclarationsAxiomsUnfolded = List.foldBack (fun e a -> axiomFolder typeEnv valueTypeEnv a Map.empty e) axioms valueDeclarations
     // All Axioms should be unfolded, i.e. all Typing (IGeneric should be replaced with it's thingy
     // How do we best do this?
     // 1. Produce a list and when each generic is computed, the element is removed from the list, yielding a list for
@@ -22,7 +22,7 @@ let _unfoldAxioms typeEnv valueEnv valueDeclarations axioms =
             (fun (i, _k) e a ->
                 match e with
                 | Typing(SingleTyping(IGeneric((s, _pos), typings), _)) ->
-                    iterateTypings typeEnv valueEnv s typings (fun e a ->
+                    iterateTypings typeEnv s typings (fun e a ->
                         match Map.tryFind (i, e) valueDeclarationsAxiomsUnfolded with
                             | None -> e :: a
                             | Some _ -> a
@@ -53,9 +53,9 @@ let _unfoldAxioms typeEnv valueEnv valueDeclarations axioms =
 /// generic declared value.
 /// </summary>
 /// <param name="typeEnv"></param>
-/// <param name="valueEnv"></param>
+/// <param name="valueTypeEnv"></param>
 /// <param name="intermediate"></param>
-let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
+let unfoldAxioms typeEnv valueTypeEnv (intermediate: Intermediate) =
     match intermediate with
     | { Axiom = axiomDecl } ->
         match axiomDecl with
@@ -67,5 +67,5 @@ let unfoldAxioms typeEnv valueEnv (intermediate: Intermediate) =
                 | None -> Map.empty
                 
             { intermediate with
-                Value = _unfoldAxioms typeEnv valueEnv valueDeclarations axioms
+                Value = _unfoldAxioms typeEnv valueTypeEnv valueDeclarations axioms
                 Axiom = None }
