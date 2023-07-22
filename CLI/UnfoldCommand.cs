@@ -6,10 +6,13 @@ internal static class UnfoldCommand
 {
     public static void AddUnfoldCommand(this RootCommand rootCommand)
     {
-        var unfoldCommand = new Command("unfold");
         var arg = new Argument<FileInfo>("specification")
         {
             Description = "The file to process"
+        };
+        var unfoldCommand = new Command("unfold")
+        {
+            Description = $"Parse input specification (<{arg.Name}>), unfold and output the unfolded specification in a new file"
         };
 
         unfoldCommand.SetHandler(UnfoldSpecification, Program.DebugOption, arg);

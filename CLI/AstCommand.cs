@@ -18,7 +18,7 @@ internal static class AstCommand
         var unfoldCommand = new Command("ast")
         {
             Description =
-                $"Parse input specification (<{arg.Name}>). and output rendered AST. (This command uses locally installed GhostScript tool `gs`)"
+                $"Parse input specification (<{arg.Name}>) and output rendered AST. (This command uses locally installed GhostScript tool `gs`)"
         };
 
         unfoldCommand.SetHandler(UnfoldSpecification, Program.DebugOption, arg, opt);
