@@ -332,7 +332,7 @@ let input: obj[] list =
                                                  VName(ASimple("s2", pos 34 36 1003 f2))
                                              ),
                                              LogicalAnd,
-                                             Negation(
+                                             LogicalNegation(
                                                  VName(
                                                      AGeneric(
                                                          ("occupied", pos 35 26 1034 f2),
@@ -429,7 +429,7 @@ let input: obj[] list =
                                                  VName(ASimple("s2", pos 44 36 1445 f2))
                                              ),
                                              LogicalAnd,
-                                             Negation(
+                                             LogicalNegation(
                                                  VName(
                                                      AGeneric(
                                                          ("occupied", pos 45 26 1476 f2),

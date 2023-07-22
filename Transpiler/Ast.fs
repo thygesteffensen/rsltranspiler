@@ -58,7 +58,7 @@ type ValueExpression =
     | Infix of (ValueExpression * InfixOp * ValueExpression)
     | VeList of ValueExpression list
     | VArray of ValueExpression list
-    | Negation of Pos<ValueExpression>
+    | LogicalNegation of Pos<ValueExpression>
 
 and Accessor =
     | ASimple of Pos<Id>

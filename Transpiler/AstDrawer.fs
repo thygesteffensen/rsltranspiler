@@ -47,7 +47,7 @@ let rec valueExpressionToNode (valueExpression: ValueExpression) (acc: Tree<stri
         :: acc // TODO: Might not be in correct order ;)
     | VeList valueExpressions -> Node("VeList", List.foldBack valueExpressionToNode valueExpressions []) :: acc
     | VArray valueExpressions -> Node("VArray", List.foldBack valueExpressionToNode valueExpressions []) :: acc
-    | Negation(valueExpression, _pos) -> Node("Negation", valueExpressionToNode valueExpression []) :: acc
+    | LogicalNegation(valueExpression, _pos) -> Node("Negation", valueExpressionToNode valueExpression []) :: acc
 
 and accessorToString (accessor: Accessor) : Tree<string> =
     match accessor with

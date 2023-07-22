@@ -110,7 +110,7 @@ value_expression:
     | axiom_infix_expr                                                  { $1 }
     | infix_expr                                                        { $1 }
     | LCURLY DOT value_expressions DOT RCURLY                           { VArray(List.rev $3) }
-    | NEG value_expression                                              { Negation($2, $1) }
+    | NEG value_expression                                              { LogicalNegation($2, $1) }
     
 accessor:
     | TEXT                                                              { VName(ASimple $1) }

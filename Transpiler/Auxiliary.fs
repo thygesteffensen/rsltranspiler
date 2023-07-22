@@ -20,4 +20,4 @@ let rec getPosFromValueExpression (valueExpr: ValueExpression) : Position =
     | VeList([]) -> failwith "Value Expression cannot be empty - location unknown..."
     | VArray(ve :: _) -> getPosFromValueExpression ve
     | VArray [] -> failwith "Value Expression cannot be empty - location unknown..."
-    | Negation(_, position) -> position
+    | LogicalNegation(_, position) -> position

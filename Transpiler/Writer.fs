@@ -117,7 +117,7 @@ let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
     | VeList valueExpressions ->
         listDelimiterAction (fun () -> stream.Write ", ") valueExpressions (writeValueExpression stream depth)
     | VArray _ -> failwith "todo"
-    | Negation(valueExpression, _pos) ->
+    | LogicalNegation(valueExpression, _pos) ->
         stream.Write "~("
         writeValueExpression stream depth valueExpression
         stream.Write ")"
