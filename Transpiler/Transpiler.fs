@@ -27,6 +27,4 @@ let transpile ((specification, cls): Scheme) =
         unfoldNamedTransitionRules typeEnvironment valueEnvironment genericsTypeUnfolded
 
     let t = convertToAst namedTransitionRulesUnfolded
-    // let t = convertToAst genericsTypeUnfolded
-    // let t = convertToAst axiomsUnfolded
     Scheme(($"{fst specification}_unfolded", snd specification), t)

@@ -83,7 +83,7 @@ let rec convertToIntermediate (cls: Class) (intermediate: Intermediate) =
 
                 { intermediate with
                     Value = Some(value) }
-            | TypeDeclaration _ as td -> { intermediate with Type = Some(td) }
+            | TypeDeclaration td -> { intermediate with Type = Some(td) }
             | AxiomDeclaration ad ->
                 { intermediate with
                     Axiom = Some(convertAxiomDeclToIr ad) }
@@ -127,7 +127,7 @@ let rec convertToAst (intermediate: Intermediate) =
     let typeDec =
         match intermediate.Type with
         | None -> None
-        | Some v -> Some(v)
+        | Some v -> Some(TypeDeclaration v)
 
     typeDec :: valueDec :: axiomDec :: [ trDec ] |> List.choose id
 
@@ -206,19 +206,22 @@ let buildValueTable (_AST: Class) =
 /// <param name="typings"></param>
 /// <param name="f">Function should be called for each final instance of an accessors</param>
 /// <param name="acc"></param>
-let rec iterateTypings (typeEnv: Map<string, TypeDefinition * string list>) valueEnv id (typings: Typing list) (f: string -> 'a -> 'a) (acc: 'a) : 'a =
+let rec iterateTypings
+    (typeEnv: Map<string, TypeDefinition * string list>)
+    id
+    (typings: Typing list)
+    (f: string -> 'a -> 'a)
+    (acc: 'a)
+    : 'a =
     match typings with
     | [] -> f id acc
-    | SingleTyping(ISimple(identifier, _pos), TName(s, _pos1))::ts ->
+        | SingleTyping(ISimple(_, _pos), TName(s, _pos1)) :: ts ->
         match Map.tryFind s typeEnv with
         | None -> failwith "No"
-        | Some (_, instances) ->
-            List.foldBack (fun e a ->
-                iterateTypings typeEnv valueEnv $"{id}{e}" ts f a)
-                instances
-                acc
+        | Some(_, instances) ->
+            List.foldBack (fun e a -> iterateTypings typeEnv $"{id}_{e}" ts f a) instances acc
     | _ -> failwith "Nono"
-    
+
 /// <summary>
 /// toString for value literal
 /// </summary>
@@ -232,4 +235,3 @@ let literalToString valueLiteral =
     | VChar c -> string c
     | VNat i -> string i
     | VText s -> s
-
