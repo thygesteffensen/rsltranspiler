@@ -32,13 +32,13 @@ let valueExpressionToString (ve: ValueExpression) (instances: Map<string, string
 /// We allow unfolding value expression until the
 /// </summary>
 /// <param name="typeEnv"></param>
-/// <param name="valueEnv"></param>
+/// <param name="valueTypeEnv"></param>
 /// <param name="map"></param>
 /// <param name="instances"></param>
 /// <param name="axiom"></param>
-let rec axiomFolder typeEnv valueEnv (map: ValueDecMap) (instances: Map<string, string>) (axiom: IrAxiomDeclaration) =
+let rec axiomFolder typeEnv valueTypeEnv (map: ValueDecMap) (instances: Map<string, string>) (axiom: IrAxiomDeclaration) =
     match axiom with
-    | IrQuantified(typings, valueExpr) -> instantiateTypings typeEnv valueEnv map instances valueExpr typings
+    | IrQuantified(typings, valueExpr) -> instantiateTypings typeEnv valueTypeEnv map instances valueExpr typings
 
     | IrInfix(identifier, rhs) ->
         let findIndex (key: string) : int * string =
@@ -47,10 +47,10 @@ let rec axiomFolder typeEnv valueEnv (map: ValueDecMap) (instances: Map<string, 
 
         match identifier with
         | ASimple(s, pos) ->
-            let valueType = Map.find s valueEnv
+            let valueType = Map.find s valueTypeEnv
             map.Add(findIndex s, ExplicitValue(Identifier.ISimple(s, pos), valueType, rhs))
         | AGeneric((s, pos), valueExpressions) ->
-            let valueType = Map.find s valueEnv
+            let valueType = Map.find s valueTypeEnv
 
             let postfix =
                 List.foldBack (fun e a -> $"_{valueExpressionToString e instances}{a}") valueExpressions ""
@@ -65,17 +65,18 @@ let rec axiomFolder typeEnv valueEnv (map: ValueDecMap) (instances: Map<string, 
 /// is unfolded and added to the value declaration map.
 /// </summary>
 /// <param name="typeEnv">Type environment</param>
-/// <param name="valueEnv">Value environment</param>
+/// <param name="valueTypeEnv">Value environment</param>
 /// <param name="map">Value declaration map</param>
 /// <param name="instances">Instances of generic variable to concrete typings or values</param>
 /// <param name="valueExpr">Value expression to be unfolded</param>
 /// <param name="typing">List of typing for which a value expression is unfolded</param>
-and instantiateTypings typeEnv valueEnv map (instances: Map<string, string>) valueExpr (typing: Typing list) =
+and instantiateTypings typeEnv valueTypeEnv map (instances: Map<string, string>) valueExpr (typing: Typing list) =
+    // TODO: This can be simplified using the new environments
     match typing with
     | [] ->
         // When we get here, all typings for this quantified expression is instantiated
         // and we are ready for continuing unfolded the quantified inner expression.
-        axiomFolder typeEnv valueEnv map instances valueExpr // Inner for loop
+        axiomFolder typeEnv valueTypeEnv map instances valueExpr // Inner for loop
     | SingleTyping(s, typeExpr) as _ :: ts ->
         match s with
         | ISimple(id, _pos) ->
@@ -108,14 +109,14 @@ and instantiateTypings typeEnv valueEnv map (instances: Map<string, string>) val
                         failwith ""
 
                     List.foldBack
-                        (fun v m -> instantiateTypings typeEnv valueEnv m (Map.add id v instances) valueExpr ts)
+                        (fun v m -> instantiateTypings typeEnv valueTypeEnv m (Map.add id v instances) valueExpr ts)
                         (List.map string [ 0..(upperbound-1) ])
                         map
 
                 | _ -> failwith "Not supported"
             | Union l ->
                 List.foldBack
-                    (fun (v, _) m -> instantiateTypings typeEnv valueEnv m (Map.add id v instances) valueExpr ts)
+                    (fun (v, _) m -> instantiateTypings typeEnv valueTypeEnv m (Map.add id v instances) valueExpr ts)
                     l
                     map
         | IGeneric _ -> failwith "todo"

@@ -23,7 +23,7 @@ let trans (ir: IrTransitionSystem) : IrTransitionSystem =
             TransitionRule = (tr irTransitionRules irTransitionRulesMap, Map.empty) |> Some }
 
 
-let unfoldNamedTransitionRules _typeEnv _valueEnv (intermediate: Intermediate) : Intermediate =
+let unfoldNamedTransitionRules _typeEnv _valueTypeEnv (intermediate: Intermediate) : Intermediate =
     match intermediate.TransitionSystem with
     | None -> intermediate
     | Some transitionSystem ->

@@ -7,8 +7,10 @@ open Transpiler.Helpers.Helpers
 open Transpiler.Ast
 
 let transpile ((specification, cls): Scheme) =
-    let typeEnvironment = buildSymbolTable cls
-    let valueEnvironment = buildValueTable cls
+    let valueEnvironment = buildValueEnvironment cls
+
+    let typeEnvironment = buildSymbolTable cls valueEnvironment
+    let valueTypeEnvironment = buildValueTypeTable cls
 
     let intermediate =
         convertToIntermediate
@@ -17,14 +19,16 @@ let transpile ((specification, cls): Scheme) =
               Value = None
               Axiom = None
               TransitionSystem = None }
+    
+    let typeUnfolded = unfoldType typeEnvironment valueTypeEnvironment valueEnvironment intermediate
 
-    let axiomsUnfolded = unfoldAxioms typeEnvironment valueEnvironment intermediate
+    let axiomsUnfolded = unfoldAxioms typeEnvironment valueTypeEnvironment typeUnfolded
 
     let genericsTypeUnfolded =
-        unfoldGenerics typeEnvironment valueEnvironment axiomsUnfolded
+        unfoldGenerics typeEnvironment valueTypeEnvironment axiomsUnfolded
 
     let namedTransitionRulesUnfolded =
-        unfoldNamedTransitionRules typeEnvironment valueEnvironment genericsTypeUnfolded
+        unfoldNamedTransitionRules typeEnvironment valueTypeEnvironment genericsTypeUnfolded
 
     let t = convertToAst namedTransitionRulesUnfolded
     Scheme(($"{fst specification}_unfolded", snd specification), t)
