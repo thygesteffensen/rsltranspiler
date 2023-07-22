@@ -4,6 +4,24 @@ open System
 open Transpiler.Ast
 open System.IO
 
+/// <summary>
+/// Iterate through a list and call delimiter function between each element and call elementAction on each element
+/// </summary>
+/// <param name="delimiter"></param>
+/// <param name="list"></param>
+/// <param name="elementAction"></param>
+let listDelimiterAction (delimiter: Unit -> Unit) list elementAction =
+    match list with
+    | [] -> ()
+    | v :: vs ->
+        elementAction v
+
+        List.iter
+            (fun e ->
+                delimiter ()
+                elementAction e)
+            vs
+
 let getValueLiteralString =
     function
     | VUnit _ -> "()"
@@ -27,7 +45,9 @@ let getTypeLiteralString =
     | TNat -> "Nat"
     | TText -> "Text"
 
-let writeTypeExpression (stream: StreamWriter) _depth typeExpression =
+let xx (stream: string -> Unit) (delimiter: string) = (fun () -> stream delimiter)
+
+let rec writeTypeExpression (stream: StreamWriter) depth typeExpression =
     match typeExpression with
     | Literal lit -> stream.Write(getTypeLiteralString lit)
     | TName(n, _) -> stream.Write n
@@ -36,9 +56,14 @@ let writeTypeExpression (stream: StreamWriter) _depth typeExpression =
     | List _ -> failwith "todo"
     | Map _ -> failwith "todo"
     | TArray _ -> failwith "todo"
-    | Sub _ -> failwith "todo"
+    | Sub(typings, valueExpression) ->
+        stream.Write "{| "
+        listDelimiterAction (fun () -> stream.Write ", ") typings (writeTyping stream depth)
+        stream.Write " :- "
+        writeValueExpression stream depth valueExpression
+        stream.Write " |}"
 
-let writeTyping (stream: StreamWriter) depth (typing: Typing) =
+and writeTyping (stream: StreamWriter) depth (typing: Typing) =
     match typing with
     | SingleTyping(identifier, typeExpression) ->
         match identifier with
@@ -47,27 +72,7 @@ let writeTyping (stream: StreamWriter) depth (typing: Typing) =
             stream.Write(id + " : ")
             writeTypeExpression stream depth typeExpression
 
-let xx (stream: string -> Unit) (delimiter: string) = (fun () -> stream delimiter)
-
-/// <summary>
-/// Iterate through a list and call delimiter function between each element and call elementAction on each element
-/// </summary>
-/// <param name="delimiter"></param>
-/// <param name="list"></param>
-/// <param name="elementAction"></param>
-let listDelimiterAction (delimiter: Unit -> Unit) list elementAction =
-    match list with
-    | [] -> ()
-    | v :: vs ->
-        elementAction v
-
-        List.iter
-            (fun e ->
-                delimiter ()
-                elementAction e)
-            vs
-
-let rec writeValueExpression (stream: StreamWriter) depth valueExpression =
+and writeValueExpression (stream: StreamWriter) depth valueExpression =
     match valueExpression with
     | ValueLiteral(literal, _) -> stream.Write(getValueLiteralString literal)
     | VName accessor -> writeAccessor stream depth accessor false
@@ -151,7 +156,7 @@ let rec writeValue (stream: StreamWriter) depth valueDeclaration =
         | ISimple(id, _) ->
             stream.Write(id + " : ")
             writeTypeExpression stream depth typeExpr
-            stream.Write " := "
+            stream.Write " = "
             writeValueExpression stream depth valueExpr
         | IGeneric _ -> failwith "todo"
     | ImplicitValue -> failwith "todo"
@@ -185,12 +190,14 @@ let writeType (stream: StreamWriter) depth (id: Pos<string>, typeDefinition) =
     stream.Write(String.replicate depth "\t")
 
     match typeDefinition with
-    | Abstract -> stream.WriteLine(fst id)
-    | Concrete _ -> failwith "todo"
+    | Abstract -> stream.Write(fst id)
+    | Concrete typeExpression ->
+        stream.Write(fst id)
+        stream.Write(" = ")
+        writeTypeExpression stream depth typeExpression
     | Union l ->
         stream.Write((fst id) + " == ")
         listDelimiterAction (fun () -> stream.Write " | ") l stream.Write
-        stream.WriteLine()
     |> ignore
 
 let writeTransitionSystem (stream: StreamWriter) depth (tr: TransitionSystem) =
@@ -244,13 +251,16 @@ let writeDeclaration (stream: StreamWriter) depth decl =
     match decl with
     | Value valueDeclarations ->
         stream.WriteLine((String.replicate depth "\t") + "value")
-        List.iter (fun e -> writeValue stream (depth + 1) e) valueDeclarations
+        listDelimiterAction (xx stream.WriteLine ",") valueDeclarations (writeValue stream (depth + 1))
+        stream.WriteLine ()
     | TypeDeclaration typeDeclarations ->
         stream.WriteLine((String.replicate depth "\t") + "type")
-        List.iter (fun e -> writeType stream (depth + 1) e) typeDeclarations
+        listDelimiterAction (xx stream.WriteLine ",") typeDeclarations (writeType stream (depth + 1))
+        stream.WriteLine ()
     | AxiomDeclaration valueExpressions ->
         stream.WriteLine((String.replicate depth "\t") + "axiom")
-        List.iter (fun e -> writeValueExpression stream (depth + 1) e) valueExpressions
+        listDelimiterAction (xx stream.WriteLine ",") valueExpressions (writeValueExpression stream (depth + 1))
+        stream.WriteLine ()
     | TransitionSystemDeclaration((id, _), transitionSystems) ->
         stream.WriteLine((String.replicate depth "\t") + "transition_system [" + id + "]")
         List.iter (fun e -> writeTransitionSystem stream (depth + 1) e) transitionSystems
