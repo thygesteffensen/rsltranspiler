@@ -26,6 +26,8 @@ let rec compareValueExpression ve1 ve2 =
     | VeList vel1, VeList vel2 ->
         Assert.AreEqual(List.length vel1, List.length vel2, $"VeList {vel1} length is not equal to {vel2} length")
         List.iter2 compareValueExpression vel1 vel2
+    | LogicalNegation (ve1, _pos1), LogicalNegation(ve2, _pos2) ->
+        compareValueExpression ve1 ve2
     | _ -> Assert.Fail($"Value Expression {ve1} are not equal to {ve2}")
 
 and compareAccessor (a1: Accessor, a2) =
