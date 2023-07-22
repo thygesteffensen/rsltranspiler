@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/dotnetcore,git,fsharp,rider
 # Edit at https://www.toptal.com/developers/gitignore?templates=dotnetcore,git,fsharp,rider
 
+Playground/
 .venv/
 Lexer.fs
 Parser.fs
