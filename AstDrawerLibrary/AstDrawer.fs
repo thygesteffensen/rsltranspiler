@@ -1,5 +1,6 @@
-﻿module Transpiler.AstDrawer
+﻿module AstDrawerLibrary.AstDrawer
 
+open Transpiler
 open Transpiler.Ast
 open AstDrawerLibrary.Library
 open Transpiler.Helpers.Helpers

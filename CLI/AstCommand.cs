@@ -57,8 +57,8 @@ internal static class AstCommand
                 using var sw = new StreamWriter($"{specificationName}.ast");
                 sw.Write(Transpiler.Reader.astToString(schemeName, declarations));
             }
-
-            Transpiler.AstDrawer.schemeToTree(schemeName, declarations, $"{specificationName}.ps");
+            
+            AstDrawerLibrary.AstDrawer.schemeToTree(schemeName, declarations, $"{specificationName}.ps");
 
             var process = new Process
             {

@@ -12,7 +12,9 @@ internal static class UnfoldCommand
         };
         var unfoldCommand = new Command("unfold")
         {
-            Description = $"Parse input specification (<{arg.Name}>), unfold and output the unfolded specification in a new file"
+            Description = $"Parse input specification (<{arg.Name}>), " +
+                          $"unfold and output the unfolded specification " +
+                          $"in a new file"
         };
 
         unfoldCommand.SetHandler(UnfoldSpecification, Program.DebugOption, arg);

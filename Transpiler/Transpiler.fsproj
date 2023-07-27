@@ -24,7 +24,6 @@
         <Compile Include="Lexer.fs" />
         <Compile Include="Transpiler.fs" />
         <Compile Include="Writer.fs" />
-        <Compile Include="AstDrawer.fs" />
         <Compile Include="Reader.fs" />
     </ItemGroup>
 
@@ -34,7 +33,7 @@
       <PackageReference Include="FsLexYacc.Runtime" Version="11.2.0" />
     </ItemGroup>
 
-    <ItemGroup>
+    <!--<ItemGroup>
       <ProjectReference Include="..\AstDrawerLibrary\AstDrawerLibrary.fsproj" />
-    </ItemGroup>
+    </ItemGroup>-->
 </Project>

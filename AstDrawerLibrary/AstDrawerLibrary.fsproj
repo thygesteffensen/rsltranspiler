@@ -7,8 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Include="AstDrawerLibrary.fs" />
+      <Compile Include="Library.fs" />
       <Content Include="README.md" />
+      <Compile Include="AstDrawer.fs" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\Transpiler\Transpiler.fsproj" />
     </ItemGroup>
 
 </Project>
