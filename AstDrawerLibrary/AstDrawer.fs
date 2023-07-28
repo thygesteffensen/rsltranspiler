@@ -10,7 +10,7 @@ let typeDeclarationToNode (typeDeclaration: Pos<Id> * TypeDefinition) (acc: Tree
     | (s, _pos), Abstract -> Node($"{s}", [ Node("Abstract", []) ]) :: acc
     | (s, _pos), Concrete _ -> Node($"{s}", [ Node("Concrete", [ Node("<type_expr>", []) ]) ]) :: acc
     | (s, _pos), Union tuples ->
-        Node($"{s}", [ Node("Union", List.foldBack (fun (i, _pos) a -> Node(i, []) :: a) tuples []) ])
+        Node($"{s}", [ Node("Variant", List.foldBack (fun (i, _pos) a -> Node(i, []) :: a) tuples []) ])
         :: acc
 
 
@@ -33,11 +33,11 @@ let infixOpToNode (infixOp: InfixOp) =
 let rec valueExpressionToNode (valueExpression: ValueExpression) (acc: Tree<string> list) : Tree<string> list =
     match valueExpression with
     | ValueLiteral(valueLiteral, _pos) -> Node("Literal", [ Node(literalToString valueLiteral, []) ]) :: acc
-    | VName accessor -> Node("VName", [ accessorToString accessor ]) :: acc
-    | VPName accessor -> Node("VPName", [ accessorToString accessor ]) :: acc
+    | VName accessor -> Node("Name", [accessorToNode accessor]) :: acc
+    | VPName accessor -> Node("PName", [accessorToNode accessor]) :: acc
     | Rule(id, _pos) -> Node("Rule", [ Node(id, []) ]) :: acc
-    | Quantified((quantifier, _pos), _, valueExpression) ->
-        Node($"Quantified {quantifier}", ([] |> valueExpressionToNode valueExpression))
+    | Quantified((quantifier, _pos), typings, valueExpression) ->
+        Node($"{quantifier}", (valueExpressionToNode valueExpression []) |> List.foldBack typingToNode typings)
         :: acc
     | Infix(lhs, infixOp, rhs) ->
         Node(
@@ -50,12 +50,19 @@ let rec valueExpressionToNode (valueExpression: ValueExpression) (acc: Tree<stri
     | VArray valueExpressions -> Node("VArray", List.foldBack valueExpressionToNode valueExpressions []) :: acc
     | LogicalNegation(valueExpression, _pos) -> Node("Negation", valueExpressionToNode valueExpression []) :: acc
 
-and accessorToString (accessor: Accessor) : Tree<string> =
+and accessorToNode (accessor: Accessor) : Tree<string> =
     match accessor with
-    | ASimple(id, _pos) -> Node(id, [])
-    | AGeneric((id, _pos), valueExpressions) -> Node(id, List.foldBack valueExpressionToNode valueExpressions [])
+    | ASimple(s, _pos) -> Node("Simple", [Node(s, [])])
+    | AGeneric((s, _pos), valueExprs) ->
+        Node("Generic", Node(s, []) :: List.foldBack valueExpressionToNode valueExprs [])
 
-let rec typeExpressionToNode (typeExpression: TypeExpression) (acc: Tree<string> list) : Tree<string> list =
+and identifierToNode (identifier: Identifier) : Tree<string> =
+    match identifier with
+    | ISimple(s, _pos) -> Node("Simple", [Node(s, [])])
+    | IGeneric((s, _pos), typings) ->
+        Node("Generic", Node(s, []) :: List.foldBack typingToNode typings [])
+
+and typeExpressionToNode (typeExpression: TypeExpression) (acc: Tree<string> list) : Tree<string> list =
     match typeExpression with
     | Literal typeLiteral -> Node(typeLiteral.ToString(), []) :: acc
     | TName(name, _pos) -> Node(name, []) :: acc
@@ -77,11 +84,6 @@ and typingToNode (typing: Typing) (acc: Tree<string> list) : Tree<string> list =
     | SingleTyping(identifier, typeExpression) ->
         Node("Typing", [ identifierToNode identifier ] @ typeExpressionToNode typeExpression [])
         :: acc
-
-and identifierToNode (identifier: Identifier) : Tree<string> =
-    match identifier with
-    | ISimple(id, _pos) -> Node(id, [])
-    | IGeneric((id, _pos), typings) -> Node(id, List.foldBack typingToNode typings [])
 
 let valueDeclarationToNode (valueDeclaration: ValueDeclaration) (acc: Tree<string> list) : Tree<string> list =
     match valueDeclaration with

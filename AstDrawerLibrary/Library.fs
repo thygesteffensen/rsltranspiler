@@ -112,7 +112,7 @@ module Library =
         let fontsize = 12
         let charHeight = 8.0
         let charWidth = 7.0
-        let nodeSpacing = 2.0
+        let nodeSpacing = 3.2
         let yDistance = 30.0
         let labelSpacing = 2.0
 
