@@ -2,11 +2,12 @@
 
 # Set the command you want to time
 if [ $1 == "rslts" ]; then
-   COMMAND="rslts unfold SimpleRailBig.rsl"
+   COMMAND="rslts unfold"
    FILE="rslts"
-   N=(1 2 3 4 5 10 20 30 40 50 60 70 80 90 100 200 300 400)
+   # N=(1 2 3 4 5 10 20 30 40 50 60 70 80 90 100 200 300 400)
+   N=(1 2 3)
 elif [ $1 == "rsltc" ]; then
-   COMMAND="rsltc -unfrtt SimpleRailBig.rsl"
+   COMMAND="rsltc -unfrtt"
    FILE="rsltc"
    N=(1 2 3 4 5 10 20 30 40 50 60)
 else
@@ -16,14 +17,18 @@ fi
 
 
 # Run the command 10 times and append output to the CSV file
-for j in {0..10}
+for j in {0..3}
 do
-  LFILE="${FILE}_${j}.csv"
-  echo "n,real,user,sys,mRSS" > $LFILE
+  echo "n,real,user,sys,mRSS" > "${FILE}_s_${j}.csv"
+  echo "n,real,user,sys,mRSS" > "${FILE}_t_${j}.csv"
+  VARIANT=""
   for i in "${N[@]}"
   do
-    sed "s/\TheBigN/$i/g" SimpleRailBig_base.rsl > SimpleRailBig.rsl
-    /usr/bin/time -f "$i,%e,%U,%S,%M" -a -o $LFILE $COMMAND
+    VARIANT="${VARIANT} | t${i}"
+    sed "s/\TheBigN/$i/g" SimpleRailSegmentId_base.rsl > SimpleRailSegmentId.rsl
+    sed "s/\TheVariant/$VARIANT/g" SimpleRailTrainId_base.rsl > SimpleRailTrainId.rsl
+    /usr/bin/time -f "$i,%e,%U,%S,%M" -a -o "${FILE}_s_${j}.csv" $COMMAND SimpleRailSegmentId.rsl
+    /usr/bin/time -f "$i,%e,%U,%S,%M" -a -o "${FILE}_t_${j}.csv" $COMMAND SimpleRailTrainId.rsl
   done
   echo "Done ${j}"
 done
