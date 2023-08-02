@@ -181,7 +181,7 @@ let buildValueEnvironment (cls: Class) : Map<string, ValueLiteral> =
 /// </summary>
 /// <param name="_AST"></param>
 /// <param name="valueMap"></param>
-let buildSymbolTable (_AST: Class) (valueMap: Map<string, ValueLiteral>) : Map<string, TypeDefinition * string list> =
+let buildSymbolTable (_AST: Class) (valueMap: Map<string, ValueLiteral>) : TypeEnvMap =
 
     let unfoldTypeEnvironments acc dec =
         match dec with
@@ -190,7 +190,7 @@ let buildSymbolTable (_AST: Class) (valueMap: Map<string, ValueLiteral>) : Map<s
         | AxiomDeclaration _ -> acc
         | TransitionSystemDeclaration _ -> acc
 
-    let buildType (env: Map<string, TypeDefinition * string list>) =
+    let buildType (env: TypeEnvMap) =
         function
         | id,
           ((Concrete(Sub([ SingleTyping(ISimple(s0, _), typeExpression) ],
@@ -265,7 +265,7 @@ let buildValueTypeTable (_AST: Class) =
 /// <param name="f">Function should be called for each final instance of an accessors</param>
 /// <param name="acc"></param>
 let rec iterateTypings
-    (typeEnv: Map<string, TypeDefinition * string list>)
+    (typeEnv: TypeEnvMap)
     id
     (typings: Typing list)
     (f: string -> 'a -> 'a)

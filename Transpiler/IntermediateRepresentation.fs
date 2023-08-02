@@ -22,6 +22,11 @@ and IrTransitionRule =
 
 and Effect = Accessor * ValueExpression
 
+/// <summary>
+/// Map with type name as key and mapping to a tuple of the type definition and, if possible, the finite set of value
+/// in the type expression.
+/// </summary>
+type TypeEnvMap = Map<string, TypeDefinition * string list>
 type ValueDecMap = Map<int * string, ValueDeclaration>
 type NamedRuleMap = Map<int * string, IrTransitionRules>
 

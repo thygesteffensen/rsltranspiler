@@ -84,7 +84,7 @@ let rec irAxiomDecUnfold
             IrInfix(ASimple(stringifyId, pos), valueExpression) :: acc
 
 and instantiateTypings
-    typeEnv
+    (typeEnv: TypeEnvMap)
     valueTypeEnv
     (instances: Map<string, string>)
     (typings: Typing list)
@@ -102,12 +102,12 @@ and instantiateTypings
                 | TName s -> s
                 | _ -> failwith "todo"
 
-            match fst (Map.find (fst t) typeEnv) with
-            | Abstract -> failwith "todo"
-            | Concrete _ -> failwith "todo"
-            | Union l ->
+            match snd (Map.find (fst t) typeEnv) with
+            | [] -> failwith "todo"
+            // TODO: Replace values after unfolding
+            | l ->
                 List.foldBack
-                    (fun (e, _) a -> instantiateTypings typeEnv valueTypeEnv (Map.add s e instances) ts ir a)
+                    (fun e a -> instantiateTypings typeEnv valueTypeEnv (Map.add s e instances) ts ir a)
                     l
                     acc
 
@@ -315,3 +315,25 @@ let unfoldType _typeEnv _valueTypeEnv valueEnv (intermediate: Intermediate) : In
 
     { intermediate with
         Type = unfoldedType }
+    
+    
+n,real,user,sys
+1,0.38,0.13,0.05
+2,0.40,0.14,0.03
+3,0.33,0.13,0.03
+4,0.39,0.15,0.02
+5,0.39,0.14,0.01
+10,0.41,0.14,0.03
+20,0.35,0.10,0.06
+30,0.39,0.17,0.02
+40,0.47,0.17,0.04
+50,0.46,0.20,0.03
+60,0.53,0.26,0.05
+70,0.73,0.33,0.03
+80,0.67,0.35,0.05
+90,0.75,0.57,0.03
+100,0.80,0.59,0.04
+200,2.64,2.34,0.23
+300,5.89,5.29,0.60
+400,9.97,9.87,1.13
+

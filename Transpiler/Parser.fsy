@@ -84,7 +84,7 @@ variable_definitions:
 
 variable_definition:
     | identifier COLON type_expr                                        { Typing(SingleTyping($1, $3)) }
-    | identifier COLON type_expr COLON EQ value_expression              { ExplicitValue($1, $3, $6) } 
+    | identifier COLON type_expr EQ value_expression                    { ExplicitValue($1, $3, $5) } 
     
 identifier:
     | TEXT                                                              { ISimple($1) }

@@ -4,11 +4,9 @@ module TranspilerTest.AstDrawer
 open NUnit.Framework
 open FSharp.Text.Lexing
 open AstDrawerLibrary.Library
+open AstDrawerLibrary.AstDrawer
 open Transpiler
 open Transpiler.Reader
-open Transpiler.AstDrawer
-
-open TranspilerTest.Common
 
 [<SetUp>]
 let setup () = ()

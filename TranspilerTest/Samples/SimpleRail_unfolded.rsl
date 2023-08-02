@@ -23,105 +23,105 @@ scheme SimpleRail_unfolded =
 				occupied_3 = false /\
 				occupied_4 = true
 			transition_rules
-				(((((((((((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_0' = true))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_0' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_4' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_4' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_3' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_3' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_2' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_2' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_1' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_1' = true))
 				 [=] 
-				(((((((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_0' = true))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_0' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_4' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_4' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_3' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_3' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_2' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_2' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_1' = true))))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_1' = true))
 				 [=] 
-				((((((((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_4' = false), (occupied_0' = true))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_4' = false), (occupied_0' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_4' = false), (occupied_4' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_4' = false), (occupied_4' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_4' = false), (occupied_3' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_4' = false), (occupied_3' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_4' = false), (occupied_2' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_4' = false), (occupied_2' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_4' = false), (occupied_1' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_4' = false), (occupied_1' = true))
 				 [=] 
-				(((((((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_4' = false), (occupied_0' = true))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_4' = false), (occupied_0' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_4' = false), (occupied_4' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_4' = false), (occupied_4' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_4' = false), (occupied_3' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_4' = false), (occupied_3' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_4' = false), (occupied_2' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_4' = false), (occupied_2' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_4' = false), (occupied_1' = true)))))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_4' = false), (occupied_1' = true))
 				 [=] 
-				((((((((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_3' = false), (occupied_0' = true))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_3' = false), (occupied_0' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_3' = false), (occupied_4' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_3' = false), (occupied_4' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_3' = false), (occupied_3' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_3' = false), (occupied_3' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_3' = false), (occupied_2' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_3' = false), (occupied_2' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_3' = false), (occupied_1' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_3' = false), (occupied_1' = true))
 				 [=] 
-				(((((((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_3' = false), (occupied_0' = true))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_3' = false), (occupied_0' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_3' = false), (occupied_4' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_3' = false), (occupied_4' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_3' = false), (occupied_3' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_3' = false), (occupied_3' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_3' = false), (occupied_2' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_3' = false), (occupied_2' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_3' = false), (occupied_1' = true)))))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_3' = false), (occupied_1' = true))
 				 [=] 
-				((((((((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_2' = false), (occupied_0' = true))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_2' = false), (occupied_0' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_2' = false), (occupied_4' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_2' = false), (occupied_4' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_2' = false), (occupied_3' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_2' = false), (occupied_3' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_2' = false), (occupied_2' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_2' = false), (occupied_2' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_2' = false), (occupied_1' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_2' = false), (occupied_1' = true))
 				 [=] 
-				(((((((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_2' = false), (occupied_0' = true))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_2' = false), (occupied_0' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_2' = false), (occupied_4' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_2' = false), (occupied_4' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_2' = false), (occupied_3' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_2' = false), (occupied_3' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_2' = false), (occupied_2' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_2' = false), (occupied_2' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_2' = false), (occupied_1' = true)))))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_2' = false), (occupied_1' = true))
 				 [=] 
-				((((((((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_1' = false), (occupied_0' = true))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_1' = false), (occupied_0' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_1' = false), (occupied_4' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_1' = false), (occupied_4' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_1' = false), (occupied_3' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_1' = false), (occupied_3' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_1' = false), (occupied_2' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_1' = false), (occupied_2' = true))
 				 [=] 
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_1' = false), (occupied_1' = true)))
+				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_1' = false), (occupied_1' = true))
 				 [=] 
-				(((((((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_1' = false), (occupied_0' = true))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_1' = false), (occupied_0' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_1' = false), (occupied_4' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_1' = false), (occupied_4' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_1' = false), (occupied_3' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_1' = false), (occupied_3' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_1' = false), (occupied_2' = true)))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_1' = false), (occupied_2' = true))
 				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_1' = false), (occupied_1' = true))))
+				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_1' = false), (occupied_1' = true))
 		end
 
 	end

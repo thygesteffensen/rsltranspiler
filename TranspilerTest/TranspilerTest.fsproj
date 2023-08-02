@@ -16,10 +16,6 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Compile Include="Common\*.fs" />
-        <Compile Include="UnitTestType.fs" />
-        <Compile Include="UnitTestValue.fs" />
-        <Compile Include="UnitTestAxiom.fs" />
-        <Compile Include="UnitTestTransitionSystem.fs" />
         <Compile Include="Logic\*.fs" />
         <Compile Include="Parser\*.fs" />
         <Compile Include="Writer\*.fs" />

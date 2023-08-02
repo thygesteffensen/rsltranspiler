@@ -60,11 +60,10 @@ let input: obj[] list =
          ) |] ]
 
 [<TestCaseSource(nameof input)>]
-let buildSymbolTableTester source expected =    
+let buildSymbolTableTester source expected =
     let actual =
         match testLexerAndParserFromFile source with
-        | Some(_, cls) ->
-            Some(Helpers.buildValueEnvironment cls |> Helpers.buildSymbolTable cls)
+        | Some(_, cls) -> Some(Helpers.buildValueEnvironment cls |> Helpers.buildSymbolTable cls)
         | None -> None
 
 
@@ -74,18 +73,15 @@ let buildSymbolTableTester source expected =
 
 
 let inputValue: obj[] list =
-    [
-        [| "Samples/AxiomSimple.rsl"; [("A", VText "a")] |> Map.ofList  |]
-        [| "Samples/AxiomSimple2.rsl"; [("A", VInt 2)] |> Map.ofList  |]
-        [| "Samples/AxiomGeneric.rsl"; Map.empty  |]
-    ]
+    [ [| "Samples/AxiomSimple.rsl"; [ ("A", VText "a") ] |> Map.ofList |]
+      [| "Samples/AxiomSimple2.rsl"; [ ("A", VInt 2) ] |> Map.ofList |]
+      [| "Samples/AxiomGeneric.rsl"; Map.empty |] ]
 
 [<TestCaseSource(nameof inputValue)>]
-let buildValueTableTester source expected =    
+let buildValueTableTester source expected =
     let actual =
         match testLexerAndParserFromFile source with
-        | Some(_, cls) ->
-            Some(Helpers.buildValueEnvironment cls)
+        | Some(_, cls) -> Some(Helpers.buildValueEnvironment cls)
         | None -> None
 
 
@@ -99,7 +95,12 @@ let input2: obj[] list =
       [| "Samples/ValueGeneric2.rsl"; "Samples/ValueGeneric2_unfolded.rsl" |]
       [| "Samples/ValueGeneric3.rsl"; "Samples/ValueGeneric3_unfolded.rsl" |]
       [| "Samples/AxiomGeneric.rsl"; "Samples/AxiomGeneric_unfolded.rsl" |]
-      [| "Samples/SimpleRail.rsl"; "Samples/SimpleRail_unfolded.rsl" |] ]
+      [| "Samples/SimpleRail.rsl"; "Samples/SimpleRail_unfolded.rsl" |]
+      [| "Samples/NamedTransitionRules.rsl"
+         "Samples/NamedTransitionRules_unfolded.rsl" |]
+      [| "Samples/NamedTransitionRulesSimple.rsl"
+         "Samples/NamedTransitionRulesSimple_unfolded.rsl" |]
+      [| "Samples/SimpleRailBig.rsl"; "Samples/SimpleRailBig_unfolded.rsl" |] ]
 
 [<TestCaseSource(nameof input2)>]
 let unfoldSpecification source expectedSource =

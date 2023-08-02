@@ -77,6 +77,4 @@ let UnfoldValueExpressionTest
     let unfolded = unfoldValueExpression typeEnv valueTypeEnv instances input
     let replaced = replaceNameWithValue valueEnv unfolded
 
-    // Assert.AreEqual(expected, unfolded)
     Assert.AreEqual(expected, replaced)
-// Assert.That(replaced, Is.EquivalentTo(expected))
