@@ -20,10 +20,13 @@ for j in {0..10}
 do
   echo "n,real,user,sys,mRSS" > "${FILE}_s_${j}.csv"
   echo "n,real,user,sys,mRSS" > "${FILE}_t_${j}.csv"
-  VARIANT=""
   for i in "${N[@]}"
   do
-    VARIANT="${VARIANT} | t${i}"
+    VARIANT=""
+    for k in $(seq 0 $i)
+    do
+      VARIANT="${VARIANT} | t${k}"
+    done
     sed "s/\TheBigN/$i/g" SimpleRailSegmentId_base.rsl > SimpleRailSegmentId.rsl
     sed "s/\TheVariant/$VARIANT/g" SimpleRailTrainId_base.rsl > SimpleRailTrainId.rsl
     /usr/bin/time -f "$i,%e,%U,%S,%M" -a -o "${FILE}_s_${j}.csv" $COMMAND SimpleRailSegmentId.rsl
