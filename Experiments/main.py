@@ -1,7 +1,6 @@
 import glob
 import pandas
 
-
 def meaner(tool: str):
     csv_files = glob.glob(f'{tool}_*.csv')
 
