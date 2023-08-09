@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Set the command you want to time
 if [ $1 == "rslts" ]; then
    COMMAND="rslts unfold"
    FILE="rslts"
@@ -8,14 +7,12 @@ if [ $1 == "rslts" ]; then
 elif [ $1 == "rsltc" ]; then
    COMMAND="rsltc -unfrtt"
    FILE="rsltc"
-   N=(1 2 3 4 5 10 20 30 40 50 60)
+   N=(1 2 3 4 5 10 20 30 40 50 60 70)
 else
    echo "$1 is not valid..."
    exit 1
 fi
 
-
-# Run the command 10 times and append output to the CSV file
 for j in {0..10}
 do
   echo "n,real,user,sys,mRSS" > "${FILE}_s_${j}.csv"
@@ -34,7 +31,3 @@ do
   done
   echo "Done ${j}"
 done
-
-# cp $FILE /mnt/c/thesis/
-
-

@@ -15,9 +15,10 @@ scheme SimpleRailTrainId =
                 occupied [ s : SegmentId ] : Bool
 
             init_constraint
+                (all t : TrainId :- position[t] = 0) /\
                 position[tt1] = 0 /\
                 position[tt2] = 1 /\
-		(all s : SegmentId :- occupied[s] = false) /\
+		        (all s : SegmentId :- occupied[s] = false) /\
                 occupied[0] = true /\
                 occupied[1] = true
             
@@ -26,20 +27,22 @@ scheme SimpleRailTrainId =
 
                 where
                 [ MOVE_RIGHT ] =
-                    (([=] t : TrainId, s1 : SegmentId, s2 : SegmentId :- 
+                    (([=] t : TrainId, t2 : TrainId, s1 : SegmentId, s2 : SegmentId :- 
                         position[t] < (max - 1) /\ 
                         position[t] = s1 /\
                         (s1 + 1) = s2 /\
+                        ~(t = t2) /\ 
                         ~occupied[s2] ==> 
                             position'[t] = position[t] + 1,
                             occupied'[s1] = false,
                             occupied'[s2] = true)),
 
                 [ MOVE_LEFT ] =
-                    (([=] t : TrainId, s1 : SegmentId, s2 : SegmentId :- 
+                    (([=] t : TrainId, t2 : TrainId, s1 : SegmentId, s2 : SegmentId :- 
                         position[t] > 0 /\ 
                         position[t] = s1 /\
                         (s1 - 1) = s2 /\
+                        ~(t = t2) /\
                         ~occupied[s2] ==> 
                             position'[t] = position[t] - 1,
                             occupied'[s1] = false,
