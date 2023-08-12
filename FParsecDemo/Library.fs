@@ -1,6 +1,6 @@
 ﻿module ClassLibrary1
 
-// #r "nuget:FParsec"
+#r "nuget:FParsec"
 open FParsec
 
 type Expr =

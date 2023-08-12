@@ -1,0 +1,24 @@
+computing first function...        time: 00:00:00.0474006
+building kernels...        time: 00:00:00.0213016
+building kernel table...        time: 00:00:00.0053354
+computing lookahead relations.........................................................................................................................        time: 00:00:00.0181509
+building lookahead table...        time: 00:00:00.0041231
+building action table...        shift/reduce error at state 58 on terminal LBRACKET between {noprec shift(59)} and {noprec reduce(value_expression:'TEXT')} - assuming the former because we prefer shift when unable to compare precedences
+        shift/reduce error at state 65 on terminal LBRACKET between {noprec shift(72)} and {noprec reduce(value_expression:quantifier typing_list 'COLON' 'MI' value_expression)} - assuming the former because we prefer shift when unable to compare precedences
+        shift/reduce error at state 65 on terminal EQ between {noprec shift(75)} and {noprec reduce(value_expression:quantifier typing_list 'COLON' 'MI' value_expression)} - assuming the former because we prefer shift when unable to compare precedences
+        shift/reduce error at state 65 on terminal PL between {noprec shift(76)} and {noprec reduce(value_expression:quantifier typing_list 'COLON' 'MI' value_expression)} - assuming the former because we prefer shift when unable to compare precedences
+        shift/reduce error at state 69 on terminal LBRACKET between {noprec shift(72)} and {noprec reduce(value_expression:value_expression infix value_expression)} - assuming the former because we prefer shift when unable to compare precedences
+        shift/reduce error at state 69 on terminal EQ between {noprec shift(75)} and {noprec reduce(value_expression:value_expression infix value_expression)} - assuming the former because we prefer shift when unable to compare precedences
+        shift/reduce error at state 69 on terminal PL between {noprec shift(76)} and {noprec reduce(value_expression:value_expression infix value_expression)} - assuming the former because we prefer shift when unable to compare precedences
+        time: 00:00:00.0322771
+        building goto table...        time: 00:00:00.0025161
+        returning tables.
+        7 shift/reduce conflicts
+        consider setting precedences explicitly using %left %right and %nonassoc on terminals and/or setting explicit precedence on rules using %prec
+writing tables to log
+        building tables
+        118 states
+        27 nonterminals
+        41 terminals
+        64 productions
+        #rows in action table: 118

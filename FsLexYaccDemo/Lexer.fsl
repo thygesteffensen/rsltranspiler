@@ -1,0 +1,18 @@
+{
+open FSharp.Text.Lexing
+open FsLexYaccDemo.Ast
+open Parser
+open System
+}
+
+let digit = ['0'-'9']
+
+rule token =
+    parse
+    | [' ' '\t']        { token lexbuf }
+    | '+'               { PLUS }
+    | '-'               { MINUS }
+    | '*'               { STAR }
+    | ['-']?digit+      { INT(Int32.Parse(LexBuffer<_>.LexemeString lexbuf))} 
+    | eof               { EOF }
+    | _                 { EOF }

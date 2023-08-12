@@ -1,0 +1,19 @@
+%{
+open FsLexYaccDemo.Ast
+%}
+
+%token<int> INT
+%token PLUS MINUS STAR EOF
+
+%start start
+%type <FsLexYaccDemo.Ast.Expr> start
+
+%%
+
+start: expr                         { $1 }
+
+expr:
+    | PLUS expr expr                { Addition($2, $3) }
+    | MINUS expr expr               { Subtraction($2, $3) }
+    | STAR expr expr                { Multiplication($2, $3) }
+    | INT                           { Integer($1) }
