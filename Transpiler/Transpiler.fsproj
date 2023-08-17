@@ -32,8 +32,4 @@
       <PackageReference Include="FsLexYacc" Version="11.2.0" />
       <PackageReference Include="FsLexYacc.Runtime" Version="11.2.0" />
     </ItemGroup>
-
-    <!--<ItemGroup>
-      <ProjectReference Include="..\AstDrawerLibrary\AstDrawerLibrary.fsproj" />
-    </ItemGroup>-->
 </Project>

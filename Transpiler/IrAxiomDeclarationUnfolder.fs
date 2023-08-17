@@ -4,21 +4,20 @@ open Transpiler.Ast
 open Transpiler.Helpers.Helpers
 open Transpiler.Intermediate
 
-
 /// <summary>
 /// Convert a value expression to a string is possible
 /// </summary>
 /// <param name="ve"></param>
-/// <param name="instances"></param>
-let valueExpressionToString (ve: ValueExpression) (instances: Map<string, string>) =
+/// <param name="valueEnv"></param>
+let valueExpressionToStringNew (ve: ValueExpression) (valueEnv: ValueEnvMap) =
     match ve with
     | ValueLiteral valueLiteral -> literalToString (fst valueLiteral)
     | VName s ->
         match s with
-        | ASimple s ->
-            match Map.tryFind (fst s) instances with
+        | ASimple s -> 
+            match Map.tryFind (fst s) valueEnv with
             | None -> fst s // TODO: Should the default just be the string assuming the type checker handles this?
-            | Some value -> value
+            | Some value -> getValueLiteralString value
         | AGeneric _ -> failwith "todo"
     | ValueExpression.Quantified _ -> failwith "todo"
     | VPName _ -> failwith "todo"
@@ -34,31 +33,33 @@ let valueExpressionToString (ve: ValueExpression) (instances: Map<string, string
 /// <param name="typeEnv"></param>
 /// <param name="valueTypeEnv"></param>
 /// <param name="map"></param>
+/// <param name="_valueEnv"></param>
 /// <param name="instances"></param>
 /// <param name="axiom"></param>
-let rec axiomFolder typeEnv valueTypeEnv (map: ValueDecMap) (instances: Map<string, string>) (axiom: IrAxiomDeclaration) =
+let rec axiomFolder typeEnv valueTypeEnv (map: ValueDecMap) valueEnv (axiom: IrAxiomDeclaration) =
     match axiom with
-    | IrQuantified(typings, valueExpr) -> instantiateTypings typeEnv valueTypeEnv map instances valueExpr typings
+    | IrQuantified(typings, valueExpr) -> instantiateTypings typeEnv valueTypeEnv map valueEnv valueExpr typings
 
     | IrInfix(identifier, rhs) ->
         let findIndex (key: string) : int * string =
             let i, _ = Map.findKey (fun (_i, k) _v -> k = key) map
             (i, key)
 
+        let rhs' = replaceNameWithValue valueEnv rhs
         match identifier with
         | ASimple(s, pos) ->
             let valueType = Map.find s valueTypeEnv
-            map.Add(findIndex s, ExplicitValue(Identifier.ISimple(s, pos), valueType, rhs))
+            map.Add(findIndex s, ExplicitValue(Identifier.ISimple(s, pos), valueType, rhs'))
         | AGeneric((s, pos), valueExpressions) ->
             let valueType = Map.find s valueTypeEnv
 
             let postfix =
-                List.foldBack (fun e a -> $"_{valueExpressionToString e instances}{a}") valueExpressions ""
+                List.foldBack (fun e a -> $"_{valueExpressionToStringNew e valueEnv}{a}") valueExpressions ""
 
             let identifier = $"{s}{postfix}"
             let i, _k = findIndex s
 
-            map.Add((i, identifier), ExplicitValue(ISimple(identifier, pos), valueType, rhs))
+            map.Add((i, identifier), ExplicitValue(ISimple(identifier, pos), valueType, rhs'))
 
 /// <summary>
 /// Iterate through each typing in the typing list and for each combination the value expression <see cref="valueExpr"/>
@@ -67,16 +68,16 @@ let rec axiomFolder typeEnv valueTypeEnv (map: ValueDecMap) (instances: Map<stri
 /// <param name="typeEnv">Type environment</param>
 /// <param name="valueTypeEnv">Value environment</param>
 /// <param name="map">Value declaration map</param>
-/// <param name="instances">Instances of generic variable to concrete typings or values</param>
+/// <param name="valueEnv">Value declaration map</param>
 /// <param name="valueExpr">Value expression to be unfolded</param>
 /// <param name="typing">List of typing for which a value expression is unfolded</param>
-and instantiateTypings typeEnv valueTypeEnv map (instances: Map<string, string>) valueExpr (typing: Typing list) =
+and instantiateTypings typeEnv valueTypeEnv map valueEnv valueExpr (typing: Typing list) =
     // TODO: This can be simplified using the new environments
     match typing with
     | [] ->
         // When we get here, all typings for this quantified expression is instantiated
         // and we are ready for continuing unfolded the quantified inner expression.
-        axiomFolder typeEnv valueTypeEnv map instances valueExpr // Inner for loop
+        axiomFolder typeEnv valueTypeEnv map valueEnv valueExpr // Inner for loop
     | SingleTyping(s, typeExpr) as _ :: ts ->
         match s with
         | ISimple(id, _pos) ->
@@ -108,15 +109,16 @@ and instantiateTypings typeEnv valueTypeEnv map (instances: Map<string, string>)
                     if not (s0 = s1 && s1 = s) then
                         failwith ""
 
+                    // TODO: change to make use of pre computed value set
                     List.foldBack
-                        (fun v m -> instantiateTypings typeEnv valueTypeEnv m (Map.add id v instances) valueExpr ts)
-                        (List.map string [ 0..(upperbound-1) ])
+                        (fun v m -> instantiateTypings typeEnv valueTypeEnv m (Map.add id v valueEnv)  valueExpr ts)
+                        (List.map VInt [ 0..(upperbound-1) ])
                         map
 
                 | _ -> failwith "Not supported"
             | Union l ->
                 List.foldBack
-                    (fun (v, _) m -> instantiateTypings typeEnv valueTypeEnv m (Map.add id v instances) valueExpr ts)
+                    (fun (e, _pos) m -> instantiateTypings typeEnv valueTypeEnv m (Map.add id (VText e) valueEnv) valueExpr ts)
                     l
                     map
         | IGeneric _ -> failwith "todo"

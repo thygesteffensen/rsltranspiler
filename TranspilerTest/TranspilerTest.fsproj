@@ -39,7 +39,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FParsecSample\FParsecSample.fsproj" />
       <ProjectReference Include="..\Transpiler\Transpiler.fsproj" />
       <ProjectReference Include="..\AstDrawerLibrary\AstDrawerLibrary.fsproj" />
     </ItemGroup>

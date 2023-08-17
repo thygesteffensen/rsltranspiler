@@ -22,13 +22,13 @@ let transpile ((specification, cls): Scheme) =
     
     let typeUnfolded = unfoldType typeEnvironment valueTypeEnvironment valueEnvironment intermediate
 
-    let axiomsUnfolded = unfoldAxioms typeEnvironment valueTypeEnvironment typeUnfolded
+    let axiomsUnfolded = unfoldAxioms typeEnvironment valueTypeEnvironment valueEnvironment typeUnfolded
 
     let genericsTypeUnfolded =
-        unfoldGenerics typeEnvironment valueTypeEnvironment axiomsUnfolded
+        unfoldGenerics typeEnvironment valueTypeEnvironment valueEnvironment axiomsUnfolded
 
     let namedTransitionRulesUnfolded =
-        unfoldNamedTransitionRules typeEnvironment valueTypeEnvironment genericsTypeUnfolded
+        unfoldNamedTransitionRules typeEnvironment valueTypeEnvironment valueEnvironment genericsTypeUnfolded
 
     let t = convertToAst namedTransitionRulesUnfolded
     Scheme(($"{fst specification}_unfolded", snd specification), t)

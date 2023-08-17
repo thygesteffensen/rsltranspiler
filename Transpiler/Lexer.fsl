@@ -74,6 +74,7 @@ let keywords =
         "init_constraint", INIT_CONSTRAINT;
         "array", ARRAY;
         "of", OF;
+        "ltl_assertion", LTL_ASSERTION;
     ] |> Map.ofList   
  
 let ops =   
@@ -106,12 +107,13 @@ let symbols =
         '(',    LPAREN;
         ')',    RPAREN;
         '|',    BAR;
-        '\"',    QUOTE;
+        '\"',   QUOTE;
         '/',    SLASH;
         '\'',   PRIME;
         '\\',   BSLASH;
         '{',    LCURLY;
         '}',    RCURLY;
+        'G',    GLOBALLY;
     ] |> Map.ofList    
    
 }
@@ -126,7 +128,7 @@ let digit       = ['0'-'9']
 let text  = char(char|digit|['-' '_' '.'])*   
 let operator    = ">" | ">=" | "<" | "<=" | "=" | "-" | "+" | "==>" | "[=]" | "[>]" | ":-" | "=>" | "/\\" | "\\/" | "~"
 
-let symbol      = '.' | ',' | ':' | '[' | ']' | '(' | ')' | '|' | '\"' | '/' | '\'' | '\\' | '{' | '}'
+let symbol      = '.' | ',' | ':' | '[' | ']' | '(' | ')' | '|' | '\"' | '/' | '\'' | '\\' | '{' | '}' | 'G'
 
 rule read =
     parse
@@ -136,10 +138,10 @@ rule read =
                   TRUE(start) }
     | "false"   { let start = getPos(lexbuf)
                   FALSE(start) }
-    | operator  { let start = getPos(lexbuf)
-                  ops.[lexeme lexbuf](start) }
     | symbol    { let start = getPos(lexbuf)
-                  symbols.[(LexBuffer<_>.LexemeString lexbuf).Chars(0)](start) } 
+                  symbols.[(LexBuffer<_>.LexemeString lexbuf).Chars(0)](start) }
+    | operator  { let start = getPos(lexbuf)
+                  ops.[lexeme lexbuf](start) } 
     | text      { let start = getPos(lexbuf)
                   match keywords.TryFind(lexeme lexbuf) with
                   | Some(token) -> token(start)

@@ -36,6 +36,7 @@ type Quantifier =
 
 type InfixOp =
     | Equal
+    | NotEqual
     | Plus
     | Minus
     | Guard
@@ -49,6 +50,13 @@ type InfixOp =
     | LogicalAnd
     | LogicalOr
 
+type TemporalModalOperators =
+    | Globally
+    | Finally
+    | Release
+    | Weak
+    | Mighty
+
 type ValueExpression =
     | ValueLiteral of Pos<ValueLiteral>
     | VName of Accessor
@@ -59,6 +67,7 @@ type ValueExpression =
     | VeList of ValueExpression list
     | VArray of ValueExpression list
     | LogicalNegation of Pos<ValueExpression>
+    | Prefix of Pos<TemporalModalOperators> * ValueExpression
 
 and Accessor =
     | ASimple of Pos<Id>
@@ -100,11 +109,14 @@ type TransitionSystem =
     | InitConstraint of ValueExpression
     | TransitionRule of ValueExpression * (Pos<Id> * ValueExpression) list
 
+type LtlAssertion = Pos<Id> * Pos<Id> * ValueExpression
+
 type Declaration =
     | Value of ValueDeclaration list
     | TypeDeclaration of (Pos<Id> * TypeDefinition) list
     | AxiomDeclaration of ValueExpression list
     | TransitionSystemDeclaration of (Pos<Id> * TransitionSystem list)
+    | LtlAssertionDeclaration of LtlAssertion list
 
 type Class = Declaration list
 

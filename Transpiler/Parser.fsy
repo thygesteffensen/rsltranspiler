@@ -14,8 +14,8 @@ let parse_error_rich = Some error_handler
 %token<FSharp.Text.Lexing.Position> FALSE 
 %token<FSharp.Text.Lexing.Position> EQ LT LE GT GE MI PL GU IM LAND LOR NEG
 %token<FSharp.Text.Lexing.Position> DETERMINISTIC NONDETERMINISTIC IS
-%token<FSharp.Text.Lexing.Position> SCHEME CLASS TYPE VALUE AXIOM END ALL EXISTS EXACTLY_ONE TS TR WHERE VARIABLE INIT_CONSTRAINT ARRAY OF
-%token<FSharp.Text.Lexing.Position> DOT COMMA COLON BAR LBRACKET RBRACKET QUOTE LPAREN RPAREN SLASH BSLASH PRIME LCURLY RCURLY
+%token<FSharp.Text.Lexing.Position> SCHEME CLASS TYPE VALUE AXIOM END ALL EXISTS EXACTLY_ONE TS TR WHERE VARIABLE INIT_CONSTRAINT ARRAY OF LTL_ASSERTION
+%token<FSharp.Text.Lexing.Position> DOT COMMA COLON BAR LBRACKET RBRACKET QUOTE LPAREN RPAREN SLASH BSLASH PRIME LCURLY RCURLY GLOBALLY
 %token<FSharp.Text.Lexing.Position> EOF
 
 %left DETERMINISTIC NONDETERMINISTIC
@@ -45,7 +45,15 @@ declaration:
     | TYPE type_declarations                                            { TypeDeclaration(List.rev $2) }
     | VALUE value_declarations                                          { Value(List.rev $2) }
     | AXIOM value_expressions                                           { AxiomDeclaration(List.rev $2) }
-    | TS LBRACKET TEXT RBRACKET transition_systems END                  { TransitionSystemDeclaration($3, List.rev $5) } 
+    | TS LBRACKET TEXT RBRACKET transition_systems END                  { TransitionSystemDeclaration($3, List.rev $5) }
+    | LTL_ASSERTION ltl_assertions                                      { LtlAssertionDeclaration(List.rev $2) } 
+    
+ltl_assertions:
+    | ltl_assertion                                                     { [ $1 ] }
+    | ltl_assertions COMMA ltl_assertion                                { $3 :: $1 }
+    
+ltl_assertion:
+    | LBRACKET TEXT RBRACKET TEXT BAR MI value_expression               { LtlAssertion($2, $4, $7) }
 
 transition_systems:
     | transition_system                                                 { [$1] }
@@ -84,7 +92,7 @@ variable_definitions:
 
 variable_definition:
     | identifier COLON type_expr                                        { Typing(SingleTyping($1, $3)) }
-    | identifier COLON type_expr EQ value_expression                    { ExplicitValue($1, $3, $5) } 
+    | identifier COLON type_expr COLON EQ value_expression              { ExplicitValue($1, $3, $6) } 
     
 identifier:
     | TEXT                                                              { ISimple($1) }
@@ -111,6 +119,10 @@ value_expression:
     | infix_expr                                                        { $1 }
     | LCURLY DOT value_expressions DOT RCURLY                           { VArray(List.rev $3) }
     | NEG value_expression                                              { LogicalNegation($2, $1) }
+    | temporal_modal_operators value_expression                         { Prefix($1, $2) }
+    
+temporal_modal_operators:
+    | GLOBALLY                                                          { (Globally, $1) }
     
 accessor:
     | TEXT                                                              { VName(ASimple $1) }
@@ -124,6 +136,7 @@ infix_expr:
     | value_expression GT value_expression                              { Infix($1, GreaterThan, $3) } 
     | value_expression GE value_expression                              { Infix($1, GreaterThanOrEqual, $3) } 
     | value_expression EQ value_expression                              { Infix($1, Equal, $3) }
+    | value_expression NEG EQ value_expression                          { Infix($1, NotEqual, $4) }
     | value_expression PL value_expression                              { Infix($1, Plus, $3) }
     | value_expression MI value_expression                              { Infix($1, Minus, $3) }
     

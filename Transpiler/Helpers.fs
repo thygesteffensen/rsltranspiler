@@ -65,6 +65,20 @@ let convertValueDeclToIr value valueDecl =
 
     map
 
+
+let getValueLiteralString =
+    function
+    | VUnit _ -> "()"
+    | VBool b ->
+        match b with
+        | true -> "true"
+        | false -> "false"
+    | VInt i -> string i
+    | VReal r -> string r
+    | VChar c -> string c
+    | VNat n -> string n
+    | VText t -> t
+
 /// <summary>
 /// Convert AST to intermediate representation.
 ///
@@ -90,6 +104,7 @@ let rec convertToIntermediate (cls: Class) (intermediate: Intermediate) =
             | TransitionSystemDeclaration(idPos, transitionSystems) ->
                 { intermediate with
                     TransitionSystem = Some(convertAstTransitionSystemToIr idPos transitionSystems) }
+            | LtlAssertionDeclaration tuples -> failwith "todo"
 
         convertToIntermediate decls intermediate'
 
@@ -131,9 +146,9 @@ let rec convertToAst (intermediate: Intermediate) =
 
     typeDec :: valueDec :: axiomDec :: [ trDec ] |> List.choose id
 
-let findValue (valueTypeEnv : Map<string, ValueLiteral>) (valueExpr: ValueExpression) : ValueLiteral =
+let findValue (valueTypeEnv: ValueEnvMap) (valueExpr: ValueExpression) : ValueLiteral =
     match valueExpr with
-    | ValueLiteral (valueLiteral, _) -> valueLiteral 
+    | ValueLiteral(valueLiteral, _) -> valueLiteral
     | VName(ASimple(s, _pos)) ->
         match Map.tryFind s valueTypeEnv with
         | None -> failwith $"Cannot compute value of {s}"
@@ -146,14 +161,16 @@ let findValue (valueTypeEnv : Map<string, ValueLiteral>) (valueExpr: ValueExpres
     | VeList _ -> failwith "todo"
     | VArray _ -> failwith "todo"
     | LogicalNegation _ -> failwith "todo"
+    | Prefix(tuple, valueExpression) -> failwith "todo"
 
-let buildValueEnvironment (cls: Class) : Map<string, ValueLiteral> =
+
+let buildValueEnvironment (cls: Class) : ValueEnvMap =
     let getAxioms (decl: Declaration) acc =
         match decl with
         | AxiomDeclaration valueExpressions -> valueExpressions @ acc
         | _ -> acc
-        
-    let extractValue1 (valueMap : Map<string, ValueLiteral>) (valueExpr: ValueExpression) : ValueLiteral =
+
+    let extractValue1 (valueMap: ValueEnvMap) (valueExpr: ValueExpression) : ValueLiteral =
         match valueExpr with
         | ValueLiteral(valueLiteral, _pos) -> valueLiteral
         | VName _ -> findValue valueMap valueExpr
@@ -164,15 +181,15 @@ let buildValueEnvironment (cls: Class) : Map<string, ValueLiteral> =
         | VeList _ -> failwith "todo"
         | VArray _ -> failwith "todo"
         | LogicalNegation _ -> failwith "todo"
-        
-    let extractValue (valueExpr: ValueExpression) (acc: Map<string, ValueLiteral>) : Map<string, ValueLiteral> =
+        | Prefix(tuple, valueExpression) -> failwith "todo"
+
+    let extractValue (valueExpr: ValueExpression) (acc: ValueEnvMap) : ValueEnvMap =
         match valueExpr with
-        | Infix(VName (ASimple(name, _pos)), Equal, valueExpr) ->
-            Map.add name (extractValue1 acc valueExpr) acc
+        | Infix(VName(ASimple(name, _pos)), Equal, valueExpr) -> Map.add name (extractValue1 acc valueExpr) acc
         | _ -> acc
-    
+
     let axioms = List.foldBack getAxioms cls []
-    
+
     List.foldBack extractValue axioms Map.empty
 
 
@@ -181,7 +198,7 @@ let buildValueEnvironment (cls: Class) : Map<string, ValueLiteral> =
 /// </summary>
 /// <param name="_AST"></param>
 /// <param name="valueMap"></param>
-let buildSymbolTable (_AST: Class) (valueMap: Map<string, ValueLiteral>) : TypeEnvMap =
+let buildSymbolTable (_AST: Class) (valueMap: ValueEnvMap) : TypeEnvMap =
 
     let unfoldTypeEnvironments acc dec =
         match dec with
@@ -189,6 +206,7 @@ let buildSymbolTable (_AST: Class) (valueMap: Map<string, ValueLiteral>) : TypeE
         | TypeDeclaration ts -> ts @ acc
         | AxiomDeclaration _ -> acc
         | TransitionSystemDeclaration _ -> acc
+        | LtlAssertionDeclaration tuples -> failwith "todo"
 
     let buildType (env: TypeEnvMap) =
         function
@@ -204,22 +222,23 @@ let buildSymbolTable (_AST: Class) (valueMap: Map<string, ValueLiteral>) : TypeE
 
             if not (s0 = s1 && s1 = s) then
                 failwith ""
+
             let lowerBoundValue =
                 match findValue valueMap lowerBound with
                 | VInt i
                 | VNat i -> i
                 | _ -> failwith "Not allowed as bound"
-                
+
             let upperBoundValue =
                 match findValue valueMap upperBound with
                 | VInt i
                 | VNat i -> i
                 | _ -> failwith "Not allowed as bound"
 
-            let ls = (List.map (fun e -> string e) [ lowerBoundValue..(upperBoundValue-1) ])
+            let ls = [ lowerBoundValue .. (upperBoundValue - 1) ] |> List.map VInt
             env.Add((fst id), (typeDecl, ls))
         | id, (Union tuples as typeDecl) ->
-            let ls = List.foldBack (fun (e, _pos) a -> (string e) :: a) tuples []
+            let ls = List.foldBack (fun (e, _pos) a -> (string e) :: a) tuples [] |> List.map VText
             env.Add((fst id), (typeDecl, ls))
         | id, typeDecl -> env.Add((fst id), (typeDecl, []))
 
@@ -264,21 +283,16 @@ let buildValueTypeTable (_AST: Class) =
 /// <param name="typings"></param>
 /// <param name="f">Function should be called for each final instance of an accessors</param>
 /// <param name="acc"></param>
-let rec iterateTypings
-    (typeEnv: TypeEnvMap)
-    id
-    (typings: Typing list)
-    (f: string -> 'a -> 'a)
-    (acc: 'a)
-    : 'a =
+let rec iterateTypings (typeEnv: TypeEnvMap) id (typings: Typing list) (f: string -> 'a -> 'a) (acc: 'a) : 'a =
     match typings with
     | [] -> f id acc
-        | SingleTyping(ISimple(_, _pos), TName(s, _pos1)) :: ts ->
+    | SingleTyping(ISimple(_, _pos), TName(s, _pos1)) :: ts ->
         match Map.tryFind s typeEnv with
         | None -> failwith "No"
         | Some(_, instances) ->
-            List.foldBack (fun e a -> iterateTypings typeEnv $"{id}_{e}" ts f a) instances acc
-    | _ -> failwith "Nono"
+            let l = List.map getValueLiteralString instances
+            List.foldBack (fun e a -> iterateTypings typeEnv $"{id}_{e}" ts f a) l acc
+    | _ -> failwith "No no"
 
 /// <summary>
 /// toString for value literal
@@ -293,3 +307,22 @@ let literalToString valueLiteral =
     | VChar c -> string c
     | VNat i -> string i
     | VText s -> s
+
+let rec replaceNameWithValue valueEnv (valueExpr: ValueExpression) : ValueExpression =
+    match valueExpr with
+    | VName(ASimple(name, pos)) ->
+        match Map.tryFind name valueEnv with
+        | None -> valueExpr
+        | Some value -> ValueLiteral(value, pos)
+    | ValueExpression.Quantified(tuple, typings, valueExpression) ->
+        ValueExpression.Quantified(tuple, typings, replaceNameWithValue valueEnv valueExpression)
+    | Infix(lhs, op, rhs) -> Infix(replaceNameWithValue valueEnv lhs, op, replaceNameWithValue valueEnv rhs)
+    | VeList valueExpressions ->
+        List.foldBack (fun e a -> (replaceNameWithValue valueEnv e) :: a) valueExpressions []
+        |> VeList
+    | VArray valueExpressions ->
+        List.foldBack (fun e a -> (replaceNameWithValue valueEnv e) :: a) valueExpressions []
+        |> VArray
+    | LogicalNegation(valueExpression, position) ->
+        LogicalNegation(replaceNameWithValue valueEnv valueExpression, position)
+    | _ -> valueExpr

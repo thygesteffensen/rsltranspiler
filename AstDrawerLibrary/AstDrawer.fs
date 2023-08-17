@@ -17,6 +17,7 @@ let typeDeclarationToNode (typeDeclaration: Pos<Id> * TypeDefinition) (acc: Tree
 let infixOpToNode (infixOp: InfixOp) =
     match infixOp with
     | Equal -> Node("Equal", [])
+    | NotEqual -> Node("NotEqual", [])
     | Plus -> Node("Plus", [])
     | Minus -> Node("Minus", [])
     | Guard -> Node("Guard", [])
@@ -30,11 +31,19 @@ let infixOpToNode (infixOp: InfixOp) =
     | LogicalAnd -> Node("And", [])
     | LogicalOr -> Node("Or", [])
 
+let temporalModalOperatorsToString (tmo: TemporalModalOperators) : string =
+    match tmo with
+    | Globally -> "G"
+    | Finally -> "F"
+    | Release -> "R"
+    | Weak -> "W"
+    | Mighty -> "M"
+
 let rec valueExpressionToNode (valueExpression: ValueExpression) (acc: Tree<string> list) : Tree<string> list =
     match valueExpression with
     | ValueLiteral(valueLiteral, _pos) -> Node("Literal", [ Node(literalToString valueLiteral, []) ]) :: acc
-    | VName accessor -> Node("Name", [accessorToNode accessor]) :: acc
-    | VPName accessor -> Node("PName", [accessorToNode accessor]) :: acc
+    | VName accessor -> Node("Name", [ accessorToNode accessor ]) :: acc
+    | VPName accessor -> Node("PName", [ accessorToNode accessor ]) :: acc
     | Rule(id, _pos) -> Node("Rule", [ Node(id, []) ]) :: acc
     | Quantified((quantifier, _pos), typings, valueExpression) ->
         Node($"{quantifier}", (valueExpressionToNode valueExpression []) |> List.foldBack typingToNode typings)
@@ -49,18 +58,20 @@ let rec valueExpressionToNode (valueExpression: ValueExpression) (acc: Tree<stri
     | VeList valueExpressions -> Node("VeList", List.foldBack valueExpressionToNode valueExpressions []) :: acc
     | VArray valueExpressions -> Node("VArray", List.foldBack valueExpressionToNode valueExpressions []) :: acc
     | LogicalNegation(valueExpression, _pos) -> Node("Negation", valueExpressionToNode valueExpression []) :: acc
+    | Prefix((tmo, _pos), valueExpression) ->
+        Node(temporalModalOperatorsToString tmo, valueExpressionToNode valueExpression [])
+        :: acc
 
 and accessorToNode (accessor: Accessor) : Tree<string> =
     match accessor with
-    | ASimple(s, _pos) -> Node("Simple", [Node(s, [])])
+    | ASimple(s, _pos) -> Node("Simple", [ Node(s, []) ])
     | AGeneric((s, _pos), valueExprs) ->
         Node("Generic", Node(s, []) :: List.foldBack valueExpressionToNode valueExprs [])
 
 and identifierToNode (identifier: Identifier) : Tree<string> =
     match identifier with
-    | ISimple(s, _pos) -> Node("Simple", [Node(s, [])])
-    | IGeneric((s, _pos), typings) ->
-        Node("Generic", Node(s, []) :: List.foldBack typingToNode typings [])
+    | ISimple(s, _pos) -> Node("Simple", [ Node(s, []) ])
+    | IGeneric((s, _pos), typings) -> Node("Generic", Node(s, []) :: List.foldBack typingToNode typings [])
 
 and typeExpressionToNode (typeExpression: TypeExpression) (acc: Tree<string> list) : Tree<string> list =
     match typeExpression with
@@ -123,6 +134,10 @@ let transitionSystemToNode (transitionSystem: TransitionSystem) (acc: Tree<strin
         )
     :: acc
 
+let ltlAssertionToNode ((name, ts, valueExpr): LtlAssertion) (acc: Tree<string> list) : Tree<string> list =
+    Node(fst name, [ Node(fst ts, valueExpressionToNode valueExpr []) ]) :: acc
+
+
 let declarationToNode (declaration: Declaration) (acc: Tree<string> list) : Tree<string> list =
     match declaration with
     | Value valueDeclarations -> Node("Value", List.foldBack valueDeclarationToNode valueDeclarations []) :: acc
@@ -131,6 +146,7 @@ let declarationToNode (declaration: Declaration) (acc: Tree<string> list) : Tree
     | TransitionSystemDeclaration((id, _pos), transitionSystems) ->
         Node($"TransitionSystem {id}", List.foldBack transitionSystemToNode transitionSystems [])
         :: acc
+    | LtlAssertionDeclaration ltls -> Node("LTL", List.foldBack ltlAssertionToNode ltls []) :: acc
 
 
 let schemeToTree ((_s, _), _ as scheme: Scheme) (name: string) : Tree<string> =
@@ -142,4 +158,3 @@ let schemeToTree ((_s, _), _ as scheme: Scheme) (name: string) : Tree<string> =
     treeToFile name tree
 
     tree
-    

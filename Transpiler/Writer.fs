@@ -2,6 +2,7 @@ module Transpiler.Writer
 
 open System
 open Transpiler.Ast
+open Transpiler.Helpers.Helpers
 open System.IO
 
 /// <summary>
@@ -21,19 +22,6 @@ let listDelimiterAction (delimiter: Unit -> Unit) list elementAction =
                 delimiter ()
                 elementAction e)
             vs
-
-let getValueLiteralString =
-    function
-    | VUnit _ -> "()"
-    | VBool b ->
-        match b with
-        | true -> "true"
-        | false -> "false"
-    | VInt i -> string i
-    | VReal r -> string r
-    | VChar c -> string c
-    | VNat n -> string n
-    | VText t -> t
 
 let getTypeLiteralString =
     function

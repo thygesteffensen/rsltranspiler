@@ -7,11 +7,14 @@
 /// </summary>
 module Transpiler.Helpers.IrTransformer
 
+open FSharp.Text
 open FSharp.Text.Lexing
 open Microsoft.FSharp.Collections
 open Transpiler.Auxiliary
 open Transpiler.Intermediate
 open Transpiler.Ast
+
+
 
 let dummyPos: Position =
     { pos_bol = -1

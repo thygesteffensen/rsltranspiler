@@ -9,9 +9,9 @@ open Transpiler.RuleCollection.Helpers
 open Transpiler.Helpers.Helpers
 
 
-let _unfoldAxioms typeEnv valueTypeEnv valueDeclarations axioms =
+let _unfoldAxioms typeEnv valueTypeEnv valueDeclarations valueEnv axioms =
         
-    let valueDeclarationsAxiomsUnfolded = List.foldBack (fun e a -> axiomFolder typeEnv valueTypeEnv a Map.empty e) axioms valueDeclarations
+    let valueDeclarationsAxiomsUnfolded = List.foldBack (fun e a -> axiomFolder typeEnv valueTypeEnv a valueEnv e) axioms valueDeclarations
     // All Axioms should be unfolded, i.e. all Typing (IGeneric should be replaced with it's thingy
     // How do we best do this?
     // 1. Produce a list and when each generic is computed, the element is removed from the list, yielding a list for
@@ -54,8 +54,9 @@ let _unfoldAxioms typeEnv valueTypeEnv valueDeclarations axioms =
 /// </summary>
 /// <param name="typeEnv"></param>
 /// <param name="valueTypeEnv"></param>
+/// <param name="valueEnv"></param>
 /// <param name="intermediate"></param>
-let unfoldAxioms typeEnv valueTypeEnv (intermediate: Intermediate) =
+let unfoldAxioms typeEnv valueTypeEnv valueEnv (intermediate: Intermediate) =
     match intermediate with
     | { Axiom = axiomDecl } ->
         match axiomDecl with
@@ -67,5 +68,5 @@ let unfoldAxioms typeEnv valueTypeEnv (intermediate: Intermediate) =
                 | None -> Map.empty
                 
             { intermediate with
-                Value = _unfoldAxioms typeEnv valueTypeEnv valueDeclarations axioms
+                Value = _unfoldAxioms typeEnv valueTypeEnv valueDeclarations valueEnv axioms
                 Axiom = None }

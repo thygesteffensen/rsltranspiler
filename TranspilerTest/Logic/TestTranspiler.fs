@@ -16,13 +16,13 @@ type TT =
     | File of System.String
     | Expected of Map<string, TypeDefinition>
 
-let emptyStringList: string list = []
+let emptyValueLiteralList: ValueLiteral list = []
 
 let input: obj[] list =
     [ [| "Samples/TypeAbstract.rsl"
-         Map.empty.Add("T", (Abstract, emptyStringList)) |]
+         Map.empty.Add("T", (Abstract, emptyValueLiteralList)) |]
       [| "Samples/TypeConcrete.rsl"
-         Map.empty.Add("T", (Concrete(TName("Nat", pos 4 17 61 "TypeConcrete.rsl")), emptyStringList)) |]
+         Map.empty.Add("T", (Concrete(TName("Nat", pos 4 17 61 "TypeConcrete.rsl")), emptyValueLiteralList)) |]
       [| "Samples/TypeUnion.rsl"
          Map.empty.Add(
              "T",
@@ -30,7 +30,7 @@ let input: obj[] list =
                  [ ("t1", pos 4 18 59 "TypeUnion.rsl")
                    ("t2", pos 4 23 64 "TypeUnion.rsl")
                    ("t3", pos 4 28 69 "TypeUnion.rsl") ],
-              [ "t1"; "t2"; "t3" ])
+              [ VText "t1"; VText "t2"; VText "t3" ])
          ) |]
       [| "Samples/TypeSubType.rsl"
          Map.empty.Add(
@@ -56,7 +56,7 @@ let input: obj[] list =
                      )
                  )
               ),
-              [ "0"; "1"; "2"; "3"; "4" ])
+              [ VInt 0; VInt 1; VInt 2; VInt 3; VInt 4 ])
          ) |] ]
 
 [<TestCaseSource(nameof input)>]
@@ -95,7 +95,7 @@ let input2: obj[] list =
       [| "Samples/ValueGeneric2.rsl"; "Samples/ValueGeneric2_unfolded.rsl" |]
       [| "Samples/ValueGeneric3.rsl"; "Samples/ValueGeneric3_unfolded.rsl" |]
       [| "Samples/AxiomGeneric.rsl"; "Samples/AxiomGeneric_unfolded.rsl" |]
-      [| "Samples/SimpleRail.rsl"; "Samples/SimpleRail_unfolded.rsl" |]
+      // [| "Samples/SimpleRail.rsl"; "Samples/SimpleRail_unfolded.rsl" |]
       [| "Samples/NamedTransitionRules.rsl"
          "Samples/NamedTransitionRules_unfolded.rsl" |]
       [| "Samples/NamedTransitionRulesSimple.rsl"

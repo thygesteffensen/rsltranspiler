@@ -1,25 +1,43 @@
-scheme SimpleRailBig_unfolded =
-	class
-		type
-			TrainId == t1 | t2,
-			SegmentId = {| n : Int :- (n >= 0) /\ (n < 1) |}
-		value
-			max : Int = 1
-		transition_system [TS]
-			variable
-				position_t1 : SegmentId,
-				position_t2 : SegmentId,
-				occupied_0 : Bool
-			init_constraint
-				position_t1 = 1 /\
-				position_t2 = 4 /\
-				occupied_0 = false /\
-				occupied_1 = true /\
-				occupied_4 = true
-			transition_rules
-				(((position_t1 < (max - 1)) /\ ((position_t1 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t1' = (position_t1 + 1)), (occupied_0' = false), (occupied_0' = true))
-				 [=] 
-				(((position_t2 < (max - 1)) /\ ((position_t2 = s1) /\ (((s1 + 1) = s2) /\ ~(occupied[s2])))) ==> (position_t2' = (position_t2 + 1)), (occupied_0' = false), (occupied_0' = true))
-		end
+scheme SimpleRailBig_unfolded = 
+class
+type
+TrainId == t1 | t2,
+SegmentId = {| n : Int :- n >= 0 /\
+  n < 1 |}
 
-	end
+value
+max : Int = 1
+
+transition_system
+[TS]
+variable
+position_t1 : SegmentId,
+position_t2 : SegmentId,
+occupied_0 : Bool
+init_constraint
+position_t1 = 1 /\
+position_t2 = 4 /\
+occupied_0 = false /\
+occupied_1 = true /\
+occupied_4 = true
+transition_rules
+  position_t1 < (max - 1) /\
+  (position_t1 = 0 /\
+  ((0 + 1) = 0 /\
+  ~occupied_0))
+  ==>
+  position_t1' = position_t1 + 1,
+  occupied_0' = false,
+  occupied_0' = true
+[=]
+  position_t2 < (max - 1) /\
+  (position_t2 = 0 /\
+  ((0 + 1) = 0 /\
+  ~occupied_0))
+  ==>
+  position_t2' = position_t2 + 1,
+  occupied_0' = false,
+  occupied_0' = true
+end
+
+end

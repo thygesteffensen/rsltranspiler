@@ -26,7 +26,8 @@ and Effect = Accessor * ValueExpression
 /// Map with type name as key and mapping to a tuple of the type definition and, if possible, the finite set of value
 /// in the type expression.
 /// </summary>
-type TypeEnvMap = Map<string, TypeDefinition * string list>
+type TypeEnvMap = Map<string, TypeDefinition * ValueLiteral list>
+type ValueEnvMap = Map<string, ValueLiteral>
 type ValueDecMap = Map<int * string, ValueDeclaration>
 type NamedRuleMap = Map<int * string, IrTransitionRules>
 
@@ -36,7 +37,6 @@ type IrTransitionSystem =
       InitConstraint: Option<IrAxiomDeclaration list>
       TransitionRule: Option<IrTransitionRules * NamedRuleMap> }
 
-[<Struct>]
 type Intermediate =
     { Type: Option<(Pos<Id> * TypeDefinition) list>
       Value: Option<ValueDecMap>
