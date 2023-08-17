@@ -398,7 +398,7 @@
                                                  pos_orig_lnum = 34
                                                  pos_bol = 1003
                                                  pos_cnum = 36 }))), LogicalAnd,
-                          Negation
+                          LogicalNegation
                             (VName
                                (AGeneric
                                   (("occupied", { pos_fname = "SimpleRail.rsl"
@@ -597,7 +597,7 @@
                                                  pos_orig_lnum = 44
                                                  pos_bol = 1445
                                                  pos_cnum = 36 }))), LogicalAnd,
-                          Negation
+                          LogicalNegation
                             (VName
                                (AGeneric
                                   (("occupied", { pos_fname = "SimpleRail.rsl"
