@@ -41,7 +41,6 @@ internal static class UnfoldCommand
 
         try
         {
-            // astOption.Value throws NUllReferenceException if astOption is None.
             var (schemeName, declarations) = astOption.Value;
 
             var (_, unfoldedDeclarations) = Transpiler.Transpiler.transpile(schemeName, declarations);
