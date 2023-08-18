@@ -156,7 +156,6 @@ let rec writeValue (stream: StreamWriter) depth valueDeclaration =
     | GenericValue(id, typingList, typeExpr) ->
         match id with
         | ISimple(id, _) ->
-            // TODO: This one is a bit hacky due to 0 as depth as constructing a type
             stream.Write(id + " [ ")
             List.iter (fun e -> (writeValue stream 0 (Typing e))) typingList
             stream.Write " ] = "

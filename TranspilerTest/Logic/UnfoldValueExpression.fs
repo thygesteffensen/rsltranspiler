@@ -105,6 +105,5 @@ let UnfoldValueExpressionTest
     (valueTypeEnv: Map<string, TypeExpression>)
     =
     let unfolded = unfoldValueExpression typeEnv valueTypeEnv valueEnv input
-    // let replaced = replaceNameWithValue valueEnv unfolded
 
     Assert.AreEqual(expected, unfolded)

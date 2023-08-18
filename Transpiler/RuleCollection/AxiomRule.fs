@@ -11,7 +11,7 @@ open Transpiler.Helpers.Helpers
 
 let _unfoldAxioms typeEnv valueTypeEnv valueDeclarations valueEnv axioms =
         
-    let valueDeclarationsAxiomsUnfolded = List.foldBack (fun e a -> axiomFolder typeEnv valueTypeEnv a valueEnv e) axioms valueDeclarations
+    let valueDeclarationsAxiomsUnfolded = List.foldBack (fun e a -> axiomFolder typeEnv valueTypeEnv valueEnv a e) axioms valueDeclarations
     // All Axioms should be unfolded, i.e. all Typing (IGeneric should be replaced with it's thingy
     // How do we best do this?
     // 1. Produce a list and when each generic is computed, the element is removed from the list, yielding a list for

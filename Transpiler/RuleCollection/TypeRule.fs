@@ -2,7 +2,6 @@ module Transpiler.RuleCollection.TypeRule
 
 open Transpiler.Ast
 open Transpiler.Intermediate
-open Transpiler.RuleCollection.Helpers
 open Transpiler.Helpers.Helpers
 
 /// <summary>
@@ -31,96 +30,7 @@ let mapFolder typeEnv _valueTypeEnv (i, _k as key) v (s: ValueDecMap) =
         failwith "Is it absolute?"
     | _ -> s
 
-let unfoldAccessor1
-    _typeEnv
-    _valueTypeEnv
-    (valueEnv: ValueEnvMap)
-    (accessor: Accessor)
-    (f: Accessor -> ValueExpression)
-    : ValueExpression =
-    match accessor with
-    | ASimple(id, position) ->
-        match Map.tryFind id valueEnv with
-        | None -> f accessor
-        | Some value -> ValueLiteral(value, position)
-    | AGeneric((id, pos), valueExprs) ->
-        let postfix =
-            List.foldBack (fun e a -> (valueExpressionToStringNew e valueEnv) + a) valueExprs ""
-        f (ASimple(id + "_" + postfix, pos))
 
-let unfoldAccessor
-    _typeEnv
-    _valueTypeEnv
-    (valueEnv: ValueEnvMap)
-    (accessor: Accessor)
-    (f: Accessor -> ValueExpression)
-    : ValueExpression =
-    match accessor with
-    | ASimple(id, position) ->
-        match Map.tryFind id valueEnv with
-        | None -> f accessor
-        | Some value -> ValueLiteral(value, position)
-    | AGeneric((id, pos), valueExprs) ->
-        let postfix =
-            List.foldBack (fun e a -> (valueExpressionToStringNew e valueEnv) + a) valueExprs ""
-            
-        f (ASimple(id + "_" + postfix, pos))
-
-let rec unfoldValueExpression
-    (typeEnv: TypeEnvMap)
-    valueTypeEnv
-    (valueEnv: ValueEnvMap)
-    (v: ValueExpression)
-    : ValueExpression =
-
-    match v with
-    | ValueExpression.Quantified((quantifier, _pos), typings, valueExpression) ->
-        let delimiter =
-            match quantifier with
-            | All -> LogicalAnd
-            | Exists -> LogicalAnd
-            | ExactlyOne -> failwith "ExactlyOne is not supported"
-            | Quantifier.Deterministic -> InfixOp.Deterministic
-            | Quantifier.NonDeterministic -> InfixOp.NonDeterministic
-
-
-        let rec typingFolder
-            (typings: Typing list)
-            (valueEnv': ValueEnvMap)
-            (acc: ValueExpression list)
-            : ValueExpression list =
-            match typings with
-            | SingleTyping(ISimple(id, _pos), TName(tName, _pos1)) :: ts ->
-                match Map.tryFind tName typeEnv with
-                | None -> failwith $"Could not find {tName} in type environment"
-                | Some(_typeDef, instances) ->
-                    List.foldBack (fun instance a -> typingFolder ts (Map.add id instance valueEnv') a) instances acc
-            | [] ->
-                unfoldValueExpression typeEnv valueTypeEnv valueEnv' valueExpression
-                :: acc
-            | _ -> failwith "Given typing not supported"
-
-        let l = typingFolder typings valueEnv [] // Yields a list of the value expressions
-        let ll = List.reduce (fun e a -> Infix(e, delimiter, a)) l // List reduced to a single infix expression
-
-        ll
-    | Infix(lhs, infixOp, rhs) ->
-        let lhs' = unfoldValueExpression typeEnv valueTypeEnv valueEnv lhs
-        let rhs' = unfoldValueExpression typeEnv valueTypeEnv valueEnv rhs
-        Infix(lhs', infixOp, rhs')
-    | VeList l ->
-        List.foldBack (fun e a -> (unfoldValueExpression typeEnv valueTypeEnv valueEnv e) :: a) l []
-        |> VeList
-    | VName accessor -> unfoldAccessor typeEnv valueTypeEnv valueEnv accessor VName
-    | VPName accessor -> unfoldAccessor typeEnv valueTypeEnv valueEnv accessor VPName 
-    | ValueLiteral tuple -> v
-    | Rule(s, position) -> v
-    | VArray valueExpressions ->
-        List.foldBack (fun e a -> unfoldValueExpression typeEnv valueTypeEnv valueEnv e :: a) valueExpressions [] |> VArray
-    | LogicalNegation(valueExpression, position) ->
-        LogicalNegation(unfoldValueExpression typeEnv valueTypeEnv valueEnv valueExpression, position)
-    | Prefix(tuple, valueExpression) ->
-        Prefix(tuple, unfoldValueExpression typeEnv valueTypeEnv valueEnv valueExpression)
 
 
 /// <summary>
@@ -131,52 +41,19 @@ let rec unfoldValueExpression
 /// <param name="valueEnv"></param>
 /// <param name="ir"></param>
 /// <param name="acc"></param>
-let rec irAxiomDecUnfold
-    typeEnv
-    valueTypeEnv
-    valueEnv
-    (ir: IrAxiomDeclaration)
-    acc
-    : IrAxiomDeclaration list =
+let rec irAxiomDecUnfold typeEnv valueTypeEnv valueEnv acc (ir: IrAxiomDeclaration) : IrAxiomDeclaration list =
     match ir with
-    | IrQuantified(typings, ir') -> instantiateTypings typeEnv valueTypeEnv valueEnv typings ir' acc
+    | IrQuantified(typings, ir') ->
+        genericInstantiateTypings typeEnv valueTypeEnv valueEnv typings acc ir' irAxiomDecUnfold
+    // instantiateTypings typeEnv valueTypeEnv valueEnv typings ir' acc
     | IrInfix(accessor, valueExpression) ->
         match accessor with
         | ASimple _ -> ir :: acc // There is no need to unfold a simple accessor
         | AGeneric((id, pos), valueExpressions) ->
-            // TODO: Consider that the value expression can hold generic accessors
             let stringifyId =
-                List.foldBack (fun e a -> a + "_" + (valueExpressionToStringNew e valueEnv)) valueExpressions id
+                List.foldBack (fun e a -> a + "_" + (valueExpressionToString e valueEnv)) valueExpressions id
 
             IrInfix(ASimple(stringifyId, pos), valueExpression) :: acc
-
-and instantiateTypings
-    (typeEnv: TypeEnvMap)
-    valueTypeEnv
-    valueEnv
-    (typings: Typing list)
-    (ir: IrAxiomDeclaration)
-    acc
-    : IrAxiomDeclaration list =
-    match typings with
-    | [] -> irAxiomDecUnfold typeEnv valueTypeEnv valueEnv ir acc
-    | SingleTyping(identifier, typeExpr) :: ts ->
-        match identifier with
-        | IGeneric _ -> failwith "todo"
-        | ISimple(s, _pos) ->
-            let t =
-                match typeExpr with
-                | TName s -> s
-                | _ -> failwith "todo"
-
-            match snd (Map.find (fst t) typeEnv) with
-            | [] -> failwith "todo"
-            // TODO: Replace values after unfolding
-            | (l: ValueLiteral list) ->
-                List.foldBack
-                    (fun e a -> instantiateTypings typeEnv valueTypeEnv (Map.add s e valueEnv) ts ir a)
-                    l
-                    acc
 
 
 /// <summary>
@@ -190,19 +67,17 @@ and instantiateTypings
 let rec irTransitionRulesUnfold typeEnv valueTypeEnv valueEnv (rule: IrTransitionRules) : IrTransitionRules =
     match rule with
     | Node(lhs, choice, rhs) ->
-        Node(irTransitionRulesUnfold typeEnv valueTypeEnv valueEnv lhs, choice, irTransitionRulesUnfold typeEnv valueTypeEnv valueEnv rhs)
+        Node(
+            irTransitionRulesUnfold typeEnv valueTypeEnv valueEnv lhs,
+            choice,
+            irTransitionRulesUnfold typeEnv valueTypeEnv valueEnv rhs
+        )
     | Leaf irTransitionRule -> irTransitionRuleUnfold typeEnv valueTypeEnv valueEnv irTransitionRule
 
-and irTransitionRuleUnfold
-    typeEnv
-    valueTypeEnv
-    valueEnv
-    (rule: IrTransitionRule)
-    : IrTransitionRules =
+and irTransitionRuleUnfold typeEnv valueTypeEnv valueEnv (rule: IrTransitionRule) : IrTransitionRules =
     match rule with
     | Guarded(valueExpression, tuples) ->
-        let t =
-            unfoldValueExpression typeEnv valueTypeEnv valueEnv valueExpression
+        let t = unfoldValueExpression typeEnv valueTypeEnv valueEnv valueExpression
 
         Guarded(
             t,
@@ -212,9 +87,8 @@ and irTransitionRuleUnfold
                         match unfoldAccessor typeEnv valueTypeEnv valueEnv a VName with
                         | VName v -> v
                         | VPName v -> v
-                    (t,
-                     (unfoldValueExpression typeEnv valueTypeEnv valueEnv e))
-                    :: acc)
+
+                    (t, (unfoldValueExpression typeEnv valueTypeEnv valueEnv e)) :: acc)
                 tuples
                 []
         )
@@ -233,31 +107,25 @@ and instantiateTypings1
     : IrTransitionRules =
     match typings with
     | [] -> irTransitionRuleUnfold typeEnv valueTypeEnv valueEnv rule
-    | SingleTyping(id, typeExpr) :: ts ->
+    | SingleTyping(id, TName typeName) :: ts ->
         match id with
         | IGeneric _ -> failwith "todo"
         | ISimple(s, _pos) ->
-            let t =
-                match typeExpr with
-                | TName s -> s
-                | _ -> failwith "todo"
 
-            match (Map.find (fst t) typeEnv) with
-            | _, [] -> failwith $"Cannot unfold infinite types ({fst t})"
-            | Abstract, _ -> failwith "todo"
-            // Union and Sub expression value set are computed when building the symbol table
-            // and this set can be iterated to know each instance of a types values
-            | Union _, v :: valueSet
-            | Concrete _, v :: valueSet ->
+            match (Map.find (fst typeName) typeEnv) with
+            | _, l :: lits ->
                 List.foldBack
                     (fun e a ->
                         Node(
                             a,
                             NonDeterministic,
-                            instantiateTypings1 typeEnv valueTypeEnv (Map.add s e valueEnv) ts rule
+                            (instantiateTypings1 typeEnv valueTypeEnv (Map.add s e valueEnv) ts rule)
                         ))
-                    valueSet
-                    (instantiateTypings1 typeEnv valueTypeEnv (Map.add s v valueEnv) ts rule)
+                    lits
+                    (instantiateTypings1 typeEnv valueTypeEnv (Map.add s l valueEnv) ts rule)
+            | _, [] -> failwith $"Cannot unfold infinite types ({fst typeName})"
+    | _ -> failwith "Only SingleTypings with TypeName type is supported, other types can be added"
+
 
 /// <summary>
 /// Unfold transition rule
@@ -310,7 +178,7 @@ let transitionSystemFolder
             match value.InitConstraint with
             | None -> None
             | Some value ->
-                List.foldBack (fun e a -> irAxiomDecUnfold typeEnv valueTypeEnv Map.empty e a) value []
+                List.foldBack (fun e a -> irAxiomDecUnfold typeEnv valueTypeEnv Map.empty a e) value []
                 |> Some
 
         let unfoldedTransitionRule =
@@ -354,11 +222,11 @@ let unfoldGenerics typeEnv valueTypeEnv valueEnv (intermediate: Intermediate) =
 /// <summary>
 /// Unfold type declaration, sub type expression are unfolded
 /// </summary>
-/// <param name="_typeEnv"></param>
-/// <param name="_valueTypeEnv"></param>
+/// <param name="typeEnv"></param>
+/// <param name="valueTypeEnv"></param>
 /// <param name="valueEnv"></param>
 /// <param name="intermediate"></param>
-let unfoldType _typeEnv _valueTypeEnv valueEnv (intermediate: Intermediate) : Intermediate =
+let unfoldType typeEnv valueTypeEnv valueEnv (intermediate: Intermediate) : Intermediate =
 
     let unfoldedType =
         match intermediate.Type with
@@ -368,7 +236,7 @@ let unfoldType _typeEnv _valueTypeEnv valueEnv (intermediate: Intermediate) : In
                 (fun (k, v as e) a ->
                     match v with
                     | Concrete(Sub(typings, valueExpression)) ->
-                        (k, Concrete(Sub(typings, replaceNameWithValue valueEnv valueExpression)))
+                        (k, Concrete(Sub(typings, unfoldValueExpression typeEnv valueTypeEnv valueEnv valueExpression)))
                     | Abstract -> e
                     | Union _ -> e
                     | Concrete _ -> e

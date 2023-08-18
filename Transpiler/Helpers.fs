@@ -24,10 +24,6 @@ let convertAxiomDeclToIr (valueExprList: ValueExpression list) =
         | ValueExpression.Quantified((All, _), typings, valueExpression) ->
             IrQuantified(typings, valueExpressionToIr valueExpression)
         | Infix(VName accessor, Equal, expression) -> IrInfix(accessor, expression)
-        // TODO: Expression should be further walked to ensure it does not violate rules.
-        // E.g., it cannot contain quantified generic expression. But then again, that should just evaluate to a
-        // boolean
-
         | ValueExpression.Quantified _ -> failwith "Quantified expression must use the all quantifier"
         | Infix _ -> failwith "Infix expression in axioms must be on the form: <Accessor> = <ValueExpr>"
 
@@ -65,6 +61,43 @@ let convertValueDeclToIr value valueDecl =
 
     map
 
+/// <summary>
+/// Generic instantiate typings method.
+/// Idea:
+///     For each quantified expression, the types in the typings must all be instantiated before the first unfolding
+///     can happen, i.e.~all types must have a value. Then each combination must be repeated, which is what this
+///     function does. It call the baseFunction for each combination. 
+/// </summary>
+/// <param name="typeEnv">Type Environment</param>
+/// <param name="valueTypeEnv">Value Type Environment</param>
+/// <param name="valueEnv">Value Environment</param>
+/// <param name="typings">Types to be instantiated</param>
+/// <param name="accumulator">Accumulator value passed along</param>
+/// <param name="element">Element to operate on</param>
+/// <param name="baseFunction">The parent function that initiated the instantiation</param>
+let rec genericInstantiateTypings
+    (typeEnv: TypeEnvMap)
+    (valueTypeEnv: Map<Id, TypeExpression>)
+    (valueEnv: ValueEnvMap)
+    (typings: Typing list)
+    (accumulator: 'a)
+    (element: 'b)
+    (baseFunction: TypeEnvMap -> Map<Id,TypeExpression> -> ValueEnvMap -> 'a -> 'b -> 'a)
+    =
+    match typings with
+    | [] -> baseFunction typeEnv valueTypeEnv valueEnv accumulator element
+    | SingleTyping(s, TName typeName) as _ :: ts ->
+        match s with
+        | ISimple(id, _pos) ->
+            match snd (Map.find (fst typeName) typeEnv) with
+            | [] -> failwith "Type is infinite and cannot be unfolded."
+            | valueLiterals ->
+                List.foldBack
+                    (fun e a -> genericInstantiateTypings typeEnv valueTypeEnv (Map.add id e valueEnv) ts a element baseFunction)
+                    valueLiterals
+                    accumulator
+        | IGeneric _ -> failwith "todo"
+    | _ -> failwith "Only SingleTypings with TypeName type is supported, other types can be added"
 
 let getValueLiteralString =
     function
@@ -308,7 +341,104 @@ let literalToString valueLiteral =
     | VNat i -> string i
     | VText s -> s
 
-let rec replaceNameWithValue valueEnv (valueExpr: ValueExpression) : ValueExpression =
+/// <summary>
+/// Convert a value expression to a string is possible
+/// </summary>
+/// <param name="ve"></param>
+/// <param name="valueEnv"></param>
+let valueExpressionToString (ve: ValueExpression) (valueEnv: ValueEnvMap) =
+    match ve with
+    | ValueLiteral valueLiteral -> literalToString (fst valueLiteral)
+    | VName s ->
+        match s with
+        | ASimple s -> 
+            match Map.tryFind (fst s) valueEnv with
+            | None -> fst s // TODO: Should the default just be the string assuming the type checker handles this?
+            | Some value -> getValueLiteralString value
+        | AGeneric _ -> failwith "todo"
+    | ValueExpression.Quantified _ -> failwith "todo"
+    | VPName _ -> failwith "todo"
+    | Rule _ -> failwith "todo"
+    | Infix _ -> failwith "todo"
+    | VeList _ -> failwith "todo"
+    | VArray _ -> failwith "todo"
+    | LogicalNegation _ -> failwith "todo"
+
+let unfoldAccessor
+    _typeEnv
+    _valueTypeEnv
+    (valueEnv: ValueEnvMap)
+    (accessor: Accessor)
+    (f: Accessor -> ValueExpression)
+    : ValueExpression =
+    match accessor with
+    | ASimple(id, position) ->
+        match Map.tryFind id valueEnv with
+        | None -> f accessor
+        | Some value -> ValueLiteral(value, position)
+    | AGeneric((id, pos), valueExprs) ->
+        let postfix =
+            List.foldBack (fun e a -> (valueExpressionToString e valueEnv) + a) valueExprs ""
+            
+        f (ASimple(id + "_" + postfix, pos))
+
+let rec unfoldValueExpression
+    (typeEnv: TypeEnvMap)
+    valueTypeEnv
+    (valueEnv: ValueEnvMap)
+    (v: ValueExpression)
+    : ValueExpression =
+
+    match v with
+    | ValueExpression.Quantified((quantifier, _pos), typings, valueExpression) ->
+        let delimiter =
+            match quantifier with
+            | All -> LogicalAnd
+            | Exists -> LogicalAnd
+            | ExactlyOne -> failwith "ExactlyOne is not supported"
+            | Quantifier.Deterministic -> InfixOp.Deterministic
+            | Quantifier.NonDeterministic -> InfixOp.NonDeterministic
+
+
+        let rec typingFolder
+            (typings: Typing list)
+            (valueEnv': ValueEnvMap)
+            (acc: ValueExpression list)
+            : ValueExpression list =
+            match typings with
+            | SingleTyping(ISimple(id, _pos), TName(tName, _pos1)) :: ts ->
+                match Map.tryFind tName typeEnv with
+                | None -> failwith $"Could not find {tName} in type environment"
+                | Some(_typeDef, instances) ->
+                    List.foldBack (fun instance a -> typingFolder ts (Map.add id instance valueEnv') a) instances acc
+            | [] ->
+                unfoldValueExpression typeEnv valueTypeEnv valueEnv' valueExpression
+                :: acc
+            | _ -> failwith "Given typing not supported"
+
+        let l = typingFolder typings valueEnv [] // Yields a list of the value expressions
+        let ll = List.reduce (fun e a -> Infix(e, delimiter, a)) l // List reduced to a single infix expression
+
+        ll
+    | Infix(lhs, infixOp, rhs) ->
+        let lhs' = unfoldValueExpression typeEnv valueTypeEnv valueEnv lhs
+        let rhs' = unfoldValueExpression typeEnv valueTypeEnv valueEnv rhs
+        Infix(lhs', infixOp, rhs')
+    | VeList l ->
+        List.foldBack (fun e a -> (unfoldValueExpression typeEnv valueTypeEnv valueEnv e) :: a) l []
+        |> VeList
+    | VName accessor -> unfoldAccessor typeEnv valueTypeEnv valueEnv accessor VName
+    | VPName accessor -> unfoldAccessor typeEnv valueTypeEnv valueEnv accessor VPName 
+    | ValueLiteral tuple -> v
+    | Rule(s, position) -> v
+    | VArray valueExpressions ->
+        List.foldBack (fun e a -> unfoldValueExpression typeEnv valueTypeEnv valueEnv e :: a) valueExpressions [] |> VArray
+    | LogicalNegation(valueExpression, position) ->
+        LogicalNegation(unfoldValueExpression typeEnv valueTypeEnv valueEnv valueExpression, position)
+    | Prefix(tuple, valueExpression) ->
+        Prefix(tuple, unfoldValueExpression typeEnv valueTypeEnv valueEnv valueExpression)
+
+(*let rec replaceNameWithValue valueEnv (valueExpr: ValueExpression) : ValueExpression =
     match valueExpr with
     | VName(ASimple(name, pos)) ->
         match Map.tryFind name valueEnv with
@@ -325,4 +455,4 @@ let rec replaceNameWithValue valueEnv (valueExpr: ValueExpression) : ValueExpres
         |> VArray
     | LogicalNegation(valueExpression, position) ->
         LogicalNegation(replaceNameWithValue valueEnv valueExpression, position)
-    | _ -> valueExpr
+    | _ -> valueExpr*)
