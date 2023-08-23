@@ -54,7 +54,7 @@ let rec valueExpressionToNode (valueExpression: ValueExpression) (acc: Tree<stri
             (infixOpToNode infixOp :: valueExpressionToNode rhs []
              |> valueExpressionToNode lhs)
         )
-        :: acc // TODO: Might not be in correct order ;)
+        :: acc
     | VeList valueExpressions -> Node("VeList", List.foldBack valueExpressionToNode valueExpressions []) :: acc
     | VArray valueExpressions -> Node("VArray", List.foldBack valueExpressionToNode valueExpressions []) :: acc
     | LogicalNegation(valueExpression, _pos) -> Node("Negation", valueExpressionToNode valueExpression []) :: acc
@@ -106,9 +106,6 @@ let valueDeclarationToNode (valueDeclaration: ValueDeclaration) (acc: Tree<strin
             @ valueExpressionToNode valueExpression []
         )
         :: acc
-    | ImplicitValue -> Node("ImplicitValue", []) :: acc
-    | ExplicitFunction -> Node("ExplicitFunction", []) :: acc
-    | ImplicitFunction -> Node("ImplicitFunction", []) :: acc
     | GenericValue(identifier, typings, typeExpression) ->
         Node(
             "GenericValue",

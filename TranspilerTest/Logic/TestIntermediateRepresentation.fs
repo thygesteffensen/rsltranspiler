@@ -33,7 +33,8 @@ let testAst2Ir2Ast decl =
         { Type = None
           Value = None
           Axiom = None
-          TransitionSystem = None }
+          TransitionSystem = None
+          LtlAssertion = None }
 
     let actual = convertToAst (convertToIntermediate decl t)
 
@@ -62,7 +63,7 @@ let testFileAstToIrToAst input =
         | Some v -> v
         | None -> failwith ""
                  
-    let ir = convertToIntermediate cls { Type = None; Value = None; Axiom = None; TransitionSystem = None }
+    let ir = convertToIntermediate cls { Type = None; Value = None; Axiom = None; TransitionSystem = None; LtlAssertion = None }
     
     let astFromIr = Scheme(($"{fst spec}", snd spec), convertToAst ir)
     

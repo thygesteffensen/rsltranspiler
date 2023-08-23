@@ -13,7 +13,7 @@ internal class Program
     {
         var rootCommand =
             new RootCommand(
-                "`rslts` is the RAISE Specification Language tool-set. This can be used to unfold specification and render their AST");
+                "`rslts` is the RAISE Specification Language toolset. This can be used to unfold specifications and render their AST");
         rootCommand.AddOption(DebugOption);
 
         rootCommand.AddUnfoldCommand();

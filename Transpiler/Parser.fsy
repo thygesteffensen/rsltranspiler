@@ -21,7 +21,7 @@ let parse_error_rich = Some error_handler
 %left DETERMINISTIC NONDETERMINISTIC
 %right IS
 %left GU
-%left LAND LOR
+%left LAND LOR IM
 %right EQ
 %left LT LE GT GE 
 %left MI PL

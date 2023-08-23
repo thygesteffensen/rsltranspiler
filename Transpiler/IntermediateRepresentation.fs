@@ -4,7 +4,6 @@ open Transpiler.Ast
 
 type IrAxiomDeclaration =
     | IrQuantified of (Typing list * IrAxiomDeclaration)
-    // TODO: Determine if the Accessor should be further specified
     | IrInfix of (Accessor * ValueExpression)
 
 type Choice =
@@ -41,4 +40,5 @@ type Intermediate =
     { Type: Option<(Pos<Id> * TypeDefinition) list>
       Value: Option<ValueDecMap>
       Axiom: Option<IrAxiomDeclaration list>
-      TransitionSystem: Option<IrTransitionSystem> }
+      TransitionSystem: Option<IrTransitionSystem>
+      LtlAssertion: Option<LtlAssertion list>  }
