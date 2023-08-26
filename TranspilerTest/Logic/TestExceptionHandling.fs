@@ -6,7 +6,7 @@ open Transpiler
 open Transpiler.Reader
 
 let input1: obj[] list =
-    [ [| "Samples/AxiomMissing.rsl"; "The following unfolded generics are missing: A_t1, A_t3" |] ]
+    [ [| "Samples/AxiomMissing.rsl"; "A_t3 is expected to have a accompanying axiom (6:13 AxiomMissing.rsl)" |] ]
 
 [<TestCaseSource(nameof input1)>]
 let unfoldSpecificationError source expectedMessage =

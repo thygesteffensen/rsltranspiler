@@ -53,9 +53,11 @@ let makeVariableDeclarationImplicit
     (_typeEnv: TypeEnvMap)
     (_valueEnv: ValueEnvMap)
     (cls: Class)
-    : Class =
+    : TypeEnvMap * ValueEnvMap * Class =
     // 1. Gather all init constraints
     // 2. Add them to the init constraint and maybe level them out a bit
     let cls', inits = List.foldBack classFolder cls ([], [])
 
-    List.foldBack (combineInitConstraintsFolder inits) cls' []
+    let cls' = List.foldBack (combineInitConstraintsFolder inits) cls' []
+
+    (_typeEnv, _valueEnv, cls')

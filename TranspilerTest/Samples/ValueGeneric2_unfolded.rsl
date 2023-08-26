@@ -5,21 +5,21 @@ TrainId == t1 | t2 | t3,
 SectionId == s1 | s2 | s3
 
 value
-position_t1_s1 : Nat,
+position_t1_s1 : Nat = 2,
 
-position_t1_s2 : Nat,
+position_t1_s2 : Nat = 2,
 
-position_t1_s3 : Nat,
+position_t1_s3 : Nat = 2,
 
-position_t2_s1 : Nat,
+position_t2_s1 : Nat = 2,
 
-position_t2_s2 : Nat,
+position_t2_s2 : Nat = 2,
 
-position_t2_s3 : Nat,
+position_t2_s3 : Nat = 2,
 
-position_t3_s1 : Nat,
+position_t3_s1 : Nat = 2,
 
-position_t3_s2 : Nat,
+position_t3_s2 : Nat = 2,
 
-position_t3_s3 : Nat
+position_t3_s3 : Nat = 2
 end

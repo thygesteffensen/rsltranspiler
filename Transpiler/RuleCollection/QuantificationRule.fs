@@ -8,17 +8,19 @@ open Transpiler.Helpers.Helpers
 let rec unfoldQuantified (typeEnv: TypeEnvMap) (valueEnv: ValueEnvMap) (valueExpr: ValueExpression) : ValueExpression =
 
     match valueExpr with
+    // TODO: References to in axioms are replaced with the value....
     | VName accessor ->
         match accessor with
         | ASimple(id, position) ->
+            // valueExpr
             match Map.tryFind id valueEnv with
             | None -> valueExpr
-            | Some value -> (ValueLiteral(value, position))
+            | Some value -> ValueLiteral(value, position)
         | AGeneric((id, pos), valueExprs) ->
             let postfix =
-                List.foldBack (fun e a -> (valueExpressionToString e valueEnv) + a) valueExprs ""
+                List.foldBack (fun e a -> "_" + (valueExpressionToString e valueEnv) + a) valueExprs ""
 
-            VName(ASimple(id + "_" + postfix, pos))
+            VName(ASimple(id + postfix, pos))
     | VPName accessor ->
         match accessor with
         | ASimple _ -> valueExpr

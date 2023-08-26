@@ -46,8 +46,10 @@ let makeValueDeclarationExplicit
     (_typeEnv: TypeEnvMap)
     (_valueEnv: ValueEnvMap)
     (cls: Class)
-    : Class =
+    : TypeEnvMap * ValueEnvMap * Class =
     // 1. Gather axioms?
     // 2. Make implicit?
     let axiomMap = List.foldBack buildAxiomMap cls Map.empty
-    List.foldBack (makeEmImplicit axiomMap) cls []
+    let cls' = List.foldBack (makeEmImplicit axiomMap) cls []
+
+    (_typeEnv, _valueEnv, cls')

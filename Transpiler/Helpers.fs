@@ -188,7 +188,7 @@ let findValue (valueEnv: ValueEnvMap) (valueExpr: ValueExpression) : ValueLitera
     | VName(ASimple(s, _pos))
     | VName(AGeneric((s, _pos), _)) -> // Should the default just be the string assuming the type checker handles this?
         match Map.tryFind s valueEnv with
-        | None -> VText s // failwith $"Cannot compute value of {s}"
+        | None -> VText s
         | Some value -> value
     | VPName(ASimple(_, pos))
     | VPName(AGeneric((_, pos), _)) -> failWithLine pos "Primed names cannot have a value."
@@ -200,24 +200,35 @@ let findValue (valueEnv: ValueEnvMap) (valueExpr: ValueExpression) : ValueLitera
     | LogicalNegation(_, pos) -> failWithLine pos "Rule cannot have a value."
     | Prefix((_, pos), _) -> failWithLine pos "Rule cannot have a value."
 
-
 let buildValueEnvironment (cls: Class) : ValueEnvMap =
-    let getAxioms (decl: Declaration) acc =
+    let valueEnvClassFolder (decl: Declaration) (env: ValueEnvMap) : ValueEnvMap =
         match decl with
-        | AxiomDeclaration valueExpressions -> valueExpressions @ acc
-        | _ -> acc
+        | Value valueDeclarations ->
+            let valueDeclFolder (decl: ValueDeclaration) (env: ValueEnvMap) : ValueEnvMap =
+                match decl with
+                | ExplicitValue(ISimple(mapKey, _pos), _, valueExpr) ->
+                    match valueExpr with
+                    | ValueLiteral(valueLiteral, _pos) -> Map.add mapKey valueLiteral env
+                    | VName(ASimple(identifier, _pos)) ->
+                        match Map.tryFind identifier env with
+                        | None -> env
+                        | Some value -> Map.add mapKey value env
+                    | _ -> env // Non other type can have value, but it is okay
+                // TODO: Determine when infix 1 + 1 should be computed and added
+                | _ -> env
 
-    let extractValue1 (valueMap: ValueEnvMap) (valueExpr: ValueExpression) : ValueLiteral = findValue valueMap valueExpr
+            List.foldBack valueDeclFolder valueDeclarations env
+        | AxiomDeclaration axioms ->
+            List.foldBack
+                (fun e acc ->
+                    match e with
+                    | Infix(VName(ASimple(name, _pos)), Equal, valueExpr) -> Map.add name (findValue acc valueExpr) acc
+                    | _ -> acc)
+                axioms
+                env
+        | _ -> env
 
-    let extractValue (valueExpr: ValueExpression) (acc: ValueEnvMap) : ValueEnvMap =
-        match valueExpr with
-        | Infix(VName(ASimple(name, _pos)), Equal, valueExpr) -> Map.add name (extractValue1 acc valueExpr) acc
-        | _ -> acc
-
-    let axioms = List.foldBack getAxioms cls []
-
-    List.foldBack extractValue axioms Map.empty
-
+    List.foldBack valueEnvClassFolder cls Map.empty
 
 /// <summary>
 /// Build symbol table for given Abstract Syntax Tree and extract type definition type set if Union or sub type

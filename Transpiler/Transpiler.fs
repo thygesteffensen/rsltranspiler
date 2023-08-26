@@ -1,8 +1,5 @@
 module Transpiler.Transpiler
 
-open Transpiler.RuleCollection.AxiomRule
-open Transpiler.RuleCollection.TypeRule
-open Transpiler.RuleCollection.TransitionSystemRule
 open Transpiler.RuleCollection.QuantificationRule
 open Transpiler.RuleCollection.GenericAccessRule
 open Transpiler.RuleCollection.GenericValueDefinitionRule
@@ -29,17 +26,17 @@ let transpile2 ((specification, cls): Scheme) =
     7. X References to named transition rules must be replaced with the content of that rule
     *)
 
-    let valueExprCataBase = valueExprCata typeEnvironment valueEnvironment
 
-    // In theory the valueEnv and typeEnv are expanded after each rule and must this also be forwarded?
-    let cls' =
-        cls
-        |> valueExprCataBase unfoldQuantified
-        |> unfoldGenericValueDeclarations typeEnvironment valueEnvironment
-        |> valueExprCataBase unfoldGenericAccess
-        |> makeValueDeclarationExplicit typeEnvironment valueEnvironment
-        |> makeVariableDeclarationImplicit typeEnvironment valueEnvironment
-        |> unfoldNamedTransitionRules1 typeEnvironment valueEnvironment
+    let apply f (a, b, c) = f a b c
+
+    let _, _, cls' =
+        (typeEnvironment, valueEnvironment, cls)
+        |> apply (valueExprCata unfoldQuantified)
+        |> apply unfoldGenericValueDeclarations
+        |> apply (valueExprCata unfoldGenericAccess)
+        |> apply makeValueDeclarationExplicit
+        |> apply makeVariableDeclarationImplicit
+        |> apply unfoldNamedTransitionRules1
 
     Scheme(($"{fst specification}_unfolded", snd specification), cls')
 

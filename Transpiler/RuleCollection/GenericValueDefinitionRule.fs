@@ -89,5 +89,6 @@ let unfoldGenericValueDeclarations
     (typeEnv: TypeEnvMap)
     (valueEnv: ValueEnvMap)
     (cls: Class)
-    : Class =
-    List.foldBack (classFolder typeEnv valueEnv) cls []
+    : TypeEnvMap * ValueEnvMap * Class =
+    let cls' = List.foldBack (classFolder typeEnv valueEnv) cls []
+    (typeEnv, valueEnv, cls')

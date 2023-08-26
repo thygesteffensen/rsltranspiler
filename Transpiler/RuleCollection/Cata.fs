@@ -2,6 +2,7 @@
 
 open Transpiler.Ast
 open Transpiler.Intermediate
+open Transpiler.Helpers.Helpers
 
 type valueExprFunc = TypeEnvMap -> ValueEnvMap -> ValueExpression -> ValueExpression
 
@@ -48,6 +49,20 @@ let ltlAssertionFolder
     : LtlAssertion list =
     (name, ts, func typeEnv valueEnv valueExpr) :: a
 
+let typeDefFolder
+    (func: valueExprFunc)
+    (typeEnv: TypeEnvMap)
+    (valueEnv: ValueEnvMap)
+    (typeDef: Pos<Id> * TypeDefinition)
+    (a: (Pos<Id> * TypeDefinition) list)
+    : (Pos<Id> * TypeDefinition) list =
+    match typeDef with
+    | tuple, Concrete(Sub(tl, valueExpr)) ->
+        let valueExpr' = func typeEnv valueEnv valueExpr
+        (tuple, Concrete(Sub(tl, valueExpr')))
+    | _ -> typeDef
+    :: a
+
 let classFolder
     (func: valueExprFunc)
     (typeEnv: TypeEnvMap)
@@ -55,13 +70,26 @@ let classFolder
     (e: Declaration)
     (a: Class)
     : Class =
+
     match e with
     | Value valueDeclarations ->
         List.foldBack (valueDeclarationFolder func typeEnv valueEnv) valueDeclarations []
         |> Value
-    | TypeDeclaration _ -> e // Does not contain any value expression
+    | TypeDeclaration typeDecls ->
+        List.foldBack (typeDefFolder func typeEnv valueEnv) typeDecls []
+        |> TypeDeclaration
     | AxiomDeclaration valueExpressions ->
-        List.foldBack (fun e a -> (func typeEnv valueEnv e) :: a) valueExpressions []
+        // TODO: Consider if the is the right choice
+        // Axioms are not "normal" value expressions, they are either equal infix with name or quantified this.
+        // To avoid that lhs name is not replaced with its value, this is done:
+        List.foldBack
+            (fun e a ->
+                (match e with
+                 | Infix(VName(ASimple _) as id, Equal, valueExpr) -> Infix(id, Equal, func typeEnv valueEnv valueExpr)
+                 | _ -> func typeEnv valueEnv e)
+                :: a)
+            valueExpressions
+            []
         |> AxiomDeclaration
     | TransitionSystemDeclaration(idPos, transitionSystems) ->
         (idPos, List.foldBack (transitionSystemsFolder func typeEnv valueEnv) transitionSystems [])
@@ -73,9 +101,15 @@ let classFolder
 
 
 let valueExprCata
+    (func: valueExprFunc)
     (typeEnv: TypeEnvMap)
     (valueEnv: ValueEnvMap)
-    (func: valueExprFunc)
     (cls: Class)
-    : Class =
-    List.foldBack (classFolder func typeEnv valueEnv) cls []
+    : TypeEnvMap * ValueEnvMap * Class =
+    let cls' = List.foldBack (classFolder func typeEnv valueEnv) cls []
+    // TODO: Optimise how the map is constructed instead of rebuilding from scratch!
+    let valueEnv' = buildValueEnvironment cls'
+
+    let typeEnvironment = buildSymbolTable cls' valueEnv'
+
+    (typeEnvironment, valueEnv', cls')

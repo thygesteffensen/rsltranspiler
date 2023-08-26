@@ -31,6 +31,23 @@ let input: obj[] list =
                          TName("Nat", pos 6 40 134 f2)
                      )
                  ) ]
+           )
+           AxiomDeclaration(
+               [ Infix(
+                     VName(AGeneric(("position", pos 8 13 164 f2), [ VName(ASimple("t1", pos 8 22 173 f2)) ])),
+                     Equal,
+                     ValueLiteral(VInt 1, pos 8 28 179 f2)
+                 )
+                 Infix(
+                     VName(AGeneric(("position", pos 9 13 194 f2), [ VName(ASimple("t2", pos 9 22 203 f2)) ])),
+                     Equal,
+                     ValueLiteral(VInt 2, pos 9 28 209 f2)
+                 )
+                 Infix(
+                     VName(AGeneric(("position", pos 10 13 224 f2), [ VName(ASimple("t3", pos 10 22 233 f2)) ])),
+                     Equal,
+                     ValueLiteral(VInt 3, pos 10 28 239 f2)
+                 ) ]
            ) ] |]
       [| "Samples/" + f3
          ("ValuesAll", pos 1 8 7 f3)

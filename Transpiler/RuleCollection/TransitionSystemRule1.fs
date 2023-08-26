@@ -1,6 +1,7 @@
 ﻿module Transpiler.RuleCollection.TransitionSystemRule1
 
 open Transpiler.Ast
+open Transpiler.Intermediate
 open Transpiler.Helpers.Helpers
 
 type RuleMapType = Map<Id, ValueExpression>
@@ -21,7 +22,8 @@ let rec exprWalker (valueExpr: ValueExpression) (ruleMap: RuleMapType) : ValueEx
         match Map.tryFind name ruleMap with
         | None -> failWithLine pos $"Rule \"{name}\" not found..."
         | Some value -> value
-    | Quantified((_, pos), _, _) -> failWithLine pos "Quantified expressions are not allowed at this stage."
+    | ValueExpression.Quantified((_, pos), _, _) ->
+        failWithLine pos "Quantified expressions are not allowed at this stage."
     | Infix(valueExpr1, infixOp, valueExpr2) ->
         Infix(exprWalker valueExpr1 ruleMap, infixOp, exprWalker valueExpr2 ruleMap)
     | VeList valueExprs -> List.foldBack (fun e a -> exprWalker e ruleMap :: a) valueExprs [] |> VeList
@@ -50,4 +52,10 @@ let declFolder (decl: Declaration) (acc: Declaration list) : Declaration list =
     | _ -> decl
     :: acc
 
-let unfoldNamedTransitionRules1 _typeEnv _value (cls: Class) : Class = List.foldBack declFolder cls []
+let unfoldNamedTransitionRules1
+    (_typeEnv: TypeEnvMap)
+    (_valueEnv: ValueEnvMap)
+    (cls: Class)
+    : TypeEnvMap * ValueEnvMap * Class =
+    let cls' = List.foldBack declFolder cls []
+    (_typeEnv, _valueEnv, cls')
