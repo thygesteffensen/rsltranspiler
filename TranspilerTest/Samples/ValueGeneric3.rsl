@@ -3,7 +3,5 @@ scheme ValueGeneric3 =
         type
             ArrayIndex = {| i : Int :- i >= 0 /\ i < 5 |}
         value
-            position [ t : ArrayIndex ] : Nat
-        axiom
-            all ai : ArrayIndex :- position[ai] = 1 
+            position [ t : ArrayIndex ] : Nat = t + 1
     end

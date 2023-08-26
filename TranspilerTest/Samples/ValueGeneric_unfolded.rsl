@@ -4,9 +4,9 @@ type
 TrainId == t1 | t2 | t3
 
 value
-position_t1 : Nat,
+position_t1 : Nat = 1,
 
-position_t2 : Nat,
+position_t2 : Nat = 2,
 
-position_t3 : Nat
+position_t3 : Nat = 3
 end

@@ -55,10 +55,6 @@ let convertValueDeclToIr (valueDeclarationsOption: Option<ValueDecMap>) (valueDe
             match id with
             | ISimple id' -> map <- map.Add(mapKey (fst id'), ev)
             | IGeneric _ -> failwith "todo"
-        | GenericValue(id, _, _) as gv ->
-            match id with
-            | ISimple id' -> map <- map.Add(mapKey (fst id'), gv)
-            | IGeneric _ -> failwith "todo"
         | Typing(SingleTyping(id, _)) as t ->
             match id with
             | ISimple id' -> map <- map.Add(mapKey (fst id'), t)
@@ -290,11 +286,6 @@ let buildValueTypeTable (_AST: Class) =
     let unfoldValueValues (map: Map<string, TypeExpression>) valueExpr =
         match valueExpr with
         | ExplicitValue(s, typeExpression, _) ->
-            match s with
-            | ISimple s' -> map.Add((fst s'), typeExpression)
-            | IGeneric _ -> failwith "todo"
-
-        | GenericValue(s, _, typeExpression) ->
             match s with
             | ISimple s' -> map.Add((fst s'), typeExpression)
             | IGeneric _ -> failwith "todo"

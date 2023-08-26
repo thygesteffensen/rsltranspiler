@@ -4,8 +4,4 @@ scheme ValueGeneric =
             TrainId == t1 | t2 | t3
         value
             position [ t : TrainId ] : Nat
-        axiom
-            position[t1] = 1,
-            position[t2] = 2,
-            position[t3] = 3
     end

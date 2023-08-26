@@ -98,7 +98,6 @@ type TypeDefinition =
 // AST Node
 type ValueDeclaration =
     | ExplicitValue of (Identifier * TypeExpression * ValueExpression)
-    | GenericValue of (Identifier * Typing list * TypeExpression)
     | Typing of Typing
 
 type TransitionSystem =

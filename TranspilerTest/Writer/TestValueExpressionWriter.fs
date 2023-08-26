@@ -9,8 +9,7 @@ open TranspilerTest.Common
 let dummyPos = pos 1 2 3 "temp.rsl"
 
 let input: obj[] list =
-    [ [|
-         Infix(
+    [ [| Infix(
              Infix(
                  ValueLiteral(VInt 2, dummyPos),
                  GreaterThan,

@@ -106,14 +106,6 @@ let valueDeclarationToNode (valueDeclaration: ValueDeclaration) (acc: Tree<strin
             @ valueExpressionToNode valueExpression []
         )
         :: acc
-    | GenericValue(identifier, typings, typeExpression) ->
-        Node(
-            "GenericValue",
-            [ identifierToNode identifier ]
-            @ List.foldBack typingToNode typings []
-            @ typeExpressionToNode typeExpression []
-        )
-        :: acc
     | Typing(SingleTyping _ as t) -> typingToNode t [] @ acc
 
 let transitionSystemToNode (transitionSystem: TransitionSystem) (acc: Tree<string> list) : Tree<string> list =

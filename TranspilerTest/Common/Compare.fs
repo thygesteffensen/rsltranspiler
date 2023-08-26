@@ -90,10 +90,6 @@ let compareValueDeclaration vd1 vd2 =
         compareIdentifier id1 id2
         compareTypeExpression typeExpr1 typeExpr2
         compareValueExpression valueExpr1 valueExpr2
-    | GenericValue(id1, typings1, typeExpr1), GenericValue(id2, typings2, typeExpr2) ->
-        compareIdentifier id1 id2
-        List.iter2 compareTyping typings1 typings2
-        compareTypeExpression typeExpr1 typeExpr2
     | Typing(SingleTyping(id1, typeExpr1)), Typing(SingleTyping(id2, typeExpr2)) ->
         compareIdentifier id1 id2
         compareTypeExpression typeExpr1 typeExpr2

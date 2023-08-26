@@ -192,18 +192,6 @@ let rec writeValue (stream: StreamWriter) depth valueDeclaration =
             writeTypeExpression stream depth typeExpr
             stream.Write " = "
             writeValueExpression stream depth valueExpr
-    | GenericValue(id, typingList, typeExpr) ->
-        match id with
-        | ISimple(id, _) ->
-            stream.Write(id + " [ ")
-            List.iter (fun e -> (writeValue stream 0 (Typing e))) typingList
-            stream.Write " ] : "
-            writeTypeExpression stream depth typeExpr
-        | IGeneric((id, _pos), typings) ->
-            stream.Write(id + " [ ")
-            listDelimiterAction (fun () -> stream.Write ", ") typings (writeTyping stream depth)
-            stream.Write(" ] : ")
-            writeTypeExpression stream depth typeExpr
 
     | Typing(SingleTyping(s, typeExpression)) ->
         match s with

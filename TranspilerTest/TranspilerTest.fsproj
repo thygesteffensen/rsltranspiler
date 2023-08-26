@@ -20,6 +20,7 @@
         <Compile Include="Parser\*.fs" />
         <Compile Include="Writer\*.fs" />
         <Compile Include="TestDrawer.fs" />
+        <Compile Include="Rules\*.fs" />
         <Compile Include="Program.fs" />
         <None Include="Playground.fsx" />
     </ItemGroup>

@@ -9,7 +9,7 @@ variable
 v1 : Nat,
 v2_p1 : Nat,
 v2_p2 : Nat,
-v3 : Nat := 3
+v3 : Nat
 init_constraint
 v1 = 1 /\
 v3 = 3 /\

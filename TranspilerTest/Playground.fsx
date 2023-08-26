@@ -1,16 +1,15 @@
-
 open System
 
-let l1  = ["x1";"x2"]
-let l2  = ["y1";"y2"]
-let l3  = ["z1";"z2"]
+let l1 = [ "x1"; "x2" ]
+let l2 = [ "y1"; "y2" ]
+let l3 = [ "z1"; "z2" ]
 
 List.foldBack (fun e a -> $"{e} | {a}") l3 ""
 
-String.concat " | " ["t1"]
+String.concat " | " [ "t1" ]
 
 
-let inputs = [1;]
+let inputs = [ 1 ]
 
 inputs |> List.reduce (fun a b -> a * 10 + b)
 
@@ -28,4 +27,6 @@ m <- m.Add((6, "MR1"), "")
 
 Map.foldBack (fun k v a -> printf $"{k}\n") m ()
 
+let l = [ "t1"; "t2" ]
 
+List.fold (fun a e -> a + "_" + e) "var" l
