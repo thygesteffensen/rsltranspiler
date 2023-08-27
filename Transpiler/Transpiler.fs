@@ -6,12 +6,15 @@ open Transpiler.RuleCollection.GenericValueDefinitionRule
 open Transpiler.RuleCollection.AxiomRule1
 open Transpiler.RuleCollection.VariableRule
 open Transpiler.RuleCollection.Cata
+open Transpiler.RuleCollection.TypeRule
+open Transpiler.RuleCollection.AxiomRule
+open Transpiler.RuleCollection.TransitionSystemRule
 open Transpiler.RuleCollection.TransitionSystemRule1
 open Transpiler.Helpers.Helpers
 open Transpiler.Ast
 
 
-let transpile2 ((specification, cls): Scheme) =
+let transpile ((specification, cls): Scheme) =
     let valueEnvironment = buildValueEnvironment cls
 
     let typeEnvironment = buildSymbolTable cls valueEnvironment
@@ -25,7 +28,6 @@ let transpile2 ((specification, cls): Scheme) =
     6. X Explicit variable definitions must be made implicit by moving the information to the init constraint.
     7. X References to named transition rules must be replaced with the content of that rule
     *)
-
 
     let apply f (a, b, c) = f a b c
 
@@ -41,8 +43,8 @@ let transpile2 ((specification, cls): Scheme) =
     Scheme(($"{fst specification}_unfolded", snd specification), cls')
 
 
-let transpile ((specification, cls): Scheme) = transpile2 (specification, cls)
-(*let valueEnvironment = buildValueEnvironment cls
+let transpile2 ((specification, cls): Scheme) =
+    let valueEnvironment = buildValueEnvironment cls
 
     let typeEnvironment = buildSymbolTable cls valueEnvironment
     let valueTypeEnvironment = buildValueTypeTable cls
@@ -68,6 +70,5 @@ let transpile ((specification, cls): Scheme) = transpile2 (specification, cls)
     let namedTransitionRulesUnfolded =
         unfoldNamedTransitionRules typeEnvironment valueTypeEnvironment valueEnvironment genericsTypeUnfolded
 
-
     let t = convertToAst namedTransitionRulesUnfolded
-    Scheme(($"{fst specification}_unfolded", snd specification), t)*)
+    Scheme(($"{fst specification}_unfolded", snd specification), t)
