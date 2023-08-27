@@ -53,7 +53,6 @@ let transitionSystemFolder (tr: TransitionSystem) (acc: IrTransitionSystem) : Ir
             | ExplicitFunction -> failwith "todo"
             | ImplicitFunction -> failwith "todo"
             | ExplicitValue(id, _, _)
-            | GenericValue(id, _, _)
             | Typing(SingleTyping(id, _)) ->
                 { acc with
                     Variable = Some((idM acc.Variable).Add((i, name id), valueDec)) }

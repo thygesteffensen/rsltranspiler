@@ -23,14 +23,7 @@ let mapFolder typeEnv _valueTypeEnv (i, _k as key) v (s: ValueDecMap) =
             typings
             (fun e (acc: ValueDecMap) -> acc.Add((i, e), Typing(SingleTyping(ISimple(e, position), expression))))
             s'
-
-
-    | GenericValue(ISimple _, _, _) ->
-        // TODO: This part is obsolete
-        failwith "Is it absolute?"
     | _ -> s
-
-
 
 
 /// <summary>

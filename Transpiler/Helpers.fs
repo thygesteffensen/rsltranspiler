@@ -53,10 +53,6 @@ let convertValueDeclToIr value valueDecl =
         | ImplicitValue -> failwith "todo"
         | ExplicitFunction -> failwith "todo"
         | ImplicitFunction -> failwith "todo"
-        | GenericValue(id, _, _) as gv ->
-            match id with
-            | ISimple id' -> map <- map.Add(mapKey (fst id'), gv)
-            | IGeneric _ -> failwith "todo"
         | Typing(SingleTyping(id, _)) as t ->
             match id with
             | ISimple id' -> map <- map.Add(mapKey (fst id'), t)
@@ -296,12 +292,7 @@ let buildValueTypeTable (_AST: Class) =
         | ExplicitValue(s, typeExpression, _) ->
             match s with
             | ISimple s' -> map.Add((fst s'), typeExpression)
-            | IGeneric _ -> failwith "todo"
-
-        | GenericValue(s, _, typeExpression) ->
-            match s with
-            | ISimple s' -> map.Add((fst s'), typeExpression)
-            | IGeneric _ -> failwith "todo"
+            | IGeneric _ -> failwith "todo" 
         | Typing(SingleTyping(id, typeExpr)) ->
             match id with
             | ISimple(id', _)

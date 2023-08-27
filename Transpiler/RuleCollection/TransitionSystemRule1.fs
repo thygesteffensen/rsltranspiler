@@ -30,6 +30,8 @@ let rec exprWalker (valueExpr: ValueExpression) (ruleMap: RuleMapType) : ValueEx
     | VArray valueExprs -> List.foldBack (fun e a -> exprWalker e ruleMap :: a) valueExprs [] |> VArray
     | LogicalNegation(valueExpr, pos) -> LogicalNegation(exprWalker valueExpr ruleMap, pos)
     | Prefix(idPos, valueExpr) -> Prefix(idPos, exprWalker valueExpr ruleMap)
+    | Flat(infixOp, valueExprs) ->
+        Flat(infixOp, List.foldBack (fun e a -> exprWalker e ruleMap :: a) valueExprs [])
 
 let mapBuilder (((name, _pos), valueExpr): Pos<Id> * ValueExpression) (acc: RuleMapType) : RuleMapType =
     acc.Add(name, valueExpr)

@@ -39,3 +39,5 @@ let rec unfoldGenericAccess
     | ValueExpression.Quantified((_, pos), _, _) ->
         // TODO: Use monad?
         failWithLine pos "Quantified Expressions must be unfolded before all generic accessors can be replaced."
+    | Flat(infixOp, valueExprs) ->
+        Flat(infixOp, List.foldBack (fun e a -> (unfoldGenericAccess typeEnv valueEnv e) :: a) valueExprs [])

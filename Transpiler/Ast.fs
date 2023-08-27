@@ -67,6 +67,7 @@ type ValueExpression =
     | VArray of ValueExpression list
     | LogicalNegation of Pos<ValueExpression>
     | Prefix of Pos<TemporalModalOperators> * ValueExpression
+    | Flat of InfixOp * ValueExpression list
 
 and Accessor =
     | ASimple of Pos<Id>
@@ -97,10 +98,6 @@ type TypeDefinition =
 // AST Node
 type ValueDeclaration =
     | ExplicitValue of (Identifier * TypeExpression * ValueExpression)
-    | ImplicitValue
-    | ExplicitFunction
-    | ImplicitFunction
-    | GenericValue of (Identifier * Typing list * TypeExpression)
     | Typing of Typing
 
 type TransitionSystem =

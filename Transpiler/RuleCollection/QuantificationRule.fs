@@ -68,6 +68,8 @@ let rec unfoldQuantified (typeEnv: TypeEnvMap) (valueEnv: ValueEnvMap) (valueExp
             | _ -> failwith "Given typing not supported"
 
         let l = typingFolder typings valueEnv [] // Yields a list of the value expressions
-        let ll = List.reduce (fun e a -> Infix(a, delimiter, e)) l // List reduced to a single infix expression
-
-        ll
+        Flat(delimiter, l)
+        // let ll = List.reduce (fun e a -> Infix(a, delimiter, e)) l // List reduced to a single infix expression
+        // ll
+    | Flat _ -> failwith "todo"
+        
