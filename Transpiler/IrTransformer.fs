@@ -49,7 +49,11 @@ let transitionSystemFolder (tr: TransitionSystem) (acc: IrTransitionSystem) : Ir
 
         let folder ((i, valueDec): int * ValueDeclaration) (acc: IrTransitionSystem) =
             match valueDec with
+            | ImplicitValue -> failwith "todo"
+            | ExplicitFunction -> failwith "todo"
+            | ImplicitFunction -> failwith "todo"
             | ExplicitValue(id, _, _)
+            | GenericValue(id, _, _)
             | Typing(SingleTyping(id, _)) ->
                 { acc with
                     Variable = Some((idM acc.Variable).Add((i, name id), valueDec)) }
@@ -71,7 +75,7 @@ let transitionSystemFolder (tr: TransitionSystem) (acc: IrTransitionSystem) : Ir
     | TransitionRule(valueExpr, tuples) ->
         let rec valueExprToTransitionRule (valueExpr: ValueExpression) : IrTransitionRule =
             match valueExpr with
-            | VName(ASimple(id, _)) -> Name id
+            | VName(ASimple(id, _)) -> Name id // TODO: LookUp name
             | VName(AGeneric((_, pos), _)) -> failwith $"Value Name at {pos} must be a Named Transition Rule"
 
             | ValueExpression.Quantified((Quantifier.NonDeterministic, _), typings, valueExprs) ->

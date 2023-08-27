@@ -53,7 +53,6 @@ let rec unfoldQuantified (typeEnv: TypeEnvMap) (valueEnv: ValueEnvMap) (valueExp
             | Quantifier.Deterministic -> InfixOp.Deterministic
             | Quantifier.NonDeterministic -> InfixOp.NonDeterministic
 
-
         let rec typingFolder
             (typings: Typing list)
             (valueEnv': ValueEnvMap)
@@ -64,11 +63,11 @@ let rec unfoldQuantified (typeEnv: TypeEnvMap) (valueEnv: ValueEnvMap) (valueExp
                 match Map.tryFind tName typeEnv with
                 | None -> failwith $"Could not find {tName} in type environment"
                 | Some(_typeDef, instances) ->
-                    List.foldBack (fun instance a -> typingFolder ts (Map.add id instance valueEnv') a) instances acc
+                    List.fold (fun a instance -> typingFolder ts (Map.add id instance valueEnv') a) acc instances
             | [] -> unfoldQuantified typeEnv valueEnv' valueExpression :: acc
             | _ -> failwith "Given typing not supported"
 
         let l = typingFolder typings valueEnv [] // Yields a list of the value expressions
-        let ll = List.reduce (fun e a -> Infix(e, delimiter, a)) l // List reduced to a single infix expression
+        let ll = List.reduce (fun e a -> Infix(a, delimiter, e)) l // List reduced to a single infix expression
 
         ll

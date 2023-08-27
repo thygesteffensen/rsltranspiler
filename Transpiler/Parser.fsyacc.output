@@ -2060,7 +2060,7 @@ state 34:  items:    ltl_assertion -> 'LBRACKET' 'TEXT' 'RBRACKET' 'TEXT' 'BAR' 
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit left 9999):   reduce ltl_assertion --> 'LBRACKET' 'TEXT' 'RBRACKET' 'TEXT' 'BAR' 'MI' value_expression
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -2428,7 +2428,7 @@ state 40:  items:    transition_system -> 'INIT_CONSTRAINT' value_expression .
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (noprec):   reduce transition_system --> 'INIT_CONSTRAINT' value_expression
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -4250,7 +4250,7 @@ state 66:  items:    named_rule -> 'NONDETERMINISTIC' typing_list 'IS' guarded_v
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit left 9995):   shift 72
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -4318,7 +4318,7 @@ state 71:  items:    guarded_value_expr -> value_expression . 'GU' value_express
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit left 9995):   shift 72
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -4986,7 +4986,7 @@ state 82:  items:    variable_definition -> identifier 'COLON' type_expr 'COLON'
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit right 9997):   reduce variable_definition --> identifier 'COLON' type_expr 'COLON' 'EQ' value_expression
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -5292,7 +5292,7 @@ state 85:  items:    identifier -> 'TEXT' 'LBRACKET' typing_list . 'RBRACKET'
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (noprec):   reduce value_expressions --> value_expression
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -5601,7 +5601,7 @@ state 92:  items:    value_expressions -> value_expressions 'COMMA' value_expres
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (noprec):   reduce value_expressions --> value_expressions 'COMMA' value_expression
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -6434,7 +6434,7 @@ state 106:  items:    value_expression -> quantifier typing_list 'IS' value_expr
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit right 9994):   reduce value_expression --> quantifier typing_list 'IS' value_expression
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -6566,7 +6566,7 @@ state 108:  items:    value_expression -> 'LPAREN' value_expression . 'RPAREN'
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (noprec):   error
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -7111,7 +7111,7 @@ state 117:  items:    value_expression -> 'NEG' value_expression .
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (noprec):   reduce value_expression --> 'NEG' value_expression
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -7243,7 +7243,7 @@ state 119:  items:    value_expression -> temporal_modal_operators value_express
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (noprec):   reduce value_expression --> temporal_modal_operators value_expression
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -7735,7 +7735,7 @@ state 126:  items:    accessor -> 'TEXT' 'PRIME' 'LBRACKET' value_expressions 'R
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit left 9998):   reduce infix_expr --> value_expression 'LT' value_expression
-    action 'IM' (explicit left 9998):   reduce infix_expr --> value_expression 'LT' value_expression
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9998):   reduce infix_expr --> value_expression 'LT' value_expression
     action 'LOR' (explicit left 9998):   reduce infix_expr --> value_expression 'LT' value_expression
     action 'NEG' (noprec):   shift 143
@@ -7803,7 +7803,7 @@ state 128:  items:    infix_expr -> value_expression . 'LT' value_expression
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit left 9998):   reduce infix_expr --> value_expression 'LE' value_expression
-    action 'IM' (explicit left 9998):   reduce infix_expr --> value_expression 'LE' value_expression
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9998):   reduce infix_expr --> value_expression 'LE' value_expression
     action 'LOR' (explicit left 9998):   reduce infix_expr --> value_expression 'LE' value_expression
     action 'NEG' (noprec):   shift 143
@@ -7871,7 +7871,7 @@ state 129:  items:    infix_expr -> value_expression . 'LT' value_expression
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit left 9998):   reduce infix_expr --> value_expression 'GT' value_expression
-    action 'IM' (explicit left 9998):   reduce infix_expr --> value_expression 'GT' value_expression
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9998):   reduce infix_expr --> value_expression 'GT' value_expression
     action 'LOR' (explicit left 9998):   reduce infix_expr --> value_expression 'GT' value_expression
     action 'NEG' (noprec):   shift 143
@@ -7939,7 +7939,7 @@ state 130:  items:    infix_expr -> value_expression . 'LT' value_expression
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit left 9998):   reduce infix_expr --> value_expression 'GE' value_expression
-    action 'IM' (explicit left 9998):   reduce infix_expr --> value_expression 'GE' value_expression
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9998):   reduce infix_expr --> value_expression 'GE' value_expression
     action 'LOR' (explicit left 9998):   reduce infix_expr --> value_expression 'GE' value_expression
     action 'NEG' (noprec):   shift 143
@@ -8007,7 +8007,7 @@ state 131:  items:    infix_expr -> value_expression . 'LT' value_expression
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit right 9997):   reduce infix_expr --> value_expression 'EQ' value_expression
-    action 'IM' (explicit right 9997):   reduce infix_expr --> value_expression 'EQ' value_expression
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit right 9997):   reduce infix_expr --> value_expression 'EQ' value_expression
     action 'LOR' (explicit right 9997):   reduce infix_expr --> value_expression 'EQ' value_expression
     action 'NEG' (noprec):   shift 143
@@ -8075,7 +8075,7 @@ state 132:  items:    infix_expr -> value_expression . 'LT' value_expression
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit right 9997):   reduce infix_expr --> value_expression 'NEG' 'EQ' value_expression
-    action 'IM' (explicit right 9997):   reduce infix_expr --> value_expression 'NEG' 'EQ' value_expression
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit right 9997):   reduce infix_expr --> value_expression 'NEG' 'EQ' value_expression
     action 'LOR' (explicit right 9997):   reduce infix_expr --> value_expression 'NEG' 'EQ' value_expression
     action 'NEG' (noprec):   shift 143
@@ -8143,7 +8143,7 @@ state 133:  items:    infix_expr -> value_expression . 'LT' value_expression
     action 'MI' (explicit left 9999):   reduce infix_expr --> value_expression 'PL' value_expression
     action 'PL' (explicit left 9999):   reduce infix_expr --> value_expression 'PL' value_expression
     action 'GU' (explicit left 9999):   reduce infix_expr --> value_expression 'PL' value_expression
-    action 'IM' (explicit left 9999):   reduce infix_expr --> value_expression 'PL' value_expression
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9999):   reduce infix_expr --> value_expression 'PL' value_expression
     action 'LOR' (explicit left 9999):   reduce infix_expr --> value_expression 'PL' value_expression
     action 'NEG' (noprec):   shift 143
@@ -8211,7 +8211,7 @@ state 134:  items:    infix_expr -> value_expression . 'LT' value_expression
     action 'MI' (explicit left 9999):   reduce infix_expr --> value_expression 'MI' value_expression
     action 'PL' (explicit left 9999):   reduce infix_expr --> value_expression 'MI' value_expression
     action 'GU' (explicit left 9999):   reduce infix_expr --> value_expression 'MI' value_expression
-    action 'IM' (explicit left 9999):   reduce infix_expr --> value_expression 'MI' value_expression
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9999):   reduce infix_expr --> value_expression 'MI' value_expression
     action 'LOR' (explicit left 9999):   reduce infix_expr --> value_expression 'MI' value_expression
     action 'NEG' (noprec):   shift 143
@@ -8279,7 +8279,7 @@ state 135:  items:    infix_expr -> value_expression . 'LT' value_expression
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (noprec):   reduce axiom_infix_expr --> value_expression infix_conn value_expression
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -8347,7 +8347,7 @@ state 136:  items:    infix_expr -> value_expression . 'LT' value_expression
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (explicit right 9997):   reduce value_declaration --> identifier 'COLON' type_expr 'EQ' value_expression
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -8415,7 +8415,7 @@ state 137:  items:    infix_expr -> value_expression . 'LT' value_expression
     action 'MI' (explicit left 9999):   shift 146
     action 'PL' (explicit left 9999):   shift 145
     action 'GU' (noprec):   error
-    action 'IM' (explicit left 9996):   shift 148
+    action 'IM' (noprec):   shift 148
     action 'LAND' (explicit left 9996):   shift 149
     action 'LOR' (explicit left 9996):   shift 150
     action 'NEG' (noprec):   shift 143
@@ -9064,63 +9064,63 @@ state 147:  items:    axiom_infix_expr -> value_expression infix_conn . value_ex
     goto axiom_infix_expr: 110
     goto quantifier: 103
 state 148:  items:    infix_conn -> 'IM' . 
-  actions:    action 'EOF' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'DOT' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'COMMA' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'COLON' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'BAR' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'LBRACKET' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'RBRACKET' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'QUOTE' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'LPAREN' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'RPAREN' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'SLASH' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'BSLASH' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'PRIME' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'LCURLY' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'RCURLY' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'GLOBALLY' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'SCHEME' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'CLASS' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'TYPE' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'VALUE' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'AXIOM' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'END' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'ALL' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'EXISTS' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'EXACTLY_ONE' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'TS' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'TR' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'WHERE' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'VARIABLE' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'INIT_CONSTRAINT' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'ARRAY' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'OF' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'LTL_ASSERTION' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'DETERMINISTIC' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'NONDETERMINISTIC' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'IS' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'EQ' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'LT' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'LE' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'GT' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'GE' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'MI' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'PL' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'GU' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'IM' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'LAND' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'LOR' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'NEG' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'FALSE' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'TRUE' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'CHAR' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'TEXT' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'INT' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'ID' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action 'error' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action '#' (explicit left 9996):   reduce infix_conn --> 'IM'
-    action '$$' (explicit left 9996):   reduce infix_conn --> 'IM'
+  actions:    action 'EOF' (noprec):   reduce infix_conn --> 'IM'
+    action 'DOT' (noprec):   reduce infix_conn --> 'IM'
+    action 'COMMA' (noprec):   reduce infix_conn --> 'IM'
+    action 'COLON' (noprec):   reduce infix_conn --> 'IM'
+    action 'BAR' (noprec):   reduce infix_conn --> 'IM'
+    action 'LBRACKET' (noprec):   reduce infix_conn --> 'IM'
+    action 'RBRACKET' (noprec):   reduce infix_conn --> 'IM'
+    action 'QUOTE' (noprec):   reduce infix_conn --> 'IM'
+    action 'LPAREN' (noprec):   reduce infix_conn --> 'IM'
+    action 'RPAREN' (noprec):   reduce infix_conn --> 'IM'
+    action 'SLASH' (noprec):   reduce infix_conn --> 'IM'
+    action 'BSLASH' (noprec):   reduce infix_conn --> 'IM'
+    action 'PRIME' (noprec):   reduce infix_conn --> 'IM'
+    action 'LCURLY' (noprec):   reduce infix_conn --> 'IM'
+    action 'RCURLY' (noprec):   reduce infix_conn --> 'IM'
+    action 'GLOBALLY' (noprec):   reduce infix_conn --> 'IM'
+    action 'SCHEME' (noprec):   reduce infix_conn --> 'IM'
+    action 'CLASS' (noprec):   reduce infix_conn --> 'IM'
+    action 'TYPE' (noprec):   reduce infix_conn --> 'IM'
+    action 'VALUE' (noprec):   reduce infix_conn --> 'IM'
+    action 'AXIOM' (noprec):   reduce infix_conn --> 'IM'
+    action 'END' (noprec):   reduce infix_conn --> 'IM'
+    action 'ALL' (noprec):   reduce infix_conn --> 'IM'
+    action 'EXISTS' (noprec):   reduce infix_conn --> 'IM'
+    action 'EXACTLY_ONE' (noprec):   reduce infix_conn --> 'IM'
+    action 'TS' (noprec):   reduce infix_conn --> 'IM'
+    action 'TR' (noprec):   reduce infix_conn --> 'IM'
+    action 'WHERE' (noprec):   reduce infix_conn --> 'IM'
+    action 'VARIABLE' (noprec):   reduce infix_conn --> 'IM'
+    action 'INIT_CONSTRAINT' (noprec):   reduce infix_conn --> 'IM'
+    action 'ARRAY' (noprec):   reduce infix_conn --> 'IM'
+    action 'OF' (noprec):   reduce infix_conn --> 'IM'
+    action 'LTL_ASSERTION' (noprec):   reduce infix_conn --> 'IM'
+    action 'DETERMINISTIC' (noprec):   reduce infix_conn --> 'IM'
+    action 'NONDETERMINISTIC' (noprec):   reduce infix_conn --> 'IM'
+    action 'IS' (noprec):   reduce infix_conn --> 'IM'
+    action 'EQ' (noprec):   reduce infix_conn --> 'IM'
+    action 'LT' (noprec):   reduce infix_conn --> 'IM'
+    action 'LE' (noprec):   reduce infix_conn --> 'IM'
+    action 'GT' (noprec):   reduce infix_conn --> 'IM'
+    action 'GE' (noprec):   reduce infix_conn --> 'IM'
+    action 'MI' (noprec):   reduce infix_conn --> 'IM'
+    action 'PL' (noprec):   reduce infix_conn --> 'IM'
+    action 'GU' (noprec):   reduce infix_conn --> 'IM'
+    action 'IM' (noprec):   reduce infix_conn --> 'IM'
+    action 'LAND' (noprec):   reduce infix_conn --> 'IM'
+    action 'LOR' (noprec):   reduce infix_conn --> 'IM'
+    action 'NEG' (noprec):   reduce infix_conn --> 'IM'
+    action 'FALSE' (noprec):   reduce infix_conn --> 'IM'
+    action 'TRUE' (noprec):   reduce infix_conn --> 'IM'
+    action 'CHAR' (noprec):   reduce infix_conn --> 'IM'
+    action 'TEXT' (noprec):   reduce infix_conn --> 'IM'
+    action 'INT' (noprec):   reduce infix_conn --> 'IM'
+    action 'ID' (noprec):   reduce infix_conn --> 'IM'
+    action 'error' (noprec):   reduce infix_conn --> 'IM'
+    action '#' (noprec):   reduce infix_conn --> 'IM'
+    action '$$' (noprec):   reduce infix_conn --> 'IM'
   immediate action:   reduce infix_conn --> 'IM'  gotos:state 149:  items:    infix_conn -> 'LAND' . 
   actions:    action 'EOF' (explicit left 9996):   reduce infix_conn --> 'LAND'
     action 'DOT' (explicit left 9996):   reduce infix_conn --> 'LAND'

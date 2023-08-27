@@ -23,7 +23,15 @@ let mapFolder typeEnv _valueTypeEnv (i, _k as key) v (s: ValueDecMap) =
             typings
             (fun e (acc: ValueDecMap) -> acc.Add((i, e), Typing(SingleTyping(ISimple(e, position), expression))))
             s'
+
+
+    | GenericValue(ISimple _, _, _) ->
+        // TODO: This part is obsolete
+        failwith "Is it absolute?"
     | _ -> s
+
+
+
 
 /// <summary>
 ///
@@ -68,27 +76,55 @@ let rec irTransitionRulesUnfold typeEnv valueTypeEnv valueEnv (rule: IrTransitio
 
 and irTransitionRuleUnfold typeEnv valueTypeEnv valueEnv (rule: IrTransitionRule) : IrTransitionRules =
     match rule with
-    | Guarded(guard, effects) ->
-        let unfoldedGuard = unfoldValueExpression typeEnv valueTypeEnv valueEnv guard
+    | Guarded(valueExpression, tuples) ->
+        let t = unfoldValueExpression typeEnv valueTypeEnv valueEnv valueExpression
 
         Guarded(
-            unfoldedGuard,
+            t,
             List.foldBack
-                (fun (id', effect) acc ->
-                    (unfoldAccessor typeEnv valueTypeEnv valueEnv id' id (fun _ -> failwith ""),
-                     unfoldValueExpression typeEnv valueTypeEnv valueEnv effect)
-                    :: acc)
-                effects
+                (fun (a, e) acc ->
+                    let t =
+                        match unfoldAccessor typeEnv valueTypeEnv valueEnv a VName with
+                        | VName v -> v
+                        | VPName v -> v
+
+                    (t, (unfoldValueExpression typeEnv valueTypeEnv valueEnv e)) :: acc)
+                tuples
                 []
         )
         |> Leaf
     | Name _ -> Leaf rule
-    | Quantified(choice, typings, irTransitionRule) ->
-        let list =
-            genericInstantiateTypings typeEnv valueTypeEnv valueEnv typings [] irTransitionRule (fun te vte ve acc e ->
-                irTransitionRuleUnfold te vte ve e :: acc)
+    | Quantified(Deterministic, _, _) -> failwith "Not possible"
+    | Quantified(NonDeterministic, typings, irTransitionRule) ->
+        instantiateTypings1 typeEnv valueTypeEnv valueEnv typings irTransitionRule
 
-        List.reduce (fun e a -> Node(e, choice, a)) list
+and instantiateTypings1
+    typeEnv
+    valueTypeEnv
+    valueEnv
+    (typings: Typing list)
+    (rule: IrTransitionRule)
+    : IrTransitionRules =
+    match typings with
+    | [] -> irTransitionRuleUnfold typeEnv valueTypeEnv valueEnv rule
+    | SingleTyping(id, TName typeName) :: ts ->
+        match id with
+        | IGeneric _ -> failwith "todo"
+        | ISimple(s, _pos) ->
+
+            match (Map.find (fst typeName) typeEnv) with
+            | _, l :: lits ->
+                List.foldBack
+                    (fun e a ->
+                        Node(
+                            a,
+                            NonDeterministic,
+                            (instantiateTypings1 typeEnv valueTypeEnv (Map.add s e valueEnv) ts rule)
+                        ))
+                    lits
+                    (instantiateTypings1 typeEnv valueTypeEnv (Map.add s l valueEnv) ts rule)
+            | _, [] -> failwith $"Cannot unfold infinite types ({fst typeName})"
+    | _ -> failwith "Only SingleTypings with TypeName type is supported, other types can be added"
 
 
 /// <summary>
@@ -176,16 +212,10 @@ let unfoldGenerics typeEnv valueTypeEnv valueEnv (intermediate: Intermediate) =
         match intermediate.Value with
         | Some m -> Map.foldBack (mapFolder typeEnv valueTypeEnv) m m |> Some
         | None -> None
-        
-    let unfoldedLtl =
-        match intermediate.LtlAssertion with
-        | Some m -> List.foldBack (fun (name, ts, e) a -> (name, ts, (unfoldValueExpression typeEnv valueTypeEnv valueEnv e)) :: a) m [] |> Some
-        | None -> None
 
     { intermediate with
         Value = unfoldedValueMap
-        TransitionSystem = transitionSystemFolder typeEnv valueTypeEnv valueEnv intermediate.TransitionSystem
-        LtlAssertion = unfoldedLtl }
+        TransitionSystem = transitionSystemFolder typeEnv valueTypeEnv valueEnv intermediate.TransitionSystem }
 
 
 

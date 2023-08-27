@@ -13,7 +13,6 @@ open Transpiler.RuleCollection.TransitionSystemRule1
 open Transpiler.Helpers.Helpers
 open Transpiler.Ast
 
-
 let transpile ((specification, cls): Scheme) =
     let valueEnvironment = buildValueEnvironment cls
 
@@ -42,7 +41,6 @@ let transpile ((specification, cls): Scheme) =
 
     Scheme(($"{fst specification}_unfolded", snd specification), cls')
 
-
 let transpile2 ((specification, cls): Scheme) =
     let valueEnvironment = buildValueEnvironment cls
 
@@ -56,7 +54,7 @@ let transpile2 ((specification, cls): Scheme) =
               Value = None
               Axiom = None
               TransitionSystem = None
-              LtlAssertion = None }
+              LtlAssertion = None  }
 
     let typeUnfolded =
         unfoldType typeEnvironment valueTypeEnvironment valueEnvironment intermediate

@@ -1,32 +1,28 @@
-open System
+type TreeNode<'T> =
+    | Node of value: 'T * children: list<TreeNode<'T>>
 
-let l1 = [ "x1"; "x2" ]
-let l2 = [ "y1"; "y2" ]
-let l3 = [ "z1"; "z2" ]
+type FlattenedNode<'T> = 
+    { Value: 'T; Depth: int }
 
-List.foldBack (fun e a -> $"{e} | {a}") l3 ""
+let rec flattenTree depth (tree: TreeNode<'T>) =
+    match tree with
+    | Node(value, children) ->
+        { Value = value; Depth = depth } :: (List.collect (flattenTree (depth + 1)) children)
 
-String.concat " | " [ "t1" ]
+let printFlattenedTree (flattened: list<FlattenedNode<'T>>) =
+    flattened |> List.iter (fun node -> 
+        printfn "%s%s" (String.replicate node.Depth "  ") node.Value)
 
+let tree =
+    Node("Root", [
+        Node("Child1", [
+            Node("Grandchild1", []);
+            Node("Grandchild2", [])
+        ]);
+        Node("Child2", [
+            Node("Grandchild3", [])
+        ])
+    ])
 
-let inputs = [ 1 ]
-
-inputs |> List.reduce (fun a b -> a * 10 + b)
-
-
-
-let mutable m: Map<int * string, string> = Map.empty
-
-m <- m.Add((2, "QR1"), "")
-m <- m.Add((1, "TR1"), "")
-m <- m.Add((3, "AR1"), "")
-m <- m.Add((9, "BR1"), "")
-m <- m.Add((5, "RR1"), "")
-m <- m.Add((6, "MR1"), "")
-
-
-Map.foldBack (fun k v a -> printf $"{k}\n") m ()
-
-let l = [ "t1"; "t2" ]
-
-List.fold (fun a e -> a + "_" + e) "var" l
+let flattened = flattenTree 0 tree
+printFlattenedTree flattened

@@ -6,6 +6,15 @@ open Transpiler.Helpers.Helpers
 
 type valueExprFunc = TypeEnvMap -> ValueEnvMap -> ValueExpression -> ValueExpression
 
+let rec flattenLogicalAndInfixValueExpr
+    (valueExpr: ValueExpression)
+    (acc: ValueExpression list)
+    : ValueExpression list =
+    match valueExpr with
+    | Infix(lhs, LogicalAnd, rhs) -> flattenLogicalAndInfixValueExpr lhs acc |> flattenLogicalAndInfixValueExpr rhs
+    | _ -> valueExpr :: acc
+
+
 let valueDeclarationFolder
     (func: valueExprFunc)
     (typeEnv: TypeEnvMap)
@@ -82,15 +91,17 @@ let classFolder
         // TODO: Consider if the is the right choice
         // Axioms are not "normal" value expressions, they are either equal infix with name or quantified this.
         // To avoid that lhs name is not replaced with its value, this is done:
-        List.foldBack
-            (fun e a ->
-                (match e with
-                 | Infix(VName(ASimple _) as id, Equal, valueExpr) -> Infix(id, Equal, func typeEnv valueEnv valueExpr)
-                 | _ -> func typeEnv valueEnv e)
-                :: a)
-            valueExpressions
-            []
-        |> AxiomDeclaration
+        let t = 
+            List.foldBack
+                (fun e a ->
+                    (match e with
+                     | Infix(VName(ASimple _) as id, Equal, valueExpr) -> Infix(id, Equal, func typeEnv valueEnv valueExpr)
+                     | _ -> func typeEnv valueEnv e)
+                    :: a)
+                valueExpressions
+                []
+
+        List.foldBack flattenLogicalAndInfixValueExpr t [] |> AxiomDeclaration
     | TransitionSystemDeclaration(idPos, transitionSystems) ->
         (idPos, List.foldBack (transitionSystemsFolder func typeEnv valueEnv) transitionSystems [])
         |> TransitionSystemDeclaration

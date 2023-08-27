@@ -21,4 +21,3 @@ let rec getPosFromValueExpression (valueExpr: ValueExpression) : Position =
     | VArray(ve :: _) -> getPosFromValueExpression ve
     | VArray [] -> failwith "Value Expression cannot be empty - location unknown..."
     | LogicalNegation(_, position) -> position
-    | Prefix((_, position), _) -> position

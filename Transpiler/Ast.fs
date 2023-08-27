@@ -2,8 +2,7 @@
 
 open FSharp.Text.Lexing
 
-type Pos<'a> =
-    'a * Position
+type Pos<'a> = 'a * Position
 
 type TokenPosition = { Line: int; Column: int }
 
@@ -75,7 +74,7 @@ and Accessor =
 
 and Identifier =
     | ISimple of Pos<Id>
-    | IGeneric of (Pos<Id> * Typing list) 
+    | IGeneric of (Pos<Id> * Typing list)
 
 and Typing = SingleTyping of Identifier * TypeExpression
 
@@ -98,6 +97,10 @@ type TypeDefinition =
 // AST Node
 type ValueDeclaration =
     | ExplicitValue of (Identifier * TypeExpression * ValueExpression)
+    | ImplicitValue
+    | ExplicitFunction
+    | ImplicitFunction
+    | GenericValue of (Identifier * Typing list * TypeExpression)
     | Typing of Typing
 
 type TransitionSystem =
