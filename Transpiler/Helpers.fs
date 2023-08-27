@@ -35,9 +35,9 @@ let convertAxiomDeclToIr (valueExprList: ValueExpression list) =
 
     List.foldBack (fun e a -> valueExpressionToIr e :: a) valueExprList []
 
-let convertValueDeclToIr value valueDecl =
+let convertValueDeclToIr (valueDeclarationsOption: Option<ValueDecMap>) (valueDecl: ValueDeclaration list) =
     let mutable map =
-        match value with
+        match valueDeclarationsOption with
         | None -> Map.empty
         | Some m -> m
 
@@ -50,9 +50,6 @@ let convertValueDeclToIr value valueDecl =
             match id with
             | ISimple id' -> map <- map.Add(mapKey (fst id'), ev)
             | IGeneric _ -> failwith "todo"
-        | ImplicitValue -> failwith "todo"
-        | ExplicitFunction -> failwith "todo"
-        | ImplicitFunction -> failwith "todo"
         | Typing(SingleTyping(id, _)) as t ->
             match id with
             | ISimple id' -> map <- map.Add(mapKey (fst id'), t)

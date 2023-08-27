@@ -22,6 +22,25 @@ let listDelimiterAction (delimiter: Unit -> Unit) list elementAction =
                 delimiter ()
                 elementAction e)
             vs
+/// <summary>
+/// Iterate through a list and call delimiter function between each element and call elementAction on each element
+/// </summary>
+/// <param name="delimiter"></param>
+/// <param name="seq"></param>
+/// <param name="elementAction"></param>
+let seqDelimiterAction (delimiter: Unit -> Unit) (seq: seq<'a>) elementAction =
+    if Seq.isEmpty seq then
+        printfn "Empty"
+    else
+        let head = Seq.head seq
+        let tail = Seq.skip 1 seq
+        elementAction head
+
+        Seq.iter
+            (fun e ->
+                delimiter ()
+                elementAction e)
+            tail
 
 let getTemporalModalOperatorsString (tmo: TemporalModalOperators) =
     match tmo with

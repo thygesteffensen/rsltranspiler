@@ -49,9 +49,6 @@ let transitionSystemFolder (tr: TransitionSystem) (acc: IrTransitionSystem) : Ir
 
         let folder ((i, valueDec): int * ValueDeclaration) (acc: IrTransitionSystem) =
             match valueDec with
-            | ImplicitValue -> failwith "todo"
-            | ExplicitFunction -> failwith "todo"
-            | ImplicitFunction -> failwith "todo"
             | ExplicitValue(id, _, _)
             | Typing(SingleTyping(id, _)) ->
                 { acc with
