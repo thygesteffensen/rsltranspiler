@@ -3,6 +3,9 @@
 open FSharp.Text.Lexing
 open Transpiler.Ast
 
+type TypeEnvMap = Map<string, TypeDefinition * ValueLiteral list>
+type ValueEnvMap = Map<string, ValueLiteral>
+
 let rec getPosFromValueExpression (valueExpr: ValueExpression) : Position =
     let getPosFromAccessor (accessor: Accessor) : Position =
         match accessor with

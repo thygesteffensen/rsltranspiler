@@ -1,7 +1,7 @@
 %{
 open Transpiler.Ast
 open FSharp.Text
-open Transpiler.Helpers.Helpers
+open Transpiler.Helpers
 
 let parse_error_rich = Some error_handler
 %}

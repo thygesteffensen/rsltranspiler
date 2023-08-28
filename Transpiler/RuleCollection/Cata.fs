@@ -1,8 +1,8 @@
 ﻿module Transpiler.RuleCollection.Cata
 
 open Transpiler.Ast
-open Transpiler.Intermediate
-open Transpiler.Helpers.Helpers
+open Transpiler.Auxiliary
+open Transpiler.Helpers
 
 type valueExprFunc = TypeEnvMap -> ValueEnvMap -> ValueExpression -> ValueExpression
 
@@ -13,7 +13,6 @@ let rec flattenLogicalAndInfixValueExpr
     match valueExpr with
     | Infix(lhs, LogicalAnd, rhs) -> flattenLogicalAndInfixValueExpr lhs acc |> flattenLogicalAndInfixValueExpr rhs
     | _ -> valueExpr :: acc
-
 
 let valueDeclarationFolder
     (func: valueExprFunc)
@@ -91,11 +90,12 @@ let classFolder
         // TODO: Consider if the is the right choice
         // Axioms are not "normal" value expressions, they are either equal infix with name or quantified this.
         // To avoid that lhs name is not replaced with its value, this is done:
-        let t = 
+        let t =
             List.foldBack
                 (fun e a ->
                     (match e with
-                     | Infix(VName(ASimple _) as id, Equal, valueExpr) -> Infix(id, Equal, func typeEnv valueEnv valueExpr)
+                     | Infix(VName(ASimple _) as id, Equal, valueExpr) ->
+                         Infix(id, Equal, func typeEnv valueEnv valueExpr)
                      | _ -> func typeEnv valueEnv e)
                     :: a)
                 valueExpressions

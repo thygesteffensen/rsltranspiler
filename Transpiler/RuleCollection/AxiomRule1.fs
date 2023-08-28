@@ -1,8 +1,8 @@
 ﻿module Transpiler.RuleCollection.AxiomRule1
 
 open Transpiler.Ast
-open Transpiler.Intermediate
-open Transpiler.Helpers.Helpers
+open Transpiler.Auxiliary
+open Transpiler.Helpers
 
 type AxiomMap = Map<Id, ValueExpression>
 

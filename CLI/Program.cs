@@ -17,7 +17,6 @@ internal class Program
         rootCommand.AddOption(DebugOption);
 
         rootCommand.AddUnfoldCommand();
-        rootCommand.AddUnfoldCommand2();
         rootCommand.AddAstCommand();
 
 

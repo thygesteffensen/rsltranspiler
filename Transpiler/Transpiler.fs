@@ -6,11 +6,8 @@ open Transpiler.RuleCollection.GenericValueDefinitionRule
 open Transpiler.RuleCollection.AxiomRule1
 open Transpiler.RuleCollection.VariableRule
 open Transpiler.RuleCollection.Cata
-open Transpiler.RuleCollection.TypeRule
-open Transpiler.RuleCollection.AxiomRule
-open Transpiler.RuleCollection.TransitionSystemRule
 open Transpiler.RuleCollection.TransitionSystemRule1
-open Transpiler.Helpers.Helpers
+open Transpiler.Helpers
 open Transpiler.Ast
 
 let transpile ((specification, cls): Scheme) =
@@ -40,33 +37,3 @@ let transpile ((specification, cls): Scheme) =
         |> apply unfoldNamedTransitionRules1
 
     Scheme(($"{fst specification}_unfolded", snd specification), cls')
-
-let transpile2 ((specification, cls): Scheme) =
-    let valueEnvironment = buildValueEnvironment cls
-
-    let typeEnvironment = buildSymbolTable cls valueEnvironment
-    let valueTypeEnvironment = buildValueTypeTable cls
-
-    let intermediate =
-        convertToIntermediate
-            cls
-            { Type = None
-              Value = None
-              Axiom = None
-              TransitionSystem = None
-              LtlAssertion = None  }
-
-    let typeUnfolded =
-        unfoldType typeEnvironment valueTypeEnvironment valueEnvironment intermediate
-
-    let axiomsUnfolded =
-        unfoldAxioms typeEnvironment valueTypeEnvironment valueEnvironment typeUnfolded
-
-    let genericsTypeUnfolded =
-        unfoldGenerics typeEnvironment valueTypeEnvironment valueEnvironment axiomsUnfolded
-
-    let namedTransitionRulesUnfolded =
-        unfoldNamedTransitionRules typeEnvironment valueTypeEnvironment valueEnvironment genericsTypeUnfolded
-
-    let t = convertToAst namedTransitionRulesUnfolded
-    Scheme(($"{fst specification}_unfolded", snd specification), t)

@@ -18,6 +18,5 @@ let testLexerAndParserFromFile (filename: string) =
 
     Parser.start Lexer.read lexbuf
     
-    
 let astToString (scheme: Scheme) : string =
     sprintf "%A" scheme

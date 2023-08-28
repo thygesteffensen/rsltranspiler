@@ -1,8 +1,8 @@
 ﻿module Transpiler.RuleCollection.QuantificationRule
 
 open Transpiler.Ast
-open Transpiler.Intermediate
-open Transpiler.Helpers.Helpers
+open Transpiler.Auxiliary
+open Transpiler.Helpers
 
 
 let rec unfoldQuantified (typeEnv: TypeEnvMap) (valueEnv: ValueEnvMap) (valueExpr: ValueExpression) : ValueExpression =

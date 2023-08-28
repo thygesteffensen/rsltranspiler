@@ -7,19 +7,13 @@
 
     <ItemGroup>
         <Compile Include="Ast.fs" />
-        <Compile Include="IntermediateRepresentation.fs" />
         <Compile Include="Auxiliary.fs" />
-        <Compile Include="IrTransformer.fs" />
         <Compile Include="Helpers.fs" />
-        <Compile Include="IrAxiomDeclarationUnfolder.fs" />
         <Compile Include="RuleCollection\GenericAccessRule.fs" />
         <Compile Include="RuleCollection\QuantificationRule.fs" />
-        <Compile Include="RuleCollection\AxiomRule.fs" />
         <Compile Include="RuleCollection\Cata.fs" />
         <Compile Include="RuleCollection\GenericValueDefinitionRule.fs" />
-        <Compile Include="RuleCollection\TransitionSystemRule.fs" />
         <Compile Include="RuleCollection\TransitionSystemRule1.fs" />
-        <Compile Include="RuleCollection\TypeRule.fs" />
         <Compile Include="RuleCollection\AxiomRule1.fs" />
         <Compile Include="RuleCollection\VariableRule.fs" />
         <FsYacc Include="Parser.fsy">

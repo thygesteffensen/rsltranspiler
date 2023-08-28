@@ -3,7 +3,7 @@
 open Transpiler
 open Transpiler.Ast
 open AstDrawerLibrary.Library
-open Transpiler.Helpers.Helpers
+open Transpiler.Helpers
 
 let typeDeclarationToNode (typeDeclaration: Pos<Id> * TypeDefinition) (acc: Tree<string> list) : Tree<string> list =
     match typeDeclaration with

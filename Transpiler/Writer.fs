@@ -2,7 +2,7 @@ module Transpiler.Writer
 
 open System
 open Transpiler.Ast
-open Transpiler.Helpers.Helpers
+open Transpiler.Helpers
 open System.IO
 
 /// <summary>

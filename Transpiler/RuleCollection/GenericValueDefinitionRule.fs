@@ -1,8 +1,8 @@
 ﻿module Transpiler.RuleCollection.GenericValueDefinitionRule
 
 open Transpiler.Ast
-open Transpiler.Intermediate
-open Transpiler.Helpers.Helpers
+open Transpiler.Auxiliary
+open Transpiler.Helpers
 open Transpiler.RuleCollection.QuantificationRule
 
 
